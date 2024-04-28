@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIFF App 16:24</title>
+    <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        #userContent {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #4CAF50;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            margin: 10px 0;
+        }
+
+        input[type=text] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        #alertMessage {
+            color: red;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Section to display user information or registration form -->
+    <p id="userInfo">Loading user information...</p>
+    <div id="userContent">
+        <!-- User Redemption Page -->
+        <div id="redeemSection" style="display:none;">
+            <h2>Redeem Page</h2>
+            <p><strong>Employee Number:</strong> <span id="empNo"></span></p>
+            <p><strong>Name:</strong> <span id="name"></span></p>
+            <p><strong>Division:</strong> <span id="division"></span></p>
+            <p><strong>Factory:</strong> <span id="factory"></span></p>
+            <p><strong>Points:</strong> <span id="points"></span></p>
+            <input type="text" id="redeemCodeInput" placeholder="Enter Redeem Code">
+            <button onclick="checkRedeemCode()">Redeem</button>
+        </div>
+
+        <!-- User Registration Page -->
+        <div id="registerSection" style="display:none;">
+            <h2>Register Page</h2>
+            <input type="text" id="empNoInput" placeholder="Enter Employee Number">
+            <input type="text" id="empDateInput" placeholder="Enter Employment Date">
+            <button onclick="registerUser()">Check and Register</button>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    <div id="alertMessage"></div>
+
+    <script>
+    window.onload = function() {
+        initializeLiff('1606478942-pB2qaWE1');
+    };
+
+    function initializeLiff(myLiffId) {
+        liff.init({
+            liffId: myLiffId
+        }).then(() => {
+            if (liff.isLoggedIn()) {
+                liff.getProfile().then(profile => {
+                    displayUserInfo(profile.userId, profile.displayName);
+                    getUserData(profile); // Pass profile to use inside the function
+                }).catch(err => console.error('Failed to get user profile:', err));
+            } else {
+                liff.login();
+            }
+        }).catch(err => console.error('LIFF Initialization failed:', err));
+    }
+
+    function displayUserInfo(userId, userName) {
+        document.getElementById('userInfo').innerHTML = `<p>User ID: ${userId}</p><p>Name: ${userName}</p>`;
+    }
+
+    function getUserData(profile) {
+        const uid = profile.userId;
+        fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=getUserData&uid=${uid}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    displayRegisterSection();
+                } else {
+                    displayRedeemSection(data.data);
+                }
+            });
+    }
+
+    function displayRedeemSection(userData) {
+        document.getElementById('redeemSection').style.display = 'block';
+        document.getElementById('empNo').textContent = userData[0];
+        document.getElementById('name').textContent = userData[1];
+        document.getElementById('division').textContent = userData[2];
+        document.getElementById('factory').textContent = userData[3];
+        document.getElementById('points').textContent = userData[4];
+    }
+
+        // Function to check redeem code
+        function checkRedeemCode() {
+            const empNo = document.getElementById('empNo').textContent;
+            const code = document.getElementById('redeemCodeInput').value;
+            fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=redeemCode&empNo=' + empNo + '&code=' + code)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('alertMessage').textContent = data.message;
+                    if (data.success) {
+                        // Optionally refresh data or inform user of success
+                    }
+                });
+        }
+
+        // Display Registration Section
+        function displayRegisterSection() {
+            document.getElementById('registerSection').style.display = 'block';
+        }
+
+        // Function to handle user registration
+function registerUser() {
+  const empNo = document.getElementById('empNoInput').value;
+  const empDate = document.getElementById('empDateInput').value;
+  if (liff.isLoggedIn()) {
+    liff.getProfile().then(profile => {
+      const uid = profile.userId;
+      const data = new FormData();
+      data.append('action', 'registerUser');
+      data.append('empNo', empNo);
+      data.append('empDate', empDate);
+      data.append('uid', uid);
+
+      fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec', {
+        method: 'POST',
+        body: data
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('alertMessage').textContent = data.message;
+        if (data.success) {
+          // Optionally switch to redeem page or inform user
+        }
+      });
+    });
+  }
+}
+
+    </script>
+</body>
+</html>
