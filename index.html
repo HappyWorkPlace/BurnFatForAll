@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App 22:47</title>
+    <title>LIFF App 22:59</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -81,7 +81,9 @@
     <!-- Section to display user information or registration form -->
 
     <p id="userInfo">รอสักครู่..</p>
-
+    <div id="loading" style="display: flex; align-items: center; justify-content: center; height: 100vh;">
+        <div class="loader"></div>
+    </div>
     <div id="userContent">
         <!-- User Redemption Page -->
         <div id="redeemSection" style="display:none;">
@@ -118,7 +120,7 @@
         }).then(() => {
             if (liff.isLoggedIn()) {
                 liff.getProfile().then(profile => {
-                    displayUserInfo(profile.displayName);
+                    displayUserInfo(profile.userId, profile.displayName);
                     getUserData(profile); // Pass profile to use inside the function
                 }).catch(err => console.error('Failed to get user profile:', err));
             } else {
@@ -127,10 +129,13 @@
         }).catch(err => console.error('LIFF Initialization failed:', err));
     }
 
-    function displayUserInfo(userName) {
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('userInfo').innerHTML = `<p>สวัสดี: ${userName}</p><p>วันนี้อย่าลืมกินอาหารที่ดีต่อสุขภาพด้วยนะ</p>`;
-    }
+function displayUserInfo(userId, userName) {
+    // Hide loader
+    document.getElementById('loading').style.display = 'none';
+    // Display user info
+    document.getElementById('userInfo').innerHTML = `<p>User ID: ${userId}</p><p>Name: ${userName}</p>`;
+}
+
 
     function getUserData(profile) {
         const uid = profile.userId;
@@ -157,11 +162,11 @@
 function checkRedeemCode() {
     const empNo = document.getElementById('empNo').textContent;
     const code = document.getElementById('redeemCodeInput').value;
-
+    Swal.showLoading(); // Show loading Swal
     fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=redeemCode&empNo=' + empNo + '&code=' + code)
         .then(response => response.json())
         .then(data => {
-
+            Swal.close(); // Close the Swal loader
             if (data.success) {
                 Swal.fire('Success', 'Your code has been redeemed!', 'success');
             } else {
@@ -187,14 +192,14 @@ function registerUser() {
       data.append('empNo', empNo);
       data.append('empDate', empDate);
       data.append('uid', uid);
-
+Swal.showLoading(); // Show loading Swal before fetch call
     fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec', {
         method: 'POST',
         body: data
     })
     .then(response => response.json())
     .then(data => {
-
+        Swal.close(); // Close the Swal loader
         if (data.success) {
             Swal.fire('Registered', 'You have been successfully registered.', 'success');
         } else {
