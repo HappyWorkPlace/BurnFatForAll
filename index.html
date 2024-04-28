@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App 17:49</title>
+    <title>LIFF App 18:11</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -81,10 +81,11 @@
     <!-- Section to display user information or registration form -->
 
     <p id="userInfo">รอสักครู่..</p>
-    <div id="loading" style="display: flex; align-items: center; justify-content: center; height: 100vh;">
+
+    <div id="userContent">
+    <div id="loading" style="display: flex; align-items: center; justify-content: center; height: 50vh;">
         <div class="loader"></div>
     </div>
-    <div id="userContent">
         <!-- User Redemption Page -->
         <div id="redeemSection" style="display:none;">
             <h2>Redeem Page</h2>
@@ -129,7 +130,7 @@
         }).catch(err => console.error('LIFF Initialization failed:', err));
     }
 
-    function displayUserInfo(userId, userName) {
+    function displayUserInfo(userName) {
         document.getElementById('loading').style.display = 'none';
         document.getElementById('userInfo').innerHTML = `<p>สวัสดี: ${userName}</p><p>วันนี้อย่าลืมกินอาหารที่ดีต่อสุขภาพด้วยนะ</p>`;
     }
