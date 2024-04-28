@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App 22:59</title>
+    <title>LIFF App 23:10</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -15,7 +15,6 @@
             padding: 20px;
             color: #333;
         }
-
         #userContent {
             background-color: white;
             padding: 20px;
@@ -23,18 +22,15 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin-bottom: 20px;
         }
-
         h2 {
             color: #4CAF50;
             border-bottom: 2px solid #4CAF50;
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
-
         p {
             margin: 10px 0;
         }
-
         input[type=text] {
             width: 100%;
             padding: 10px;
@@ -43,7 +39,6 @@
             border-radius: 5px;
             box-sizing: border-box;
         }
-
         button {
             background-color: #4CAF50;
             color: white;
@@ -57,35 +52,15 @@
             cursor: pointer;
             border-radius: 5px;
         }
-
         #alertMessage {
             color: red;
             padding: 10px;
         }
-        .loader {
-    border: 5px solid #f3f3f3;
-    border-radius: 50%;
-    border-top: 5px solid #3498db;
-    width: 50px;
-    height: 50px;
-    animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
     </style>
 </head>
 <body>
-    <!-- Section to display user information or registration form -->
-
     <p id="userInfo">รอสักครู่..</p>
-    <div id="loading" style="display: flex; align-items: center; justify-content: center; height: 100vh;">
-        <div class="loader"></div>
-    </div>
     <div id="userContent">
-        <!-- User Redemption Page -->
         <div id="redeemSection" style="display:none;">
             <h2>Redeem Page</h2>
             <p><strong>Employee Number:</strong> <span id="empNo"></span></p>
@@ -96,8 +71,6 @@
             <input type="text" id="redeemCodeInput" placeholder="Enter Redeem Code">
             <button onclick="checkRedeemCode()">Redeem</button>
         </div>
-
-        <!-- User Registration Page -->
         <div id="registerSection" style="display:none;">
             <h2>Register Page</h2>
             <input type="text" id="empNoInput" placeholder="Enter Employee Number">
@@ -105,10 +78,7 @@
             <button onclick="registerUser()">Check and Register</button>
         </div>
     </div>
-
-    <!-- Alert Messages -->
     <div id="alertMessage"></div>
-
     <script>
     window.onload = function() {
         initializeLiff('2004752543-O6bmBeMw');
@@ -121,32 +91,43 @@
             if (liff.isLoggedIn()) {
                 liff.getProfile().then(profile => {
                     displayUserInfo(profile.userId, profile.displayName);
-                    getUserData(profile); // Pass profile to use inside the function
-                }).catch(err => console.error('Failed to get user profile:', err));
+                    getUserData(profile);
+                }).catch(err => {
+                    console.error('Failed to get user profile:', err);
+                    Swal.fire('Error', 'Failed to get user profile.', 'error');
+                });
             } else {
                 liff.login();
             }
-        }).catch(err => console.error('LIFF Initialization failed:', err));
+        }).catch(err => {
+            console.error('LIFF Initialization failed:', err);
+            Swal.fire('Error', 'Initialization failed.', 'error');
+        });
     }
 
-function displayUserInfo(userId, userName) {
-    // Hide loader
-    document.getElementById('loading').style.display = 'none';
-    // Display user info
-    document.getElementById('userInfo').innerHTML = `<p>User ID: ${userId}</p><p>Name: ${userName}</p>`;
-}
-
+    function displayUserInfo(userId, userName) {
+        document.getElementById('userInfo').innerHTML = `<p>User ID: ${userId}</p><p>Name: ${userName}</p>`;
+    }
 
     function getUserData(profile) {
         const uid = profile.userId;
         fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=getUserData&uid=${uid}`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.error) {
                     displayRegisterSection();
                 } else {
                     displayRedeemSection(data.data);
                 }
+            })
+            .catch(error => {
+                console.error('Error fetching user data:', error);
+                Swal.fire('Error', 'Failed to fetch user data.', 'error');
             });
     }
 
@@ -158,56 +139,72 @@ function displayUserInfo(userId, userName) {
         document.getElementById('factory').textContent = userData[4];
         document.getElementById('points').textContent = userData[7];
     }
-// Function to check redeem code
-function checkRedeemCode() {
-    const empNo = document.getElementById('empNo').textContent;
-    const code = document.getElementById('redeemCodeInput').value;
-    Swal.showLoading(); // Show loading Swal
-    fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=redeemCode&empNo=' + empNo + '&code=' + code)
-        .then(response => response.json())
-        .then(data => {
-            Swal.close(); // Close the Swal loader
-            if (data.success) {
-                Swal.fire('Success', 'Your code has been redeemed!', 'success');
-            } else {
-                Swal.fire('Error', data.message, 'error');
-            }
-        });
-}
 
-        // Display Registration Section
-        function displayRegisterSection() {
-            document.getElementById('registerSection').style.display = 'block';
+    function checkRedeemCode() {
+        const empNo = document.getElementById('empNo').textContent;
+        const code = document.getElementById('redeemCodeInput').value;
+        fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=redeemCode&empNo=${empNo}&code=${code}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    Swal.fire('Success', 'Your code has been redeemed!', 'success');
+                } else {
+                    Swal.fire('Error', data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('There has been a problem with your fetch operation:', error);
+                Swal.fire('Error', 'Network error, please try again later.', 'error');
+            });
+    }
+
+    function displayRegisterSection() {
+        document.getElementById('registerSection').style.display = 'block';
+    }
+
+    function registerUser() {
+        const empNo = document.getElementById('empNoInput').value;
+        const empDate = document.getElementById('empDateInput').value;
+        if (liff.isLoggedIn()) {
+            liff.getProfile().then(profile => {
+                const uid = profile.userId;
+                const data = new FormData();
+                data.append('action', 'registerUser');
+                data.append('empNo', empNo);
+                data.append('empDate', empDate);
+                data.append('uid', uid);
+                fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec', {
+                    method: 'POST',
+                    body: data
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('Registered', 'You have been successfully registered.', 'success');
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Registration failed:', error);
+                    Swal.fire('Error', 'Registration failed. Please try again later.', 'error');
+                });
+            }).catch(err => {
+                console.error('Failed to get user profile on registration:', err);
+                Swal.fire('Error', 'Failed to get user profile.', 'error');
+            });
         }
-
-        // Function to handle user registration
-function registerUser() {
-  const empNo = document.getElementById('empNoInput').value;
-  const empDate = document.getElementById('empDateInput').value;
-  if (liff.isLoggedIn()) {
-    liff.getProfile().then(profile => {
-      const uid = profile.userId;
-      const data = new FormData();
-      data.append('action', 'registerUser');
-      data.append('empNo', empNo);
-      data.append('empDate', empDate);
-      data.append('uid', uid);
-Swal.showLoading(); // Show loading Swal before fetch call
-    fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec', {
-        method: 'POST',
-        body: data
-    })
-    .then(response => response.json())
-    .then(data => {
-        Swal.close(); // Close the Swal loader
-        if (data.success) {
-            Swal.fire('Registered', 'You have been successfully registered.', 'success');
-        } else {
-            Swal.fire('Error', data.message, 'error');
-        }
-    });
-}
-
+    }
     </script>
 </body>
 </html>
