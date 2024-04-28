@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App 18:11</title>
+    <title>LIFF App 22:41</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -121,7 +121,7 @@
         }).then(() => {
             if (liff.isLoggedIn()) {
                 liff.getProfile().then(profile => {
-                    displayUserInfo(profile.userId, profile.displayName);
+                    displayUserInfo(profile.displayName);
                     getUserData(profile); // Pass profile to use inside the function
                 }).catch(err => console.error('Failed to get user profile:', err));
             } else {
