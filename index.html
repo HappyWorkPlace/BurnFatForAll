@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App 17:22</title>
+    <title>LIFF App 17:49</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
             font-family: 'Kanit', sans-serif;
@@ -61,11 +62,28 @@
             color: red;
             padding: 10px;
         }
+        .loader {
+    border: 5px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 5px solid #3498db;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
     </style>
 </head>
 <body>
     <!-- Section to display user information or registration form -->
-    <p id="userInfo">Loading user information...</p>
+
+    <p id="userInfo">รอสักครู่..</p>
+    <div id="loading" style="display: flex; align-items: center; justify-content: center; height: 100vh;">
+        <div class="loader"></div>
+    </div>
     <div id="userContent">
         <!-- User Redemption Page -->
         <div id="redeemSection" style="display:none;">
@@ -112,7 +130,8 @@
     }
 
     function displayUserInfo(userId, userName) {
-        document.getElementById('userInfo').innerHTML = `<p>User ID: ${userId}</p><p>Name: ${userName}</p>`;
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('userInfo').innerHTML = `<p>สวัสดี: ${userName}</p><p>วันนี้อย่าลืมกินอาหารที่ดีต่อสุขภาพด้วยนะ</p>`;
     }
 
     function getUserData(profile) {
@@ -136,20 +155,22 @@
         document.getElementById('factory').textContent = userData[4];
         document.getElementById('points').textContent = userData[7];
     }
-
-        // Function to check redeem code
-        function checkRedeemCode() {
-            const empNo = document.getElementById('empNo').textContent;
-            const code = document.getElementById('redeemCodeInput').value;
-            fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=redeemCode&empNo=' + empNo + '&code=' + code)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('alertMessage').textContent = data.message;
-                    if (data.success) {
-                        // Optionally refresh data or inform user of success
-                    }
-                });
-        }
+// Function to check redeem code
+function checkRedeemCode() {
+    const empNo = document.getElementById('empNo').textContent;
+    const code = document.getElementById('redeemCodeInput').value;
+    Swal.showLoading(); // Show loading Swal
+    fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=redeemCode&empNo=' + empNo + '&code=' + code)
+        .then(response => response.json())
+        .then(data => {
+            Swal.close(); // Close the Swal loader
+            if (data.success) {
+                Swal.fire('Success', 'Your code has been redeemed!', 'success');
+            } else {
+                Swal.fire('Error', data.message, 'error');
+            }
+        });
+}
 
         // Display Registration Section
         function displayRegisterSection() {
@@ -168,20 +189,20 @@ function registerUser() {
       data.append('empNo', empNo);
       data.append('empDate', empDate);
       data.append('uid', uid);
-
-      fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec', {
+    Swal.showLoading(); // Show loading Swal before fetch call
+    fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec', {
         method: 'POST',
         body: data
-      })
-      .then(response => response.json())
-      .then(data => {
-        document.getElementById('alertMessage').textContent = data.message;
+    })
+    .then(response => response.json())
+    .then(data => {
+        Swal.close(); // Close the Swal loader
         if (data.success) {
-          // Optionally switch to redeem page or inform user
+            Swal.fire('Registered', 'You have been successfully registered.', 'success');
+        } else {
+            Swal.fire('Error', data.message, 'error');
         }
-      });
     });
-  }
 }
 
     </script>
