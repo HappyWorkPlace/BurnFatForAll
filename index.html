@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App 16:41</title>
+    <title>LIFF App 16:46</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
@@ -98,93 +98,154 @@
     <div id="alertMessage">
         
     </div>
-  <script>
-        window.onload = function() {
-            initializeLiff('2004752543-O6bmBeMw');
-        };
+    <script>
+    window.onload = function() {
+        initializeLiff('2004752543-O6bmBeMw');
+    };
 
-        function initializeLiff(myLiffId) {
-            liff.init({ liffId: myLiffId }).then(() => {
-                if (liff.isLoggedIn()) {
-                    liff.getProfile().then(profile => {
-                        displayUserInfo(profile.userId, profile.displayName);
-                        getUserData(profile);
-                    }).catch(err => {
-                        console.error('Failed to get user profile:', err);
-                        Swal.fire('Error', 'Failed to get user profile.', 'error');
-                    });
+    function initializeLiff(myLiffId) {
+        liff.init({
+            liffId: myLiffId
+        }).then(() => {
+            if (liff.isLoggedIn()) {
+                liff.getProfile().then(profile => {
+                    displayUserInfo(profile.userId, profile.displayName);
+                    getUserData(profile);
+                }).catch(err => {
+                    console.error('Failed to get user profile:', err);
+                    Swal.fire('Error', 'Failed to get user profile.', 'error');
+                });
+            } else {
+                liff.login();
+            }
+        }).catch(err => {
+            console.error('LIFF Initialization failed:', err);
+            Swal.fire('Error', 'Initialization failed.', 'error');
+        });
+    }
+
+    function displayUserInfo(userId, userName) {
+        document.getElementById('userInfo').innerHTML = `<p>User ID: ${userId}</p><p>Name: ${userName}</p>`;
+    }
+
+    function getUserData(profile) {
+        const uid = profile.userId;
+        fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=getUserData&uid=${uid}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    displayRegisterSection();
                 } else {
-                    liff.login();
+                    displayRedeemSection(data.data);
                 }
-            }).catch(err => {
-                console.error('LIFF Initialization failed:', err);
-                Swal.fire('Error', 'Initialization failed.', 'error');
+            })
+            .catch(error => {
+                console.error('Error fetching user data:', error);
+                Swal.fire('Error', 'Failed to fetch user data.', 'error');
             });
-        }
+    }
 
-        function displayUserInfo(userId, userName) {
-            document.getElementById('userInfo').innerHTML = `<p>User ID: ${userId}</p><p>Name: ${userName}</p>`;
-        }
+    function displayRedeemSection(userData) {
+        document.getElementById('redeemSection').style.display = 'block';
+        document.getElementById('empNo').textContent = userData[0];
+        document.getElementById('name').textContent = userData[1];
+        document.getElementById('division').textContent = userData[2];
+        document.getElementById('factory').textContent = userData[4];
+        document.getElementById('points').textContent = userData[7];
+    }
 
-        function getUserData(profile) {
-            const uid = profile.userId;
-            fetchUserData(uid);
+function checkRedeemCode() {
+    const empNo = document.getElementById('empNo').textContent;
+    const code = document.getElementById('redeemCodeInput').value;
+    Swal.fire({
+        title: 'Checking information...',
+        text: 'Please wait.',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
         }
+    });
 
-        function fetchUserData(uid) {
-            const url = `https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=getUserData&uid=${uid}`;
-            fetchData(url);
-        }
+    fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=redeemCode&empNo=${empNo}&code=${code}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            Swal.close(); 
+            if (data.success) {
+                Swal.fire('Success', 'Your code has been redeemed!', 'success');
+            } else {
+                Swal.fire('Error', data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+            Swal.fire('Error', 'Network error, please try again later.', 'error');
+        });
+}
 
-        function checkRedeemCode() {
-            const empNo = document.getElementById('empNo').textContent;
-            const code = document.getElementById('redeemCodeInput').value;
-            const url = `https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=redeemCode&empNo=${empNo}&code=${code}`;
-            fetchData(url);
-        }
+    function displayRegisterSection() {
+        document.getElementById('registerSection').style.display = 'block';
+    }
 
-        function registerUser() {
-            const empNo = document.getElementById('empNoInput').value;
-            const empDate = document.getElementById('empDateInput').value;
-            const uid = liff.getContext().userId;
-            const data = new FormData();
-            data.append('action', 'registerUser');
-            data.append('empNo', empNo);
-            data.append('empDate', empDate);
-            data.append('uid', uid);
-            const url = 'https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec';
-            fetchData(url, 'POST', data);
-        }
-
-        function fetchData(url, method = 'GET', body = null) {
-            Swal.fire({
-                title: 'Checking information...',
-                text: 'Please wait.',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-            fetch(url, { method: method, body: body })
+function registerUser() {
+        const empNo = document.getElementById('empNoInput').value;
+        const empDate = document.getElementById('empDateInput').value;
+        if (liff.isLoggedIn()) {
+            liff.getProfile().then(profile => {
+                const uid = profile.userId;
+                const data = new FormData();
+                data.append('action', 'registerUser');
+                data.append('empNo', empNo);
+                data.append('empDate', empDate);
+                data.append('uid', uid);
+                                // Show loading dialogue
+                Swal.fire({
+                    title: 'Checking information...',
+                    text: 'Please wait.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec', {
+                    method: 'POST',
+                    body: data
+                })
                 .then(response => {
                     if (!response.ok) {
+                        Swal.close();
                         throw new Error('Network response was not ok.');
                     }
                     return response.json();
                 })
                 .then(data => {
-                    Swal.close(); 
                     if (data.success) {
-                        Swal.fire('Success', data.message, 'success');
+                        Swal.close();
+                        Swal.fire('Registered', 'You have been successfully registered.', 'success');
                     } else {
+                        Swal.close();
                         Swal.fire('Error', data.message, 'error');
                     }
                 })
                 .catch(error => {
-                    console.error('There has been a problem with your fetch operation:', error);
-                    Swal.fire('Error', 'Network error, please try again later.', 'error');
+                    console.error('Registration failed:', error);
+                    Swal.fire('Error', 'Registration failed. Please try again later.', 'error');
                 });
+            }).catch(err => {
+                console.error('Failed to get user profile on registration:', err);
+                Swal.fire('Error', 'Failed to get user profile.', 'error');
+            });
         }
+    }
     </script>
 </body>
 </html>
