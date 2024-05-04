@@ -142,39 +142,44 @@
         document.getElementById('points').textContent = userData[7];
     }
 
-    function checkRedeemCode() {
-        const empNo = document.getElementById('empNo').textContent;
-        const code = document.getElementById('redeemCodeInput').value;
-        // แสดงตัว Loading
-            Swal.fire({
-                title: 'Checking information...',
-                text: 'Please wait.',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-        fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=redeemCode&empNo=${empNo}&code=${code}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok.');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    Swal.close();  // ปิดตัว Loading
-                    Swal.fire('Success', 'Your code has been redeemed!', 'success');
-                } else {
-                    Swal.close();  // ปิดตัว Loading
-                    Swal.fire('Error', data.message, 'error');
-                }
-            })
-            .catch(error => {
-                console.error('There has been a problem with your fetch operation:', error);
-                Swal.fire('Error', 'Network error, please try again later.', 'error');
-            });
-    }
+function checkRedeemCode() {
+    const empNo = document.getElementById('empNo').textContent;
+    const code = document.getElementById('redeemCodeInput').value;
+
+    // Show loading dialogue
+    Swal.fire({
+        title: 'Checking information...',
+        text: 'Please wait.',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    // Construct the URL with proper URI encoding
+    const url = `https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec`;
+    const params = new URLSearchParams({ action: 'redeemCode', empNo: empNo, code: code });
+
+    fetch(`${url}?${params.toString()}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            Swal.close();  // Close the loading dialogue
+            if (data.success) {
+                Swal.fire('Success', 'Your code has been redeemed!', 'success');
+            } else {
+                Swal.fire('Error', data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+            Swal.fire('Error', 'Network error, please try again later.', 'error');
+        });
+}
 
     function displayRegisterSection() {
         document.getElementById('registerSection').style.display = 'block';
@@ -191,20 +196,32 @@ function registerUser() {
                 data.append('empNo', empNo);
                 data.append('empDate', empDate);
                 data.append('uid', uid);
+                                // Show loading dialogue
+                Swal.fire({
+                    title: 'Checking information...',
+                    text: 'Please wait.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
                 fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec', {
                     method: 'POST',
                     body: data
                 })
                 .then(response => {
                     if (!response.ok) {
+                        Swal.close();
                         throw new Error('Network response was not ok.');
                     }
                     return response.json();
                 })
                 .then(data => {
                     if (data.success) {
+                        Swal.close();
                         Swal.fire('Registered', 'You have been successfully registered.', 'success');
                     } else {
+                        Swal.close();
                         Swal.fire('Error', data.message, 'error');
                     }
                 })
