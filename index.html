@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App 16:46</title>
+    <title>LIFF App 23:39</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
@@ -181,7 +181,7 @@ function checkRedeemCode() {
         .then(data => {
             Swal.close(); 
             if (data.success) {
-                Swal.fire('Success', 'Your code has been redeemed!', 'success');
+                displaySuccessPage(); // Call a function to display the success page
             } else {
                 Swal.fire('Error', data.message, 'error');
             }
@@ -191,6 +191,17 @@ function checkRedeemCode() {
             Swal.fire('Error', 'Network error, please try again later.', 'error');
         });
 }
+
+function displaySuccessPage() {
+    // Clear the userContent and display the success message
+    const userContent = document.getElementById('userContent');
+    userContent.innerHTML = `<div style="text-align:center;">
+        <h2>Redeem Code Successful</h2>
+        <p>Your redeem code has been successfully processed.</p>
+        <button onclick="location.reload();">Return</button>
+    </div>`;
+}
+
 
     function displayRegisterSection() {
         document.getElementById('registerSection').style.display = 'block';
