@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App 17:09</title>
+    <title>LIFF App 17:19</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
@@ -189,36 +189,41 @@
             document.getElementById('registerSection').style.display = 'block';
         }
 
-    function registerUser() {
-        const empNo = document.getElementById('empNoInput').value.trim().toUpperCase();
-        const empDate = document.getElementById('empDateInput').value.trim().replace(/-/g, ""); // Ensure dashes are removed
+ function registerUser() {
+    const empNo = document.getElementById('empNoInput').value.trim().toUpperCase();
+    const empDate = document.getElementById('empDateInput').value.trim().replace(/-/g, ""); // Ensure dashes are removed
 
-        if (!empNo || !empDate) {
-            document.getElementById('alertMessage').textContent = 'Please enter all required fields.';
-            document.getElementById('alertMessage').style.color = '#dc3545';
-            return;
-        }
-
-        document.getElementById('alertMessage').textContent = 'Processing... Please wait while we fetch your information.';
-        document.getElementById('alertMessage').style.color = '#007BFF';
-
-        fetch(`https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec?action=registerUser&empNo=${encodeURIComponent(empNo)}&empDate=${encodeURIComponent(empDate)}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    document.getElementById('alertMessage').textContent = data.message;
-                    document.getElementById('alertMessage').style.color = '#dc3545';
-                } else {
-                    document.getElementById('alertMessage').textContent = 'Registration successful. Welcome!';
-                    document.getElementById('alertMessage').style.color = '#28a745'; // Success color
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching user data:', error);
-                document.getElementById('alertMessage').textContent = 'Failed to fetch user data.';
-                document.getElementById('alertMessage').style.color = '#dc3545';
-            });
+    if (!empNo || !empDate) {
+        document.getElementById('alertMessage').textContent = 'Please enter all required fields.';
+        document.getElementById('alertMessage').style.color = '#dc3545';
+        return;
     }
+
+    document.getElementById('alertMessage').textContent = 'Processing... Please wait while we fetch your information.';
+    document.getElementById('alertMessage').style.color = '#007BFF';
+
+    fetch(`https://script.google.com/macros/s/YOUR_ACTUAL_SCRIPT_ID_HERE/exec?action=registerUser&empNo=${encodeURIComponent(empNo)}&empDate=${encodeURIComponent(empDate)}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
+                document.getElementById('alertMessage').textContent = data.message;
+                document.getElementById('alertMessage').style.color = '#dc3545';
+            } else {
+                document.getElementById('alertMessage').textContent = 'Registration successful. Welcome!';
+                document.getElementById('alertMessage').style.color = '#28a745'; // Success color
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user data:', error);
+            document.getElementById('alertMessage').textContent = 'Failed to fetch user data.';
+            document.getElementById('alertMessage').style.color = '#dc3545';
+        });
+}
 
 
         function confirmRegistration(userData, empNo, empDate) {
