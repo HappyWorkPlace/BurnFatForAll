@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App 23:59</title>
+    <title>LIFF App 12:02</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
@@ -124,9 +124,12 @@
         });
     }
 
-    function displayUserInfo(userId, userName) {
-        document.getElementById('userInfo').innerHTML = `<p>User ID: ${userId}</p><p>Name: ${userName}</p>`;
-    }
+function displayUserInfo(userId, userName) {
+    document.getElementById('userInfo').innerHTML = `
+        <p>สวัสดีคุณ ${userName}</p>
+        <p>วันนี้มาสุขภาพดีไปด้วยกันนะคะ</p>`;
+}
+
 
     function getUserData(profile) {
         const uid = profile.userId;
@@ -210,18 +213,29 @@ function displaySuccessPage() {
 function registerUser() {
     const empNo = document.getElementById('empNoInput').value;
     const empDate = document.getElementById('empDateInput').value;
+
     if (!empNo || !empDate) {
         Swal.fire('Error', 'Please enter all required fields.', 'error');
         return;
     }
 
+    Swal.fire({
+        title: 'Processing...',
+        text: 'Please wait while we fetch your information.',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
     fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=getUserData&empNo=${empNo}&empDate=${empDate}`)
         .then(response => response.json())
         .then(data => {
+            Swal.close(); // Close the loading Swal before showing the next one
             if (data.error) {
                 Swal.fire('Error', data.message, 'error');
             } else {
-                confirmRegistration(data.data, empNo, empDate);  // Show confirmation with details
+                confirmRegistration(data.data, empNo, empDate);
             }
         })
         .catch(error => {
@@ -246,7 +260,7 @@ function confirmRegistration(userData, empNo, empDate) {
         icon: 'question'
     }).then((result) => {
         if (result.isConfirmed) {
-            completeRegistration(empNo, empDate);  // Proceed to register if confirmed
+            completeRegistration(empNo, empDate); // Proceed to register if confirmed
         }
     });
 }
@@ -293,6 +307,7 @@ function completeRegistration(empNo, empDate) {
         });
     }
 }
+
 
     </script>
 </body>
