@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App 13:41</title>
+    <title>LIFF App 14:07</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
@@ -215,106 +215,89 @@ function registerUser() {
     const empDate = document.getElementById('empDateInput').value;
 
     if (!empNo || !empDate) {
-        Swal.fire('Error', 'Please enter all required fields.', 'error');
+        document.getElementById('alertMessage').textContent = 'Please enter all required fields.';
+        document.getElementById('alertMessage').style.color = '#dc3545'; // Using Bootstrap's danger color
         return;
     }
 
-    Swal.fire({
-        title: 'Processing...',
-        text: 'Please wait while we fetch your information.',
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
+    document.getElementById('alertMessage').textContent = 'Processing... Please wait while we fetch your information.';
+    document.getElementById('alertMessage').style.color = '#007BFF'; // Info color
 
     fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=getUserData&empNo=${empNo}&empDate=${empDate}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
+            }
+            return response.json();
+        })
         .then(data => {
-            Swal.close(); // Close the loading Swal before showing the next one
             if (data.error) {
-                Swal.fire('Error', data.message, 'error');
+                document.getElementById('alertMessage').textContent = data.message;
+                document.getElementById('alertMessage').style.color = '#dc3545'; // Error message in red
             } else {
+                // Populate data on the page instead of using Swal for confirmation
                 confirmRegistration(data.data, empNo, empDate);
+                document.getElementById('alertMessage').textContent = ''; // Clear the alert message
             }
         })
         .catch(error => {
             console.error('Error fetching user data:', error);
-            Swal.fire('Error', 'Failed to fetch user data.', 'error');
-        });
+            document.getElementById('alertMessage').textContent = 'Failed to fetch user data.';
+            document.getElementById('alertMessage').style.color = '#dc3545'; // Error message in red
+});
 }
 
 function confirmRegistration(userData, empNo, empDate) {
-    console.log("UserData received in confirmRegistration:", userData);
-    Swal.fire({
-        title: 'Confirm Registration',
-        html: `
-            <p><strong>Employee Number:</strong> ${empNo}</p>
-            <p><strong>Name:</strong> ${userData[1]}</p>
-            <p><strong>Division:</strong> ${userData[2]}</p>
-            <p><strong>Factory:</strong> ${userData[4]}</p>
-            <p>Is this information correct?</p>
-        `,
-        showCancelButton: true,
-        confirmButtonText: 'Confirm',
-        cancelButtonText: 'Cancel',
-        icon: 'question'
-    }).then((result) => {
-        console.log("Swal result:", result);
-        if (result.isConfirmed) {
-            console.log("Registration confirmed by user.");
-            completeRegistration(empNo, empDate); // Proceed to register if confirmed
-        }
-    }).catch((error) => {
-        console.error("Error with Swal:", error);
-    });
+// Populate the data in the webpage elements
+document.getElementById('confirmEmpNo').textContent = empNo;
+document.getElementById('confirmName').textContent = userData[1]; // Assuming index 1 is Name
+document.getElementById('confirmDivision').textContent = userData[2]; // Assuming index 2 is Division
+document.getElementById('confirmFactory').textContent = userData[4]; // Assuming index 4 is Factory
+    // Display the confirmation section
+document.getElementById('registerConfirmationSection').style.display = 'block';
+document.getElementById('registerSection').style.display = 'none'; // Optionally hide the registration form
 }
 
-
-function completeRegistration(empNo, empDate) {
-    if (liff.isLoggedIn()) {
-        liff.getProfile().then(profile => {
-            const uid = profile.userId;
-            const data = new FormData();
-            data.append('action', 'registerUser');
-            data.append('empNo', empNo);
-            data.append('empDate', empDate);
-            data.append('uid', uid);
-
-            Swal.fire({
-                title: 'Registering...',
-                text: 'Please wait.',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
-            fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec', {
-                method: 'POST',
-                body: data
-            })
-            .then(response => response.json())
-            .then(data => {
-                Swal.close();
-                if (data.success) {
-                    Swal.fire('Registered', 'You have been successfully registered.', 'success');
-                } else {
-                    Swal.fire('Error', data.message, 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Registration failed:', error);
-                Swal.fire('Error', 'Registration failed. Please try again later.', 'error');
-            });
-        }).catch(err => {
-            console.error('Failed to get user profile on registration:', err);
-            Swal.fire('Error', 'Failed to get user profile.', 'error');
-        });
+function completeRegistration() {
+const empNo = document.getElementById('confirmEmpNo').textContent;
+const empDate = document.getElementById('empDateInput').value; // Ensure this is the correct way to get empDate
+Swal.fire({
+    title: 'Registering...',
+    text: 'Please wait.',
+    allowOutsideClick: false,
+    didOpen: () => {
+        Swal.showLoading();
     }
+});
+
+// Here we should assemble the request payload correctly, assuming the server expects URL-encoded form data
+const formData = new FormData();
+formData.append('action', 'registerUser');
+formData.append('empNo', empNo);
+formData.append('empDate', empDate);
+// If UID is needed from the profile, ensure it's fetched and added here
+// formData.append('uid', uid); // This needs to be set from somewhere if necessary
+
+fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec', {
+    method: 'POST',
+    body: formData
+})
+.then(response => response.json())
+.then(data => {
+    Swal.close();
+    if (data.success) {
+        Swal.fire('Success', 'You have been successfully registered.', 'success');
+        document.getElementById('registerConfirmationSection').style.display = 'none'; // Hide the confirmation section
+        document.getElementById('userInfo').textContent = 'Registration successful. Welcome!'; // Update user info or redirect
+    } else {
+        Swal.fire('Error', data.message, 'error');
+    }
+})
+.catch(error => {
+    console.error('Registration failed:', error);
+    Swal.fire('Error', 'Registration failed. Please try again later.', 'error');
+});
 }
-
-
     </script>
 </body>
 </html>
