@@ -3,77 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App 14:57</title>
+    <title>LIFF App 15:09</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
-<style>
-    body {
-        font-family: 'Kanit', sans-serif;
-        background-color: #f9f9f9; /* Lighter grey background */
-        margin: 0;
-        padding: 20px;
-        color: #333;
-    }
-
-    #userContent {
-        background-color: #ffffff; /* Pure white background for content */
-        padding: 20px;
-        border-radius: 8px; /* Softer edge radius */
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Subtle shadow */
-        margin-bottom: 20px;
-        max-width: 600px; /* Ensures content is not too wide on larger screens */
-        margin: 20px auto; /* Centers the content horizontally */
-    }
-
-    h2 {
-        color: #007BFF; /* Bright blue for headings */
-        border-bottom: 2px solid #007BFF; /* Matching border under heading */
-        padding-bottom: 10px;
-        margin-bottom: 20px;
-    }
-
-    p, input[type=text], button {
-        margin: 10px 0;
-        padding: 10px;
-    }
-
-    input[type=text] {
-        width: calc(100% - 20px); /* Full width taking padding into account */
-        border: 2px solid #ddd; /* Slightly thicker border in a soft grey */
-        border-radius: 5px; /* Rounded corners for input fields */
-        box-sizing: border-box; /* Handles box sizing to include padding in width */
-        transition: border-color 0.3s; /* Smooth transition for focus */
-    }
-
-    input[type=text]:focus {
-        border-color: #007BFF; /* Blue border on focus */
-        outline: none; /* Removes the default focus outline */
-    }
-
-    button {
-        background-color: #007BFF; /* Consistent blue background for buttons */
-        color: white;
-        border: none;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer;
-        border-radius: 5px;
-        transition: background-color 0.3s; /* Smooth transition for hover effect */
-    }
-
-    button:hover {
-        background-color: #0056b3; /* Darker blue on hover for button */
-    }
-
-    #alertMessage {
-        color: #dc3545; /* Bootstrap's danger color for error messages */
-        padding: 10px;
-        text-align: center; /* Center-align the alert messages */
-    }
-</style>
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        #userContent {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        h2 {
+            color: #007BFF;
+            border-bottom: 2px solid #007BFF;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        p, input[type=text], button {
+            margin: 10px 0;
+            padding: 10px;
+        }
+        input[type=text] {
+            width: calc(100% - 20px);
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        input[type=text]:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #alertMessage {
+            color: #dc3545;
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     <p id="userInfo">รอสักครู่..</p>
@@ -95,209 +85,192 @@
             <button onclick="registerUser()">Check and Register</button>
         </div>
     </div>
-    <div id="alertMessage">
-        
-    </div>
+    <div id="alertMessage"></div>
     <script>
-    window.onload = function() {
-        initializeLiff('2004752543-O6bmBeMw');
-    };
+        window.onload = function() {
+            initializeLiff('2004752543-O6bmBeMw');
+        };
 
-    function initializeLiff(myLiffId) {
-        liff.init({
-            liffId: myLiffId
-        }).then(() => {
-            if (liff.isLoggedIn()) {
-                liff.getProfile().then(profile => {
-                    displayUserInfo(profile.userId, profile.displayName);
-                    getUserData(profile);
-                }).catch(err => {
-                    console.error('Failed to get user profile:', err);
-                    Swal.fire('Error', 'Failed to get user profile.', 'error');
-                });
-            } else {
-                liff.login();
-            }
-        }).catch(err => {
-            console.error('LIFF Initialization failed:', err);
-            Swal.fire('Error', 'Initialization failed.', 'error');
-        });
-    }
-
-function displayUserInfo(userId, userName) {
-    document.getElementById('userInfo').innerHTML = `
-        <p>สวัสดีคุณ ${userName}</p>
-        <p>วันนี้มาสุขภาพดีไปด้วยกันนะคะ</p>`;
-}
-
-
-function getUserData(profile) {
-    const uid = profile.userId;
-    fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=getUserData&uid=${uid}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok.');
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.error) {
-                displayRegisterSection();
-                document.getElementById('alertMessage').textContent = data.message;
-                document.getElementById('alertMessage').style.color = '#dc3545';
-            } else {
-                displayRedeemSection(data.data);
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching user data:', error);
-            Swal.fire('Error', 'Failed to fetch user data.', 'error');
-        });
-}
-    function displayRedeemSection(userData) {
-        document.getElementById('redeemSection').style.display = 'block';
-        document.getElementById('empNo').textContent = userData[0];
-        document.getElementById('name').textContent = userData[1];
-        document.getElementById('division').textContent = userData[2];
-        document.getElementById('factory').textContent = userData[4];
-        document.getElementById('points').textContent = userData[7];
-    }
-
-function checkRedeemCode() {
-    const empNo = document.getElementById('empNo').textContent;
-    const code = document.getElementById('redeemCodeInput').value;
-    Swal.fire({
-        title: 'Checking information...',
-        text: 'Please wait.',
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
+        function initializeLiff(myLiffId) {
+            liff.init({ liffId: myLiffId }).then(() => {
+                if (liff.isLoggedIn()) {
+                    liff.getProfile().then(profile => {
+                        displayUserInfo(profile.userId, profile.displayName);
+                        getUserData(profile);
+                    }).catch(err => {
+                        console.error('Failed to get user profile:', err);
+                        Swal.fire('Error', 'Failed to get user profile.', 'error');
+                    });
+                } else {
+                    liff.login();
+                }
+            }).catch(err => {
+                console.error('LIFF Initialization failed:', err);
+                Swal.fire('Error', 'Initialization failed.', 'error');
+            });
         }
-    });
 
-    fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=redeemCode&empNo=${empNo}&code=${code}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok.');
-            }
-            return response.json();
-        })
-        .then(data => {
-            Swal.close(); 
-            if (data.success) {
-                displaySuccessPage(); // Call a function to display the success page
-            } else {
-                Swal.fire('Error', data.message, 'error');
-            }
-        })
-        .catch(error => {
-            console.error('There has been a problem with your fetch operation:', error);
-            Swal.fire('Error', 'Network error, please try again later.', 'error');
-        });
-}
+        function displayUserInfo(userId, userName) {
+            document.getElementById('userInfo').innerHTML = `<p>สวัสดีคุณ ${userName}</p><p>วันนี้มาสุขภาพดีไปด้วยกันนะคะ</p>`;
+        }
 
-function displaySuccessPage() {
-    // Clear the userContent and display the success message
-    const userContent = document.getElementById('userContent');
-    userContent.innerHTML = `<div style="text-align:center;">
-        <h2>Redeem Code Successful</h2>
-        <p>Your redeem code has been successfully processed.</p>
-        <button onclick="location.reload();">Return</button>
-    </div>`;
-}
+        function getUserData(profile) {
+            const uid = profile.userId;
+            fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=getUserData&uid=${uid}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        displayRegisterSection();
+                        document.getElementById('alertMessage').textContent = data.message;
+                        document.getElementById('alertMessage').style.color = '#dc3545';
+                    } else {
+                        displayRedeemSection(data.data);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching user data:', error);
+                    Swal.fire('Error', 'Failed to fetch user data.', 'error');
+                });
+        }
 
+        function displayRedeemSection(userData) {
+            document.getElementById('redeemSection').style.display = 'block';
+            document.getElementById('empNo').textContent = userData[0];
+            document.getElementById('name').textContent = userData[1];
+            document.getElementById('division').textContent = userData[2];
+            document.getElementById('factory').textContent = userData[4];
+            document.getElementById('points').textContent = userData[7];
+        }
 
-    function displayRegisterSection() {
-        document.getElementById('registerSection').style.display = 'block';
-    }
+        function checkRedeemCode() {
+            const empNo = document.getElementById('empNo').textContent;
+            const code = document.getElementById('redeemCodeInput').value;
+            Swal.fire({
+                title: 'Checking information...',
+                text: 'Please wait.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
 
-function registerUser() {
-    const empNo = document.getElementById('empNoInput').value;
-    const empDate = document.getElementById('empDateInput').value;
+            fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=redeemCode&empNo=${empNo}&code=${code}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    Swal.close();
+                    if (data.success) {
+                        displaySuccessPage(); // Call a function to display the success page
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                    Swal.fire('Error', 'Network error, please try again later.', 'error');
+                });
+        }
 
-    if (!empNo || !empDate) {
-        document.getElementById('alertMessage').textContent = 'Please enter all required fields.';
-        document.getElementById('alertMessage').style.color = '#dc3545';
-        return;
-    }
+        function displaySuccessPage() {
+            const userContent = document.getElementById('userContent');
+            userContent.innerHTML = `<div style="text-align:center;"><h2>Redeem Code Successful</h2><p>Your redeem code has been successfully processed.</p><button onclick="location.reload();">Return</button></div>`;
+        }
 
-    document.getElementById('alertMessage').textContent = 'Processing... Please wait while we fetch your information.';
-    document.getElementById('alertMessage').style.color = '#007BFF';
+        function displayRegisterSection() {
+            document.getElementById('registerSection').style.display = 'block';
+        }
 
-    fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=getUserData&empNo=${empNo}&empDate=${empDate}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok.');
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.error) {
-                document.getElementById('alertMessage').textContent = 'User not found or data mismatch.';
+        function registerUser() {
+            const empNo = document.getElementById('empNoInput').value;
+            const empDate = document.getElementById('empDateInput').value;
+
+            if (!empNo || !empDate) {
+                document.getElementById('alertMessage').textContent = 'Please enter all required fields.';
                 document.getElementById('alertMessage').style.color = '#dc3545';
-            } else {
-                confirmRegistration(data.data, empNo, empDate);
-                document.getElementById('alertMessage').textContent = ''; // Clear the alert message
+                return;
             }
-        })
-        .catch(error => {
-            console.error('Error fetching user data:', error);
-            document.getElementById('alertMessage').textContent = 'Failed to fetch user data.';
-            document.getElementById('alertMessage').style.color = '#dc3545';
-        });
-}
 
-function confirmRegistration(userData, empNo, empDate) {
-// Populate the data in the webpage elements
-document.getElementById('confirmEmpNo').textContent = empNo;
-document.getElementById('confirmName').textContent = userData[1]; // Assuming index 1 is Name
-document.getElementById('confirmDivision').textContent = userData[2]; // Assuming index 2 is Division
-document.getElementById('confirmFactory').textContent = userData[4]; // Assuming index 4 is Factory
-    // Display the confirmation section
-document.getElementById('registerConfirmationSection').style.display = 'block';
-document.getElementById('registerSection').style.display = 'none'; // Optionally hide the registration form
-}
+            document.getElementById('alertMessage').textContent = 'Processing... Please wait while we fetch your information.';
+            document.getElementById('alertMessage').style.color = '#007BFF';
 
-function completeRegistration() {
-const empNo = document.getElementById('confirmEmpNo').textContent;
-const empDate = document.getElementById('empDateInput').value; // Ensure this is the correct way to get empDate
-Swal.fire({
-    title: 'Registering...',
-    text: 'Please wait.',
-    allowOutsideClick: false,
-    didOpen: () => {
-        Swal.showLoading();
-    }
-});
+            fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=getUserData&empNo=${empNo}&empDate=${empDate}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        document.getElementById('alertMessage').textContent = 'User not found or data mismatch.';
+                        document.getElementById('alertMessage').style.color = '#dc3545';
+                    } else {
+                        confirmRegistration(data.data, empNo, empDate);
+                        document.getElementById('alertMessage').textContent = ''; // Clear the alert message
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching user data:', error);
+                    document.getElementById('alertMessage').textContent = 'Failed to fetch user data.';
+                    document.getElementById('alertMessage').style.color = '#dc3545';
+                });
+        }
 
-// Here we should assemble the request payload correctly, assuming the server expects URL-encoded form data
-const formData = new FormData();
-formData.append('action', 'registerUser');
-formData.append('empNo', empNo);
-formData.append('empDate', empDate);
-// If UID is needed from the profile, ensure it's fetched and added here
-// formData.append('uid', uid); // This needs to be set from somewhere if necessary
+        function confirmRegistration(userData, empNo, empDate) {
+            document.getElementById('confirmEmpNo').textContent = empNo;
+            document.getElementById('confirmName').textContent = userData[1]; // Assuming index 1 is Name
+            document.getElementById('confirmDivision').textContent = userData[2]; // Assuming index 2 is Division
+            document.getElementById('confirmFactory').textContent = userData[4]; // Assuming index 4 is Factory
+            document.getElementById('registerConfirmationSection').style.display = 'block';
+            document.getElementById('registerSection').style.display = 'none'; // Optionally hide the registration form
+        }
 
-fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec', {
-    method: 'POST',
-    body: formData
-})
-.then(response => response.json())
-.then(data => {
-    Swal.close();
-    if (data.success) {
-        Swal.fire('Success', 'You have been successfully registered.', 'success');
-        document.getElementById('registerConfirmationSection').style.display = 'none'; // Hide the confirmation section
-        document.getElementById('userInfo').textContent = 'Registration successful. Welcome!'; // Update user info or redirect
-    } else {
-        Swal.fire('Error', data.message, 'error');
-    }
-})
-.catch(error => {
-    console.error('Registration failed:', error);
-    Swal.fire('Error', 'Registration failed. Please try again later.', 'error');
-});
-}
+        function completeRegistration() {
+            const empNo = document.getElementById('confirmEmpNo').textContent;
+            const empDate = document.getElementById('empDateInput').value; // Ensure this is the correct way to get empDate
+            Swal.fire({
+                title: 'Registering...',
+                text: 'Please wait.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            const formData = new FormData();
+            formData.append('action', 'registerUser');
+            formData.append('empNo', empNo);
+            formData.append('empDate', empDate);
+
+            fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                Swal.close();
+                if (data.success) {
+                    Swal.fire('Success', 'You have been successfully registered.', 'success');
+                    document.getElementById('registerConfirmationSection').style.display = 'none'; // Hide the confirmation section
+                    document.getElementById('userInfo').textContent = 'Registration successful. Welcome!'; // Update user info or redirect
+                } else {
+                    Swal.fire('Error', data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Registration failed:', error);
+                Swal.fire('Error', 'Registration failed. Please try again later.', 'error');
+            });
+        }
     </script>
 </body>
 </html>
