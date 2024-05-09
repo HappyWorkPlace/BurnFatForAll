@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App 12:02</title>
+    <title>LIFF App 13:41</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
@@ -245,6 +245,7 @@ function registerUser() {
 }
 
 function confirmRegistration(userData, empNo, empDate) {
+    console.log("UserData received in confirmRegistration:", userData);
     Swal.fire({
         title: 'Confirm Registration',
         html: `
@@ -259,11 +260,16 @@ function confirmRegistration(userData, empNo, empDate) {
         cancelButtonText: 'Cancel',
         icon: 'question'
     }).then((result) => {
+        console.log("Swal result:", result);
         if (result.isConfirmed) {
+            console.log("Registration confirmed by user.");
             completeRegistration(empNo, empDate); // Proceed to register if confirmed
         }
+    }).catch((error) => {
+        console.error("Error with Swal:", error);
     });
 }
+
 
 function completeRegistration(empNo, empDate) {
     if (liff.isLoggedIn()) {
