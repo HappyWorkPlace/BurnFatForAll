@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App 17:19</title>
+    <title>LIFF App 17:31</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
@@ -185,46 +185,60 @@
             userContent.innerHTML = `<div style="text-align:center;"><h2>Redeem Code Successful</h2><p>Your redeem code has been successfully processed.</p><button onclick="location.reload();">Return</button></div>`;
         }
 
-        function displayRegisterSection() {
-            document.getElementById('registerSection').style.display = 'block';
-        }
-
- function registerUser() {
-    const empNo = document.getElementById('empNoInput').value.trim().toUpperCase();
-    const empDate = document.getElementById('empDateInput').value.trim().replace(/-/g, ""); // Ensure dashes are removed
-
-    if (!empNo || !empDate) {
-        document.getElementById('alertMessage').textContent = 'Please enter all required fields.';
-        document.getElementById('alertMessage').style.color = '#dc3545';
-        return;
-    }
-
-    document.getElementById('alertMessage').textContent = 'Processing... Please wait while we fetch your information.';
-    document.getElementById('alertMessage').style.color = '#007BFF';
-
-    fetch(`https://script.google.com/macros/s/YOUR_ACTUAL_SCRIPT_ID_HERE/exec?action=registerUser&empNo=${encodeURIComponent(empNo)}&empDate=${encodeURIComponent(empDate)}`)
+ // Fetch user data and determine UI state
+function fetchUserData(uid) {
+    fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=getUserData&uid=${uid}`)
         .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok.');
-            }
+            if (!response.ok) throw new Error('Network response was not ok.');
             return response.json();
         })
         .then(data => {
             if (data.error) {
+                displayRegisterSection();
                 document.getElementById('alertMessage').textContent = data.message;
                 document.getElementById('alertMessage').style.color = '#dc3545';
             } else {
-                document.getElementById('alertMessage').textContent = 'Registration successful. Welcome!';
-                document.getElementById('alertMessage').style.color = '#28a745'; // Success color
+                displayRedeemSection(data.data);
             }
         })
         .catch(error => {
             console.error('Error fetching user data:', error);
-            document.getElementById('alertMessage').textContent = 'Failed to fetch user data.';
-            document.getElementById('alertMessage').style.color = '#dc3545';
+            Swal.fire('Error', 'Failed to fetch user data.', 'error');
         });
 }
 
+// Display register section to enter registration details
+function displayRegisterSection() {
+    document.getElementById('registerSection').style.display = 'block';
+}
+
+// Register user using provided details
+function registerUser() {
+    const empNo = document.getElementById('empNoInput').value;
+    const empDate = document.getElementById('empDateInput').value;
+
+    if (!empNo || !empDate) {
+        Swal.fire('Error', 'Please fill all the fields.', 'error');
+        return;
+    }
+
+    fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=registerUser&empNo=${empNo}&empDate=${empDate}`)
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok.');
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
+                Swal.fire('Registration Failed', data.message, 'error');
+            } else {
+                Swal.fire('Success', 'Registration successful.', 'success');
+            }
+        })
+        .catch(error => {
+            console.error('Error registering user:', error);
+            Swal.fire('Error', 'Registration failed, please try again.', 'error');
+        });
+}
 
         function confirmRegistration(userData, empNo, empDate) {
             document.getElementById('confirmEmpNo').textContent = empNo;
