@@ -212,80 +212,43 @@ function displayRegisterSection() {
     document.getElementById('registerSection').style.display = 'block';
 }
 
-// Register user using provided details
-function registerUser() {
-    const empNo = document.getElementById('empNoInput').value;
-    const empDate = document.getElementById('empDateInput').value;
-
-    if (!empNo || !empDate) {
-        Swal.fire('Error', 'Please fill all the fields.', 'error');
-        return;
+    function checkEmployee() {
+      const empNo = document.getElementById('empNoInput').value;
+      const empDate = document.getElementById('empDateInput').value;
+      fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=getUserData&empNo=${empNo}&empDate=${empDate}`)
+      .then(response => response.json())
+      .then(data => {
+        if (!data.found) {
+          Swal.fire('Not Found', 'No employee data found.', 'error');
+        } else {
+          const details = data.data;
+          Swal.fire({
+            title: 'Confirm Details',
+            html: `EmpNo: ${details.empNo}<br>Name: ${details.name}<br>Division: ${details.division}<br>Factory: ${details.factory}`,
+            showCancelButton: true,
+            confirmButtonText: 'Register',
+            cancelButtonText: 'Cancel'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              const uid = 'UniqueUserID'; // This should be generated or fetched appropriately
+              registerUser(empNo, empDate, uid);
+            }
+          });
+        }
+      });
     }
 
-    fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=registerUser&empNo=${empNo}&empDate=${empDate}`)
-        .then(response => {
-            if (!response.ok) throw new Error('Network response was not ok.');
-            return response.json();
-        })
-        .then(data => {
-            if (data.error) {
-                Swal.fire('Registration Failed', data.message, 'error');
-            } else {
-                Swal.fire('Success', 'Registration successful.', 'success');
-            }
-        })
-        .catch(error => {
-            console.error('Error registering user:', error);
-            Swal.fire('Error', 'Registration failed, please try again.', 'error');
-        });
-}
-
-        function confirmRegistration(userData, empNo, empDate) {
-            document.getElementById('confirmEmpNo').textContent = empNo;
-            document.getElementById('confirmName').textContent = userData[1]; // Assuming index 1 is Name
-            document.getElementById('confirmDivision').textContent = userData[2]; // Assuming index 2 is Division
-            document.getElementById('confirmFactory').textContent = userData[4]; // Assuming index 4 is Factory
-            document.getElementById('registerConfirmationSection').style.display = 'block';
-            document.getElementById('registerSection').style.display = 'none'; // Optionally hide the registration form
+    function registerUser(empNo, empDate, uid) {
+      fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=registerUser&empNo=${empNo}&empDate=${empDate}&uid=${uid}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          Swal.fire('Registered', 'Employee registered successfully.', 'success');
+        } else {
+          Swal.fire('Error', data.message, 'error');
         }
-
-        function completeRegistration() {
-            const empNo = document.getElementById('confirmEmpNo').textContent;
-            const empDate = document.getElementById('empDateInput').value; // Ensure this is the correct way to get empDate
-            Swal.fire({
-                title: 'Registering...',
-                text: 'Please wait.',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
-            const formData = new FormData();
-            formData.append('action', 'registerUser');
-            formData.append('empNo', empNo);
-            formData.append('empDate', empDate);
-
-            fetch('https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                Swal.close();
-                if (data.success) {
-                    Swal.fire('Success', 'You have been successfully registered.', 'success');
-                    document.getElementById('registerConfirmationSection').style.display = 'none'; // Hide the confirmation section
-                    document.getElementById('userInfo').textContent = 'Registration successful. Welcome!'; // Update user info or redirect
-                } else {
-                    Swal.fire('Error', data.message, 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Registration failed:', error);
-                Swal.fire('Error', 'Registration failed. Please try again later.', 'error');
-            });
-        }
+      });
+    }
     </script>
 </body>
 </html>
