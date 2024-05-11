@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App 18:56</title>
+    <title>LIFF App 19:20</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
@@ -90,6 +90,7 @@
 </style>
 </head>
 <body onload="showPreloader()">
+    <div id="preloader"></div>
     <p id="userInfo">รอสักครู่..</p>
 </div>
     <div id="userContent">
@@ -124,6 +125,13 @@ window.onload = function() {
     initializeLiff('2004752543-O6bmBeMw');
 };
 
+function showPreloader() {
+    document.getElementById('preloader').style.display = 'block';
+}
+
+function hidePreloader() {
+    document.getElementById('preloader').style.display = 'none';
+}
 
 function initializeLiff(myLiffId) {
     liff.init({
