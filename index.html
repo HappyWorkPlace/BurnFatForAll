@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App 16:41</title>
+    <title>LIFF App 17:09</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
@@ -209,7 +209,8 @@ function displaySuccessPage() {
     }
 
 // Function to check user information
-function checkUserInfo() {
+function checkUserInfo(profile) {
+    const uid = profile.userId;
     const empNo = document.getElementById('empNoInput').value;
     const empDate = document.getElementById('empDateInput').value;
 
@@ -248,7 +249,7 @@ function checkUserInfo() {
                     confirmButtonText: 'Yes, register me!'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        registerUser(empNo, empDate);
+                        registerUser(empNo, empDate,uid);
                     }
                 });
             } else {
@@ -263,8 +264,8 @@ function checkUserInfo() {
 
 // Function to register user
 // Function to confirm and register user
-function registerUser(empNo, empDate) {
-    const uid = profile.userId;
+function registerUser(empNo, empDate,uid) {
+    // const uid = profile.userId;
     console.log(`Registering: ${empNo}, ${empDate}, ${uid}`);  // Debugging output
     Swal.fire({
         title: 'กำลังลงทะเบียน...',
