@@ -226,7 +226,7 @@ function checkUserInfo() {
     });
 
     // Fetching user info from server-side App.gs
-    fetch(`https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec?action=checkUserInfo&empNo=${empNo}&empDate=${empDate}`)
+    fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=checkUserInfo&empNo=${empNo}&empDate=${empDate}`)
         .then(response => response.json())
         .then(data => {
             Swal.close();
@@ -271,7 +271,7 @@ function registerUser(empNo, empDate) {
     });
 
     // Fetching to register user
-    fetch(`https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec?action=registerUser&empNo=${empNo}&empDate=${empDate}`)
+    fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=registerUser&empNo=${empNo}&empDate=${empDate}`)
         .then(response => response.json())
         .then(data => {
             Swal.close();
