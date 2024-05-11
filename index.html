@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App 17:27</title>
+    <title>LIFF App 17:56</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
@@ -104,26 +104,30 @@
         initializeLiff('2004752543-O6bmBeMw');
     };
 
-    function initializeLiff(myLiffId) {
-        liff.init({
-            liffId: myLiffId
-        }).then(() => {
-            if (liff.isLoggedIn()) {
-                liff.getProfile().then(profile => {
-                    displayUserInfo(profile.userId, profile.displayName);
-                    getUserData(profile);
-                }).catch(err => {
-                    console.error('Failed to get user profile:', err);
-                    Swal.fire('Error', 'Failed to get user profile.', 'error');
-                });
-            } else {
-                liff.login();
-            }
-        }).catch(err => {
-            console.error('LIFF Initialization failed:', err);
-            Swal.fire('Error', 'Initialization failed.', 'error');
-        });
-    }
+function initializeLiff(myLiffId) {
+    liff.init({
+        liffId: myLiffId
+    }).then(() => {
+        if (liff.isLoggedIn()) {
+            // Now it's safe to get the ID token after confirming the user is logged in
+            const uid = liff.getDecodedIDToken().sub;  // Get UID from LIFF's decoded ID token
+            console.log(`UID after login: ${uid}`);
+            liff.getProfile().then(profile => {
+                displayUserInfo(profile.userId, profile.displayName);
+                getUserData(profile);
+            }).catch(err => {
+                console.error('Failed to get user profile:', err);
+                Swal.fire('Error', 'Failed to get user profile.', 'error');
+            });
+        } else {
+            liff.login(); // Prompt login if not logged in
+        }
+    }).catch(err => {
+        console.error('LIFF Initialization failed:', err);
+        Swal.fire('Error', 'Initialization failed.', 'error');
+    });
+}
+
 
     function displayUserInfo(userId, userName) {
         document.getElementById('userInfo').innerHTML = `<p>User ID: ${userId}</p><p>Name: ${userName}</p>`;
@@ -210,7 +214,7 @@ function displaySuccessPage() {
 
 // Function to check user information
 function checkUserInfo(profile) {
-    const uid = profile.userId;
+    const uid = liff.getDecodedIDToken()?.sub;  // Safely attempting to get UID
     const empNo = document.getElementById('empNoInput').value;
     const empDate = document.getElementById('empDateInput').value;
 
@@ -262,8 +266,7 @@ function checkUserInfo(profile) {
         });
 }
 
-// Function to register user
-// Function to confirm and register user
+
 // Function to confirm and register user
 function registerUser(empNo, empDate, uid) {
     console.log(`Registering: ${empNo}, ${empDate}, ${uid}`);  // Debugging output
