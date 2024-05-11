@@ -3,11 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App 17:56</title>
+    <title>LIFF App 18:56</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
 <style>
+    #preloader {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5); /* Black with opacity */
+    background-image: url('https://www.example.com/path/to/loader.gif'); /* Centered loading GIF */
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: 9999; /* Make sure it's on top */
+}
+
     body {
         font-family: 'Kanit', sans-serif;
         background-color: #f9f9f9; /* Lighter grey background */
@@ -75,8 +89,9 @@
     }
 </style>
 </head>
-<body>
+<body onload="showPreloader()">
     <p id="userInfo">รอสักครู่..</p>
+</div>
     <div id="userContent">
         <div id="redeemSection" style="display:none;">
             <h2>Redeem Page</h2>
@@ -85,13 +100,13 @@
             <p><strong>Division:</strong> <span id="division"></span></p>
             <p><strong>Factory:</strong> <span id="factory"></span></p>
             <p><strong>Points:</strong> <span id="points"></span></p>
-            <input type="text" id="redeemCodeInput" placeholder="Enter Redeem Code">
+            <input type="text" id="redeemCodeInput" placeholder="กรอก Code" oninput="forceUppercase(this)>
             <button onclick="checkRedeemCode()">Redeem</button>
         </div>
         <div id="registerSection" style="display:none;">
             <h2>Register Page</h2>
-            <input type="text" id="empNoInput" placeholder="Enter Employee Number">
-            <input type="text" id="empDateInput" placeholder="Enter Employment Date (YYYYMMDD)">
+            <input type="text" id="empNoInput" placeholder="Enter Employee Number" oninput="forceUppercase(this)">
+            <input type="text" id="empDateInput" placeholder="กรอกวันเข้างาน ปี(ค.ศ.)เดือนวัน เช่น 20180401">
             <button id="checkButton" onclick="checkUserInfo()">ตรวจสอบข้อมูล</button>
 
         </div>
@@ -100,9 +115,15 @@
         
     </div>
     <script>
-    window.onload = function() {
-        initializeLiff('2004752543-O6bmBeMw');
-    };
+        function forceUppercase(element) {
+    element.value = element.value.toUpperCase();
+}
+
+window.onload = function() {
+    hidePreloader();
+    initializeLiff('2004752543-O6bmBeMw');
+};
+
 
 function initializeLiff(myLiffId) {
     liff.init({
@@ -130,7 +151,7 @@ function initializeLiff(myLiffId) {
 
 
     function displayUserInfo(userId, userName) {
-        document.getElementById('userInfo').innerHTML = `<p>User ID: ${userId}</p><p>Name: ${userName}</p>`;
+        document.getElementById('userInfo').innerHTML = `<p>สวัสดีค่ะคุณ ${userName}</p><p>วันนี้มาสุขภาพดีไปด้วยกันนะคะ`;
     }
 
     function getUserData(profile) {
@@ -168,8 +189,8 @@ function checkRedeemCode() {
     const empNo = document.getElementById('empNo').textContent;
     const code = document.getElementById('redeemCodeInput').value;
     Swal.fire({
-        title: 'Checking information...',
-        text: 'Please wait.',
+        // title: 'กำลังตรวจสอบข้อมูล',
+        text: 'กำลังตรวจสอบข้อมูล',
         allowOutsideClick: false,
         didOpen: () => {
             Swal.showLoading();
@@ -224,11 +245,12 @@ function checkUserInfo(profile) {
     }
 
     Swal.fire({
-        title: 'Checking...',
-        text: 'Please wait while we verify your information.',
-        icon: 'info',
-        showConfirmButton: false,
-        allowOutsideClick: false
+        // title: 'Checking...',
+        text: 'กำลังตรวจสอบข้อมูล',
+        // icon: 'info',
+        didOpen: () => {
+            Swal.showLoading();
+        }
     });
 
     // Fetching user info from server-side App.gs
@@ -271,9 +293,12 @@ function checkUserInfo(profile) {
 function registerUser(empNo, empDate, uid) {
     console.log(`Registering: ${empNo}, ${empDate}, ${uid}`);  // Debugging output
     Swal.fire({
-        title: 'กำลังลงทะเบียน...',
-        text: 'รอสักครู่',
-        icon: 'info',
+        // title: 'กำลังลงทะเบียน...',
+        text: 'กำลังลงทะเบียน',
+        // icon: 'info',
+        didOpen: () => {
+            Swal.showLoading();
+        }
         showConfirmButton: false,
         allowOutsideClick: false
     });
