@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App 16:05</title>
+    <title>LIFF App 16:08</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
@@ -275,7 +275,7 @@ function registerUser(empNo, empDate) {
     });
 
     // Fetching to register user with UID
-    fetch(`https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?action=registerUser&empNo=${empNo}&empDate=${empDate}&uid=${uid}`)
+    fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=registerUser&empNo=${empNo}&empDate=${empDate}&uid=${uid}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok.');
