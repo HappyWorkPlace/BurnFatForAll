@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App 15:09</title>
+    <title>LIFF App 15:45</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
@@ -92,7 +92,8 @@
             <h2>Register Page</h2>
             <input type="text" id="empNoInput" placeholder="Enter Employee Number">
             <input type="text" id="empDateInput" placeholder="Enter Employment Date (YYYYMMDD)">
-            <button onclick="checkUserInfo()">Check and Register</button>
+            <button id="checkButton" onclick="checkUserInfo()">ตรวจสอบข้อมูล</button>
+
         </div>
     </div>
     <div id="alertMessage">
@@ -262,7 +263,9 @@ function checkUserInfo() {
 
 // Function to register user
 // Function to confirm and register user
-function registerUser(empNo, empDate, uid) { // Add uid parameter if not already included
+function registerUser(empNo, empDate) {
+    const uid = liff.getDecodedIDToken().sub;  // Fetch UID from LIFF's decoded ID token
+    console.log(`Registering: ${empNo}, ${empDate}, ${uid}`);  // Debugging output
     Swal.fire({
         title: 'กำลังลงทะเบียน...',
         text: 'รอสักครู่',
@@ -289,8 +292,15 @@ function registerUser(empNo, empDate, uid) { // Add uid parameter if not already
 }
 
 
-// Add Event Listeners if necessary or directly attach functions to button onclick events
-document.getElementById('checkButton').onclick = checkUserInfo;
+document.addEventListener('DOMContentLoaded', function () {
+    const checkButton = document.getElementById('checkButton');
+    if (checkButton) {
+        checkButton.onclick = checkUserInfo;
+    } else {
+        console.error('checkButton not found');
+    }
+});
+
 
     </script>
 </body>
