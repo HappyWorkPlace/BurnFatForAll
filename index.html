@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App 17:09</title>
+    <title>LIFF App 17:27</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
@@ -264,8 +264,8 @@ function checkUserInfo(profile) {
 
 // Function to register user
 // Function to confirm and register user
-function registerUser(empNo, empDate,uid) {
-    // const uid = profile.userId;
+// Function to confirm and register user
+function registerUser(empNo, empDate, uid) {
     console.log(`Registering: ${empNo}, ${empDate}, ${uid}`);  // Debugging output
     Swal.fire({
         title: 'กำลังลงทะเบียน...',
@@ -276,27 +276,27 @@ function registerUser(empNo, empDate,uid) {
     });
 
     // Fetching to register user with UID
-    fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=registerUser&empNo=${empNo}&empDate=${empDate}&uid=${uid}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok.');
-            }
-            return response.json();
-        })
-        .then(data => {
-            Swal.close();
-            if (data.success) {
-                Swal.fire('Registered!', 'ลงทะเบียนสำเร็จแล้ว', 'success');
-            } else {
-                Swal.fire('Error', data.message, 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire('Error', 'Failed to register. Please try again later.', 'error');
-        });
+    fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `action=registerUser&empNo=${encodeURIComponent(empNo)}&empDate=${encodeURIComponent(empDate)}&uid=${encodeURIComponent(uid)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        Swal.close();
+        if (data.success) {
+            Swal.fire('Registered!', 'ลงทะเบียนสำเร็จแล้ว', 'success');
+        } else {
+            Swal.fire('Error', data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire('Error', 'Failed to register. Please try again later.', 'error');
+    });
 }
-
 
 
 document.addEventListener('DOMContentLoaded', function () {
