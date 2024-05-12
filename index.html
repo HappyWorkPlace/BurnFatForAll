@@ -3,50 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App 12:14</title>
+    <title>LIFF App ver 12.05.2024 12:16</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
 <style>
     body {
         font-family: 'Kanit', sans-serif;
-        background-color: #f9f9f9;
+        background-color: #f9f9f9; /* Lighter grey background */
         margin: 0;
         padding: 20px;
         color: #333;
     }
+
     #userContent {
-        background-color: #ffffff;
+        background-color: #ffffff; /* Pure white background for content */
         padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        border-radius: 8px; /* Softer edge radius */
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Subtle shadow */
         margin-bottom: 20px;
-        max-width: 600px;
-        margin: 20px auto;
+        max-width: 600px; /* Ensures content is not too wide on larger screens */
+        margin: 20px auto; /* Centers the content horizontally */
     }
+
     h2 {
-        color: #007BFF;
-        border-bottom: 2px solid #007BFF;
+        color: #007BFF; /* Bright blue for headings */
+        border-bottom: 2px solid #007BFF; /* Matching border under heading */
         padding-bottom: 10px;
         margin-bottom: 20px;
     }
+
     p, input[type=text], button {
         margin: 10px 0;
         padding: 10px;
     }
+
     input[type=text] {
-        width: calc(100% - 20px);
-        border: 2px solid #ddd;
-        border-radius: 5px;
-        box-sizing: border-box;
-        transition: border-color 0.3s;
+        width: calc(100% - 20px); /* Full width taking padding into account */
+        border: 2px solid #ddd; /* Slightly thicker border in a soft grey */
+        border-radius: 5px; /* Rounded corners for input fields */
+        box-sizing: border-box; /* Handles box sizing to include padding in width */
+        transition: border-color 0.3s; /* Smooth transition for focus */
     }
+
     input[type=text]:focus {
-        border-color: #007BFF;
-        outline: none;
+        border-color: #007BFF; /* Blue border on focus */
+        outline: none; /* Removes the default focus outline */
     }
+
     button {
-        background-color: #007BFF;
+        background-color: #007BFF; /* Consistent blue background for buttons */
         color: white;
         border: none;
         text-decoration: none;
@@ -55,15 +61,17 @@
         margin: 4px 2px;
         cursor: pointer;
         border-radius: 5px;
-        transition: background-color 0.3s;
+        transition: background-color 0.3s; /* Smooth transition for hover effect */
     }
+
     button:hover {
-        background-color: #0056b3;
+        background-color: #0056b3; /* Darker blue on hover for button */
     }
+
     #alertMessage {
-        color: #dc3545;
+        color: #dc3545; /* Bootstrap's danger color for error messages */
         padding: 10px;
-        text-align: center;
+        text-align: center; /* Center-align the alert messages */
     }
 </style>
 </head>
@@ -77,126 +85,136 @@
             <p><strong>Division:</strong> <span id="division"></span></p>
             <p><strong>Factory:</strong> <span id="factory"></span></p>
             <p><strong>Points:</strong> <span id="points"></span></p>
-            <input type="text" id="redeemCodeInput" placeholder="กรอก Code" oninput="forceUppercase(this)">
+            <input type="text" id="redeemCodeInput" placeholder="Enter Redeem Code">
             <button onclick="checkRedeemCode()">Redeem</button>
         </div>
         <div id="registerSection" style="display:none;">
             <h2>Register Page</h2>
-            <input type="text" id="empNoInput" placeholder="Enter Employee Number" oninput="forceUppercase(this)">
-            <input type="text" id="empDateInput" placeholder="กรอกวันเข้างาน ปี(ค.ศ.)เดือนวัน เช่น 20180401">
+            <input type="text" id="empNoInput" placeholder="Enter Employee Number">
+            <input type="text" id="empDateInput" placeholder="Enter Employment Date (YYYYMMDD)">
             <button id="checkButton" onclick="checkUserInfo()">ตรวจสอบข้อมูล</button>
+
         </div>
     </div>
-    <div id="alertMessage"></div>
+    <div id="alertMessage">
+        
+    </div>
     <script>
-        function forceUppercase(element) {
-            element.value = element.value.toUpperCase();
-        }
+    window.onload = function() {
+        initializeLiff('2004752543-O6bmBeMw');
+    };
 
-        function initializeLiff(myLiffId) {
-            liff.init({
-                liffId: myLiffId
-            }).then(() => {
-                if (liff.isLoggedIn()) {
-                    const uid = liff.getDecodedIDToken().sub;
-                    console.log(`UID after login: ${uid}`);
-                    liff.getProfile().then(profile => {
-                        displayUserInfo(profile.userId, profile.displayName);
-                        getUserData(profile);
-                    }).catch(err => {
-                        console.error('Failed to get user profile:', err);
-                        Swal.fire('Error', 'Failed to get user profile.', 'error');
-                    });
-                } else {
-                    liff.login();
-                }
+function initializeLiff(myLiffId) {
+    liff.init({
+        liffId: myLiffId
+    }).then(() => {
+        if (liff.isLoggedIn()) {
+            // Now it's safe to get the ID token after confirming the user is logged in
+            const uid = liff.getDecodedIDToken().sub;  // Get UID from LIFF's decoded ID token
+            console.log(`UID after login: ${uid}`);
+            liff.getProfile().then(profile => {
+                displayUserInfo(profile.userId, profile.displayName);
+                getUserData(profile);
             }).catch(err => {
-                console.error('LIFF Initialization failed:', err);
-                Swal.fire('Error', 'Initialization failed.', 'error');
+                console.error('Failed to get user profile:', err);
+                Swal.fire('Error', 'Failed to get user profile.', 'error');
             });
+        } else {
+            liff.login(); // Prompt login if not logged in
         }
+    }).catch(err => {
+        console.error('LIFF Initialization failed:', err);
+        Swal.fire('Error', 'Initialization failed.', 'error');
+    });
+}
 
-        function displayUserInfo(userId, userName) {
-            document.getElementById('userInfo').innerHTML = `<p>สวัสดีค่ะคุณ ${userName}</p><p>วันนี้มาสุขภาพดีไปด้วยกันนะคะ</p>`;
-        }
 
-        function getUserData(profile) {
-            const uid = profile.userId;
-            fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=getUserData&uid=${uid}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok.');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.error) {
-                        displayRegisterSection();
-                    } else {
-                        displayRedeemSection(data.data);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching user data:', error);
-                    Swal.fire('Error', 'Failed to fetch user data.', 'error');
-                });
-        }
+    function displayUserInfo(userId, userName) {
+        document.getElementById('userInfo').innerHTML = `<p>User ID: ${userId}</p><p>Name: ${userName}</p>`;
+    }
 
-        function displayRedeemSection(userData) {
-            document.getElementById('redeemSection').style.display = 'block';
-            document.getElementById('empNo').textContent = userData[0];
-            document.getElementById('name').textContent = userData[1];
-            document.getElementById('division').textContent = userData[2];
-            document.getElementById('factory').textContent = userData[4];
-            document.getElementById('points').textContent = userData[7];
-        }
-
-        function checkRedeemCode() {
-            const empNo = document.getElementById('empNo').textContent;
-            const code = document.getElementById('redeemCodeInput').value;
-            Swal.fire({
-                text: 'กำลังตรวจสอบข้อมูล',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
+    function getUserData(profile) {
+        const uid = profile.userId;
+        fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=getUserData&uid=${uid}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
                 }
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    displayRegisterSection();
+                } else {
+                    displayRedeemSection(data.data);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching user data:', error);
+                Swal.fire('Error', 'Failed to fetch user data.', 'error');
             });
+    }
 
-            fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=redeemCode&empNo=${empNo}&code=${code}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok.');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    Swal.close(); 
-                    if (data.success) {
-                        displaySuccessPage();
-                    } else {
-                        Swal.fire('Error', data.message, 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('There has been a problem with your fetch operation:', error);
-                    Swal.fire('Error', 'Network error, please try again later.', 'error');
-                });
+    function displayRedeemSection(userData) {
+        document.getElementById('redeemSection').style.display = 'block';
+        document.getElementById('empNo').textContent = userData[0];
+        document.getElementById('name').textContent = userData[1];
+        document.getElementById('division').textContent = userData[2];
+        document.getElementById('factory').textContent = userData[4];
+        document.getElementById('points').textContent = userData[7];
+    }
+
+function checkRedeemCode() {
+    const empNo = document.getElementById('empNo').textContent;
+    const code = document.getElementById('redeemCodeInput').value;
+    Swal.fire({
+        title: 'Checking information...',
+        text: 'Please wait.',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
         }
+    });
 
-        function displaySuccessPage() {
-            const userContent = document.getElementById('userContent');
-            userContent.innerHTML = `<div style="text-align:center;">
-                <h2>Redeem Code Successful</h2>
-                <p>Your redeem code has been successfully processed.</p>
-                <button onclick="location.reload();">Return</button>
-            </div>`;
-        }
+    fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=redeemCode&empNo=${empNo}&code=${code}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            Swal.close(); 
+            if (data.success) {
+                displaySuccessPage(); // Call a function to display the success page
+            } else {
+                Swal.fire('Error', data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+            Swal.fire('Error', 'Network error, please try again later.', 'error');
+        });
+}
 
-        function displayRegisterSection() {
-            document.getElementById('registerSection').style.display = 'block';
-        }
+function displaySuccessPage() {
+    // Clear the userContent and display the success message
+    const userContent = document.getElementById('userContent');
+    userContent.innerHTML = `<div style="text-align:center;">
+        <h2>Redeem Code Successful</h2>
+        <p>Your redeem code has been successfully processed.</p>
+        <button onclick="location.reload();">Return</button>
+    </div>`;
+}
 
-       function checkUserInfo() {
+
+    function displayRegisterSection() {
+        document.getElementById('registerSection').style.display = 'block';
+    }
+
+// Function to check user information
+function checkUserInfo(profile) {
+    const uid = liff.getDecodedIDToken()?.sub;  // Safely attempting to get UID
     const empNo = document.getElementById('empNoInput').value;
     const empDate = document.getElementById('empDateInput').value;
 
@@ -206,17 +224,20 @@
     }
 
     Swal.fire({
-        text: 'กำลังตรวจสอบข้อมูล',
-        didOpen: () => {
-            Swal.showLoading();
-        }
+        title: 'Checking...',
+        text: 'Please wait while we verify your information.',
+        icon: 'info',
+        showConfirmButton: false,
+        allowOutsideClick: false
     });
 
+    // Fetching user info from server-side App.gs
     fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=checkUserInfo&empNo=${empNo}&empDate=${empDate}`)
         .then(response => response.json())
         .then(data => {
             Swal.close();
             if (data.status === 'found') {
+                // Show confirmation dialog with user details
                 Swal.fire({
                     title: 'Confirm Your Details',
                     html: `
@@ -232,7 +253,7 @@
                     confirmButtonText: 'Yes, register me!'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        registerUser(empNo, empDate, data.details.uid);
+                        registerUser(empNo, empDate,uid);
                     }
                 });
             } else {
@@ -246,49 +267,51 @@
 }
 
 
-            function registerUser(empNo, empDate, uid) {
-                console.log(`Registering: ${empNo}, ${empDate}, ${uid}`);
-                Swal.fire({
-                    text: 'กำลังลงทะเบียน',
-                    didOpen: () => {
-                        Swal.showLoading();
-                    },
-                    showConfirmButton: false,
-                    allowOutsideClick: false
-                });
+// Function to confirm and register user
+function registerUser(empNo, empDate, uid) {
+    console.log(`Registering: ${empNo}, ${empDate}, ${uid}`);  // Debugging output
+    Swal.fire({
+        title: 'กำลังลงทะเบียน...',
+        text: 'รอสักครู่',
+        icon: 'info',
+        showConfirmButton: false,
+        allowOutsideClick: false
+    });
 
-                fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `action=registerUser&empNo=${encodeURIComponent(empNo)}&empDate=${encodeURIComponent(empDate)}&uid=${encodeURIComponent(uid)}`
-                })
-                .then(response => response.json())
-                .then(data => {
-                    Swal.close();
-                    if (data.success) {
-                        Swal.fire('Registered!', 'ลงทะเบียนสำเร็จแล้ว', 'success');
-                    } else {
-                        Swal.fire('Error', data.message, 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    Swal.fire('Error', 'Failed to register. Please try again later.', 'error');
-                });
-            }
+    // Fetching to register user with UID
+    fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `action=registerUser&empNo=${encodeURIComponent(empNo)}&empDate=${encodeURIComponent(empDate)}&uid=${encodeURIComponent(uid)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        Swal.close();
+        if (data.success) {
+            Swal.fire('Registered!', 'ลงทะเบียนสำเร็จแล้ว', 'success');
+        } else {
+            Swal.fire('Error', data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire('Error', 'Failed to register. Please try again later.', 'error');
+    });
+}
 
-            document.addEventListener('DOMContentLoaded', function () {
-                const checkButton = document.getElementById('checkButton');
-                if (checkButton) {
-                    checkButton.onclick = function() {
-                        checkUserInfo(); // This should call checkUserInfo without needing to pass the profile, as it is assumed to be handled internally
-                    };
-                } else {
-                    console.error('CheckButton not found');
-                }
-            });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const checkButton = document.getElementById('checkButton');
+    if (checkButton) {
+        checkButton.onclick = checkUserInfo;
+    } else {
+        console.error('checkButton not found');
+    }
+});
+
+
     </script>
 </body>
 </html>
