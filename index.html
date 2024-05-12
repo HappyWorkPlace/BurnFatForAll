@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App ver 12.05.2024 12:16</title>
+    <title>LIFF App ver 12.05.2024 18:30</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
@@ -130,7 +130,7 @@ function initializeLiff(myLiffId) {
 
 
     function displayUserInfo(userId, userName) {
-        document.getElementById('userInfo').innerHTML = `<p>User ID: ${userId}</p><p>Name: ${userName}</p>`;
+        document.getElementById('userInfo').innerHTML = `<p>สวัสดีค่ะคุณ ${userName}</p><p>วันนี้มาสุขภาพดีไปด้วยกันนะคะ</p>`;
     }
 
     function getUserData(profile) {
@@ -168,8 +168,8 @@ function checkRedeemCode() {
     const empNo = document.getElementById('empNo').textContent;
     const code = document.getElementById('redeemCodeInput').value;
     Swal.fire({
-        title: 'Checking information...',
-        text: 'Please wait.',
+        title: 'ตรวจสอบข้อมูล',
+        text: 'รอสักครู่..',
         allowOutsideClick: false,
         didOpen: () => {
             Swal.showLoading();
@@ -228,7 +228,10 @@ function checkUserInfo(profile) {
         text: 'Please wait while we verify your information.',
         icon: 'info',
         showConfirmButton: false,
-        allowOutsideClick: false
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
     });
 
     // Fetching user info from server-side App.gs
@@ -275,7 +278,10 @@ function registerUser(empNo, empDate, uid) {
         text: 'รอสักครู่',
         icon: 'info',
         showConfirmButton: false,
-        allowOutsideClick: false
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
     });
 
     // Fetching to register user with UID
