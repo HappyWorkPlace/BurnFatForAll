@@ -3,40 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App ver 12.05.2024 18:53</title>
+    <title>LIFF App ver 23.05.2024 09:00</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
 <style>
     .swal2-title {
-    border-bottom: none !important; /* Remove border if it's applied to the title */
-}
+        border-bottom: none !important;
+    }
 
-.swal2-popup {
-    border-bottom: none !important; /* Remove border if it's around the popup */
-}
+    .swal2-popup {
+        border-bottom: none !important;
+    }
 
     body {
         font-family: 'Kanit', sans-serif;
-        background-color: #f9f9f9; /* Lighter grey background */
+        background-color: #f9f9f9;
         margin: 0;
         padding: 20px;
         color: #333;
     }
 
     #userContent {
-        background-color: #ffffff; /* Pure white background for content */
+        background-color: #ffffff;
         padding: 20px;
-        border-radius: 8px; /* Softer edge radius */
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Subtle shadow */
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         margin-bottom: 20px;
-        max-width: 600px; /* Ensures content is not too wide on larger screens */
-        margin: 20px auto; /* Centers the content horizontally */
+        max-width: 600px;
+        margin: 20px auto;
     }
 
     h2 {
-        color: #007BFF; /* Bright blue for headings */
-        border-bottom: 2px solid #007BFF; /* Matching border under heading */
+        color: #007BFF;
+        border-bottom: 2px solid #007BFF;
         padding-bottom: 10px;
         margin-bottom: 20px;
     }
@@ -47,20 +47,20 @@
     }
 
     input[type=text] {
-        width: calc(100% - 20px); /* Full width taking padding into account */
-        border: 2px solid #ddd; /* Slightly thicker border in a soft grey */
-        border-radius: 5px; /* Rounded corners for input fields */
-        box-sizing: border-box; /* Handles box sizing to include padding in width */
-        transition: border-color 0.3s; /* Smooth transition for focus */
+        width: calc(100% - 20px);
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        box-sizing: border-box;
+        transition: border-color 0.3s;
     }
 
     input[type=text]:focus {
-        border-color: #007BFF; /* Blue border on focus */
-        outline: none; /* Removes the default focus outline */
+        border-color: #007BFF;
+        outline: none;
     }
 
     button {
-        background-color: #007BFF; /* Consistent blue background for buttons */
+        background-color: #007BFF;
         color: white;
         border: none;
         text-decoration: none;
@@ -69,44 +69,41 @@
         margin: 4px 2px;
         cursor: pointer;
         border-radius: 5px;
-        transition: background-color 0.3s; /* Smooth transition for hover effect */
+        transition: background-color 0.3s;
     }
 
     button:hover {
-        background-color: #0056b3; /* Darker blue on hover for button */
+        background-color: #0056b3;
     }
 
     #alertMessage {
-        color: #dc3545; /* Bootstrap's danger color for error messages */
+        color: #dc3545;
         padding: 10px;
-        text-align: center; /* Center-align the alert messages */
+        text-align: center;
     }
 </style>
 </head>
 <body>
     <p id="userInfo">รอสักครู่..</p>
     <div id="userContent">
-        <div id="redeemSection" style="display:none;">
-            <h2>Redeem Page</h2>
+        <div id="inputSection" style="display:none;">
+            <h2>Input Page</h2>
             <p><strong>Employee Number:</strong> <span id="empNo"></span></p>
             <p><strong>Name:</strong> <span id="name"></span></p>
             <p><strong>Division:</strong> <span id="division"></span></p>
             <p><strong>Factory:</strong> <span id="factory"></span></p>
             <p><strong>Points:</strong> <span id="points"></span></p>
-            <input type="text" id="redeemCodeInput" placeholder="Enter Redeem Code">
-            <button onclick="checkRedeemCode()">Redeem</button>
+            <input type="text" id="freeTextInput" placeholder="Enter your text">
+            <button onclick="saveFreeText()">Save</button>
         </div>
         <div id="registerSection" style="display:none;">
             <h2>Register Page</h2>
             <input type="text" id="empNoInput" placeholder="Enter Employee Number">
             <input type="text" id="empDateInput" placeholder="Enter Employment Date (YYYYMMDD)">
             <button id="checkButton" onclick="checkUserInfo()">ตรวจสอบข้อมูล</button>
-
         </div>
     </div>
-    <div id="alertMessage">
-        
-    </div>
+    <div id="alertMessage"></div>
     <script>
     window.onload = function() {
         initializeLiff('2004752543-O6bmBeMw');
@@ -117,9 +114,7 @@ function initializeLiff(myLiffId) {
         liffId: myLiffId
     }).then(() => {
         if (liff.isLoggedIn()) {
-            // Now it's safe to get the ID token after confirming the user is logged in
-            const uid = liff.getDecodedIDToken().sub;  // Get UID from LIFF's decoded ID token
-            console.log(`UID after login: ${uid}`);
+            const uid = liff.getDecodedIDToken().sub;
             liff.getProfile().then(profile => {
                 displayUserInfo(profile.userId, profile.displayName);
                 getUserData(profile);
@@ -128,7 +123,7 @@ function initializeLiff(myLiffId) {
                 Swal.fire('Error', 'Failed to get user profile.', 'error');
             });
         } else {
-            liff.login(); // Prompt login if not logged in
+            liff.login();
         }
     }).catch(err => {
         console.error('LIFF Initialization failed:', err);
@@ -136,55 +131,13 @@ function initializeLiff(myLiffId) {
     });
 }
 
+function displayUserInfo(userId, userName) {
+    document.getElementById('userInfo').innerHTML = `<p>สวัสดีค่ะคุณ ${userName}</p><p>วันนี้มาสุขภาพดีไปด้วยกันนะคะ</p>`;
+}
 
-    function displayUserInfo(userId, userName) {
-        document.getElementById('userInfo').innerHTML = `<p>สวัสดีค่ะคุณ ${userName}</p><p>วันนี้มาสุขภาพดีไปด้วยกันนะคะ</p>`;
-    }
-
-    function getUserData(profile) {
-        const uid = profile.userId;
-        fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=getUserData&uid=${uid}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok.');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.error) {
-                    displayRegisterSection();
-                } else {
-                    displayRedeemSection(data.data);
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching user data:', error);
-                Swal.fire('Error', 'Failed to fetch user data.', 'error');
-            });
-    }
-
-    function displayRedeemSection(userData) {
-        document.getElementById('redeemSection').style.display = 'block';
-        document.getElementById('empNo').textContent = userData[0];
-        document.getElementById('name').textContent = userData[1];
-        document.getElementById('division').textContent = userData[2];
-        document.getElementById('factory').textContent = userData[4];
-        document.getElementById('points').textContent = userData[7];
-    }
-
-function checkRedeemCode() {
-    const empNo = document.getElementById('empNo').textContent;
-    const code = document.getElementById('redeemCodeInput').value;
-    Swal.fire({
-        title: 'ตรวจสอบข้อมูล',
-        text: 'รอสักครู่..',
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
-
-    fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=redeemCode&empNo=${empNo}&code=${code}`)
+function getUserData(profile) {
+    const uid = profile.userId;
+    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserData&uid=${uid}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok.');
@@ -192,9 +145,55 @@ function checkRedeemCode() {
             return response.json();
         })
         .then(data => {
-            Swal.close(); 
+            if (data.error) {
+                displayRegisterSection();
+            } else {
+                displayInputSection(data.data);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user data:', error);
+            Swal.fire('Error', 'Failed to fetch user data.', 'error');
+        });
+}
+
+function displayInputSection(userData) {
+    document.getElementById('inputSection').style.display = 'block';
+    document.getElementById('empNo').textContent = userData[0];
+    document.getElementById('name').textContent = userData[1];
+    document.getElementById('division').textContent = userData[2];
+    document.getElementById('factory').textContent = userData[4];
+    document.getElementById('points').textContent = userData[7];
+}
+
+function saveFreeText() {
+    const freeText = document.getElementById('freeTextInput').value;
+
+    if (!freeText) {
+        Swal.fire('Error', 'Please enter text to save.', 'error');
+        return;
+    }
+
+    Swal.fire({
+        title: 'Saving data',
+        text: 'รอสักครู่..',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=saveRedeemData&code=${encodeURIComponent(freeText)}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            Swal.close();
             if (data.success) {
-                displaySuccessPage(); // Call a function to display the success page
+                Swal.fire('Success', 'Data saved successfully.', 'success');
             } else {
                 Swal.fire('Error', data.message, 'error');
             }
@@ -205,24 +204,12 @@ function checkRedeemCode() {
         });
 }
 
-function displaySuccessPage() {
-    // Clear the userContent and display the success message
-    const userContent = document.getElementById('userContent');
-    userContent.innerHTML = `<div style="text-align:center;">
-        <h2>Redeem Code Successful</h2>
-        <p>Your redeem code has been successfully processed.</p>
-        <button onclick="location.reload();">Return</button>
-    </div>`;
+function displayRegisterSection() {
+    document.getElementById('registerSection').style.display = 'block';
 }
 
-
-    function displayRegisterSection() {
-        document.getElementById('registerSection').style.display = 'block';
-    }
-
-// Function to check user information
 function checkUserInfo(profile) {
-    const uid = liff.getDecodedIDToken()?.sub;  // Safely attempting to get UID
+    const uid = liff.getDecodedIDToken()?.sub;
     const empNo = document.getElementById('empNoInput').value;
     const empDate = document.getElementById('empDateInput').value;
 
@@ -242,13 +229,11 @@ function checkUserInfo(profile) {
         }
     });
 
-    // Fetching user info from server-side App.gs
-    fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec?action=checkUserInfo&empNo=${empNo}&empDate=${empDate}`)
+    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=checkUserInfo&empNo=${empNo}&empDate=${empDate}`)
         .then(response => response.json())
         .then(data => {
             Swal.close();
             if (data.status === 'found') {
-                // Show confirmation dialog with user details
                 Swal.fire({
                     title: 'Confirm Your Details',
                     html: `
@@ -264,7 +249,7 @@ function checkUserInfo(profile) {
                     confirmButtonText: 'Yes, register me!'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        registerUser(empNo, empDate,uid);
+                        registerUser(empNo, empDate, uid);
                     }
                 });
             } else {
@@ -277,10 +262,7 @@ function checkUserInfo(profile) {
         });
 }
 
-
-// Function to confirm and register user
 function registerUser(empNo, empDate, uid) {
-    console.log(`Registering: ${empNo}, ${empDate}, ${uid}`);  // Debugging output
     Swal.fire({
         title: 'กำลังลงทะเบียน...',
         text: 'รอสักครู่',
@@ -292,8 +274,7 @@ function registerUser(empNo, empDate, uid) {
         }
     });
 
-    // Fetching to register user with UID
-    fetch(`https://script.google.com/macros/s/AKfycbxeJrkSUAdLvAFTnjnXL1VSbW2p0MI_uFXZ9WlizbV5MzB5N0STarj7g2L_qDP5rCf6/exec`, {
+    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -315,17 +296,14 @@ function registerUser(empNo, empDate, uid) {
     });
 }
 
-
 document.addEventListener('DOMContentLoaded', function () {
     const checkButton = document.getElementById('checkButton');
     if (checkButton) {
         checkButton.onclick = checkUserInfo;
     } else {
         console.error('checkButton not found');
-    }
+    });
 });
-
-
-    </script>
+</script>
 </body>
 </html>
