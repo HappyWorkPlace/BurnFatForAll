@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App ver 23.05.2024 09:00</title>
+    <title>LIFF App ver 23.05.2024 09:13</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
@@ -208,8 +208,7 @@ function displayRegisterSection() {
     document.getElementById('registerSection').style.display = 'block';
 }
 
-function checkUserInfo(profile) {
-    const uid = liff.getDecodedIDToken()?.sub;
+function checkUserInfo() {
     const empNo = document.getElementById('empNoInput').value;
     const empDate = document.getElementById('empDateInput').value;
 
@@ -249,6 +248,7 @@ function checkUserInfo(profile) {
                     confirmButtonText: 'Yes, register me!'
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        const uid = liff.getDecodedIDToken().sub; // Get UID here instead
                         registerUser(empNo, empDate, uid);
                     }
                 });
@@ -302,7 +302,7 @@ document.addEventListener('DOMContentLoaded', function () {
         checkButton.onclick = checkUserInfo;
     } else {
         console.error('checkButton not found');
-    });
+    }
 });
 </script>
 </body>
