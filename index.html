@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App ver 23.05.2024 09:35</title>
+    <title>LIFF App ver 23.05.2024 09:40</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
@@ -106,6 +106,7 @@
     <div id="alertMessage"></div>
     <script>
     window.onload = function() {
+        console.log("Window loaded, initializing LIFF");
         initializeLiff('2004752543-O6bmBeMw');
     };
 
@@ -113,9 +114,12 @@ function initializeLiff(myLiffId) {
     liff.init({
         liffId: myLiffId
     }).then(() => {
+        console.log("LIFF initialized");
         if (liff.isLoggedIn()) {
+            console.log("User is logged in, getting profile");
             const uid = liff.getDecodedIDToken().sub;
             liff.getProfile().then(profile => {
+                console.log("Profile obtained: ", profile);
                 displayUserInfo(profile.userId, profile.displayName);
                 getUserData(profile);
             }).catch(err => {
@@ -123,6 +127,7 @@ function initializeLiff(myLiffId) {
                 Swal.fire('Error', 'Failed to get user profile.', 'error');
             });
         } else {
+            console.log("User is not logged in, logging in");
             liff.login();
         }
     }).catch(err => {
@@ -137,14 +142,17 @@ function displayUserInfo(userId, userName) {
 
 function getUserData(profile) {
     const uid = profile.userId;
+    console.log("Fetching user data for UID:", uid);
     fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserData&uid=${uid}`)
         .then(response => {
+            console.log("User data response received");
             if (!response.ok) {
                 throw new Error('Network response was not ok.');
             }
             return response.json();
         })
         .then(data => {
+            console.log("User data:", data);
             if (data.error) {
                 displayRegisterSection();
             } else {
@@ -304,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function () {
         checkButton.onclick = checkUserInfo;
     } else {
         console.error('checkButton not found');
-    });
+    }
 });
 </script>
 </body>
