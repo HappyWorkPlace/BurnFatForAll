@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App ver 23.05.2024 09:18</title>
+    <title>LIFF App ver 23.05.2024 09:00</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
@@ -167,6 +167,7 @@ function displayInputSection(userData) {
 }
 
 function saveFreeText() {
+    const empNo = document.getElementById('empNo').textContent;
     const freeText = document.getElementById('freeTextInput').value;
 
     if (!freeText) {
@@ -183,7 +184,7 @@ function saveFreeText() {
         }
     });
 
-    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=saveRedeemData&code=${encodeURIComponent(freeText)}`)
+    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=saveRedeemData&empNo=${encodeURIComponent(empNo)}&code=${encodeURIComponent(freeText)}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok.');
@@ -302,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function () {
         checkButton.onclick = checkUserInfo;
     } else {
         console.error('checkButton not found');
-    }
+    });
 });
 </script>
 </body>
