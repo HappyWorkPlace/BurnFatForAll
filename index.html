@@ -7,99 +7,99 @@
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
-<style>
-    .swal2-title {
-        border-bottom: none !important;
-    }
+    <style>
+        .swal2-title {
+            border-bottom: none !important;
+        }
 
-    .swal2-popup {
-        border-bottom: none !important;
-    }
+        .swal2-popup {
+            border-bottom: none !important;
+        }
 
-    body {
-        font-family: 'Kanit', sans-serif;
-        background-color: #f9f9f9;
-        margin: 0;
-        padding: 20px;
-        color: #333;
-    }
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
 
-    #userContent {
-        background-color: #ffffff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        margin-bottom: 20px;
-        max-width: 600px;
-        margin: 20px auto;
-    }
+        #userContent {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            max-width: 600px;
+            margin: 20px auto;
+        }
 
-    h2 {
-        color: #007BFF;
-        border-bottom: 2px solid #007BFF;
-        padding-bottom: 10px;
-        margin-bottom: 20px;
-    }
+        h2 {
+            color: #007BFF;
+            border-bottom: 2px solid #007BFF;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
 
-    p, input[type=text], button {
-        margin: 10px 0;
-        padding: 10px;
-    }
+        p, input[type=text], button {
+            margin: 10px 0;
+            padding: 10px;
+        }
 
-    input[type=text] {
-        width: calc(100% - 20px);
-        border: 2px solid #ddd;
-        border-radius: 5px;
-        box-sizing: border-box;
-        transition: border-color 0.3s;
-    }
+        input[type=text] {
+            width: calc(100% - 20px);
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
 
-    input[type=text]:focus {
-        border-color: #007BFF;
-        outline: none;
-    }
+        input[type=text]:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
 
-    button {
-        background-color: #007BFF;
-        color: white;
-        border: none;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer;
-        border-radius: 5px;
-        transition: background-color 0.3s;
-    }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
 
-    button:hover {
-        background-color: #0056b3;
-    }
+        button:hover {
+            background-color: #0056b3;
+        }
 
-    #alertMessage {
-        color: #dc3545;
-        padding: 10px;
-        text-align: center;
-    }
+        #alertMessage {
+            color: #dc3545;
+            padding: 10px;
+            text-align: center;
+        }
 
-    #foodDropdown {
-        width: 100%;
-        padding: 10px;
-        border: 2px solid #ddd;
-        border-radius: 5px;
-        box-sizing: border-box;
-        transition: border-color 0.3s;
-    }
+        #foodDropdown {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
 
-    #foodDropdown:focus {
-        border-color: #007BFF;
-        outline: none;
-    }
+        #foodDropdown:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
 
-    #foodDropdown option {
-        padding: 10px;
-    }
-</style>
+        #foodDropdown option {
+            padding: 10px;
+        }
+    </style>
 </head>
 <body>
     <p id="userInfo">รอสักครู่..</p>
@@ -111,9 +111,8 @@
             <p><strong>Division:</strong> <span id="division"></span></p>
             <p><strong>Factory:</strong> <span id="factory"></span></p>
             <p><strong>Points:</strong> <span id="points"></span></p>
-<input type="text" id="foodSearchInput" placeholder="กรอกเมนูที่ทาน" oninput="filterFoodList()">
-<select id="foodDropdown" size="5"></select>
-
+            <input type="text" id="foodSearchInput" placeholder="กรอกเมนูที่ทาน" oninput="filterFoodList()">
+            <select id="foodDropdown" size="5"></select>
             <button onclick="saveFreeText()">Save</button>
         </div>
         <div id="registerSection" style="display:none;">
@@ -130,49 +129,49 @@
         initializeLiff('2004752543-O6bmBeMw');
     };
 
-let foodList = [];
+    let foodList = [];
 
-// Fetch food list from Google Sheets on page load
-function fetchFoodList() {
-    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getFoodList`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                foodList = data.data;
-                populateFoodDropdown(foodList);
-            } else {
+    // Fetch food list from Google Sheets on page load
+    function fetchFoodList() {
+        fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getFoodList`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    foodList = data.data;
+                    populateFoodDropdown(foodList);
+                } else {
+                    Swal.fire('Error', 'Failed to fetch food list.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching food list:', error);
                 Swal.fire('Error', 'Failed to fetch food list.', 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching food list:', error);
-            Swal.fire('Error', 'Failed to fetch food list.', 'error');
+            });
+    }
+
+    // Populate dropdown with food list
+    function populateFoodDropdown(list) {
+        const dropdown = document.getElementById('foodDropdown');
+        dropdown.innerHTML = '';
+        list.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item;
+            option.textContent = item;
+            dropdown.appendChild(option);
         });
-}
+    }
 
-// Populate dropdown with food list
-function populateFoodDropdown(list) {
-    const dropdown = document.getElementById('foodDropdown');
-    dropdown.innerHTML = '';
-    list.forEach(item => {
-        const option = document.createElement('option');
-        option.value = item;
-        option.textContent = item;
-        dropdown.appendChild(option);
-    });
-}
+    // Filter food list based on input
+    function filterFoodList() {
+        const input = document.getElementById('foodSearchInput').value.toLowerCase();
+        const filteredList = foodList.filter(item => item.toLowerCase().includes(input));
+        populateFoodDropdown(filteredList);
+    }
 
-// Filter food list based on input
-function filterFoodList() {
-    const input = document.getElementById('foodSearchInput').value.toLowerCase();
-    const filteredList = foodList.filter(item => item.toLowerCase().includes(input));
-    populateFoodDropdown(filteredList);
-}
-
-// Fetch food list on page load
-window.onload = function() {
-    fetchFoodList();
-};
+    // Fetch food list on page load
+    window.onload = function() {
+        fetchFoodList();
+    };
 
     function displayUserInfo(userId, userName) {
         document.getElementById('userInfo').innerHTML = `<p>สวัสดีค่ะคุณ ${userName}</p><p>วันนี้มาสุขภาพดีไปด้วยกันนะคะ</p>`;
@@ -212,7 +211,6 @@ window.onload = function() {
         document.getElementById('factory').textContent = userData[4];
         document.getElementById('points').textContent = userData[7];
     }
-
 
     function saveFreeText() {
         const empNo = document.getElementById('empNo').textContent;
@@ -357,3 +355,4 @@ window.onload = function() {
     </script>
 </body>
 </html>
+
