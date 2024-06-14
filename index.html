@@ -164,7 +164,7 @@
     function getUserData(profile) {
         const uid = profile.userId;
         console.log("Fetching user data for UID:", uid);
-        fetch(`https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?action=getUserData&uid=${uid}`)
+        fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserData&uid=${uid}`)
             .then(response => {
                 console.log("User data response received");
                 if (!response.ok) {
@@ -197,7 +197,7 @@
     }
 
     function fetchFoodList() {
-        fetch(`https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?action=getFoodList`)
+        fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getFoodList`)
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -249,7 +249,7 @@
             }
         });
 
-        fetch(`https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?action=saveRedeemData&empNo=${encodeURIComponent(empNo)}&factory=${encodeURIComponent(factory)}&code=${encodeURIComponent(freeText)}`)
+        fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=saveRedeemData&empNo=${encodeURIComponent(empNo)}&factory=${encodeURIComponent(factory)}&code=${encodeURIComponent(freeText)}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok.');
@@ -294,7 +294,7 @@
             }
         });
 
-        fetch(`https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?action=checkUserInfo&empNo=${empNo}&empDate=${empDate}`)
+        fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=checkUserInfo&empNo=${empNo}&empDate=${empDate}`)
             .then(response => response.json())
             .then(data => {
                 Swal.close();
@@ -340,7 +340,7 @@
             }
         });
 
-        fetch(`https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec`, {
+        fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
