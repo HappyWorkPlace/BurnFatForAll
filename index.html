@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App ver 23.05.2024 09:40</title>
+    <title>LIFF App ver 22.06.2024 13:02</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
@@ -99,6 +99,22 @@
         #foodDropdown option {
             padding: 10px;
         }
+
+        .icon-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .icon {
+            text-align: center;
+        }
+        .icon img {
+            width: 80px;
+            height: 80px;
+            display: block;
+            margin: 0 auto 10px;
+        }
     </style>
 </head>
 <body>
@@ -111,9 +127,41 @@
             <p><strong>Division:</strong> <span id="division"></span></p>
             <p><strong>Factory:</strong> <span id="factory"></span></p>
             <p><strong>Points:</strong> <span id="points"></span></p>
-            <input type="text" id="foodSearchInput" placeholder="กรอกเมนูที่ทาน" oninput="filterFoodList()">
-            <select id="foodDropdown" size="5"></select>
-            <button onclick="saveFreeText()">Save</button>
+            
+            <div class="icon-container">
+                <div class="icon">
+                    <img src="path/to/dish_icon.png" alt="กับข้าว" onclick="showDishOptions()">
+                    <button onclick="showDishOptions()">กับข้าว</button>
+                </div>
+                <div class="icon">
+                    <img src="path/to/over_rice_icon.png" alt="อาหารจานเดียว" onclick="showOverRiceOptions()">
+                    <button onclick="showOverRiceOptions()">อาหารจานเดียว</button>
+                </div>
+            </div>
+            
+            <div id="dishOptions" class="icon-container" style="display:none;">
+                <div class="icon">
+                    <img src="path/to/boil_icon.png" alt="ต้ม" onclick="showDropdown('boil')">
+                    <button onclick="showDropdown('boil')">ต้ม</button>
+                </div>
+                <div class="icon">
+                    <img src="path/to/fry_icon.png" alt="ผัด" onclick="showDropdown('fry')">
+                    <button onclick="showDropdown('fry')">ผัด</button>
+                </div>
+                <div class="icon">
+                    <img src="path/to/curry_icon.png" alt="แกง" onclick="showDropdown('curry')">
+                    <button onclick="showDropdown('curry')">แกง</button>
+                </div>
+                <div class="icon">
+                    <img src="path/to/grill_icon.png" alt="นึ่ง/ปิ้ง/ย่าง" onclick="showDropdown('grill')">
+                    <button onclick="showDropdown('grill')">นึ่ง/ปิ้ง/ย่าง</button>
+                </div>
+            </div>
+            
+            <div id="dropdownContainer" class="dropdown" style="display:none;">
+                <select id="foodDropdown" size="5"></select>
+                <button onclick="recordSelection()">Record</button>
+            </div>
         </div>
         <div id="registerSection" style="display:none;">
             <h2>Register Page</h2>
@@ -132,8 +180,8 @@
     let foodList = [];
 
     // Fetch food list from Google Sheets on page load
-    function fetchFoodList() {
-        fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getFoodList`)
+    function fetchFoodList(sheetName, column) {
+        fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getFoodList&sheetName=${sheetName}&column=${column}`)
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -168,11 +216,6 @@
         populateFoodDropdown(filteredList);
     }
 
-    // Fetch food list on page load
-    window.onload = function() {
-        fetchFoodList();
-    };
-
     function displayUserInfo(userId, userName) {
         document.getElementById('userInfo').innerHTML = `<p>สวัสดีค่ะคุณ ${userName}</p><p>วันนี้มาสุขภาพดีไปด้วยกันนะคะ</p>`;
     }
@@ -184,175 +227,184 @@
             .then(response => {
                 console.log("User data response received");
                 if (!response.ok) {
-                    throw new Error('Network response was not ok.');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log("User data:", data);
-                if (data.error) {
-                    displayRegisterSection();
-                } else {
-                    displayInputSection(data.data);
-                    fetchFoodList();
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching user data:', error);
-                Swal.fire('Error', 'Failed to fetch user data.', 'error');
-            });
+                    throw new Error('Network response was not ok.’);
     }
-
+    return response.json();
+    })
+    .then(data => {
+    console.log(“User data:”, data);
+    if (data.error) {
+    displayRegisterSection();
+    } else {
+    displayInputSection(data.data);
+    }
+    })
+    .catch(error => {
+    console.error(‘Error fetching user data:’, error);
+    Swal.fire(‘Error’, ‘Failed to fetch user data.’, ‘error’);
+    });
+    }
     function displayInputSection(userData) {
-        document.getElementById('inputSection').style.display = 'block';
-        document.getElementById('empNo').textContent = userData[0];
-        document.getElementById('name').textContent = userData[1];
-        document.getElementById('division').textContent = userData[2];
-        document.getElementById('factory').textContent = userData[4];
-        document.getElementById('points').textContent = userData[7];
+    document.getElementById('inputSection').style.display = 'block';
+    document.getElementById('empNo').textContent = userData[0];
+    document.getElementById('name').textContent = userData[1];
+    document.getElementById('division').textContent = userData[2];
+    document.getElementById('factory').textContent = userData[4];
+    document.getElementById('points').textContent = userData[7];
+}
+
+function saveFreeText() {
+    const empNo = document.getElementById('empNo').textContent;
+    const factory = document.getElementById('factory').textContent;
+    const freeText = document.getElementById('foodDropdown').value;
+
+    if (!freeText) {
+        Swal.fire('Error', 'Please select an item from the dropdown.', 'error');
+        return;
     }
 
-    function saveFreeText() {
-        const empNo = document.getElementById('empNo').textContent;
-        const factory = document.getElementById('factory').textContent;
-        const freeText = document.getElementById('foodDropdown').value;
-
-        if (!freeText) {
-            Swal.fire('Error', 'Please select an item from the dropdown.', 'error');
-            return;
+    Swal.fire({
+        title: 'Saving data',
+        text: 'รอสักครู่..',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
         }
+    });
 
-        Swal.fire({
-            title: 'Saving data',
-            text: 'รอสักครู่..',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
+    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=saveRedeemData&empNo=${encodeURIComponent(empNo)}&factory=${encodeURIComponent(factory)}&code=${encodeURIComponent(freeText)}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
             }
-        });
-
-        fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=saveRedeemData&empNo=${encodeURIComponent(empNo)}&factory=${encodeURIComponent(factory)}&code=${encodeURIComponent(freeText)}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok.');
-                }
-                return response.json();
-            })
-            .then(data => {
-                Swal.close();
-                if (data.success) {
-                    Swal.fire('Success', 'Data saved successfully.', 'success');
-                } else {
-                    Swal.fire('Error', data.message, 'error');
-                }
-            })
-            .catch(error => {
-                console.error('There has been a problem with your fetch operation:', error);
-                Swal.fire('Error', 'Network error, please try again later.', 'error');
-            });
-    }
-
-    function displayRegisterSection() {
-        document.getElementById('registerSection').style.display = 'block';
-    }
-
-    function checkUserInfo() {
-        const empNo = document.getElementById('empNoInput').value;
-        const empDate = document.getElementById('empDateInput').value;
-
-        if (!empNo || !empDate) {
-            Swal.fire('Error', 'Please provide both Employee Number and Employment Date.', 'error');
-            return;
-        }
-
-        Swal.fire({
-            title: 'กำลังตรวจสอบ',
-            text: 'รอสักครู่',
-            icon: 'info',
-            showConfirmButton: false,
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-
-        fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=checkUserInfo&empNo=${empNo}&empDate=${empDate}`)
-            .then(response => response.json())
-            .then(data => {
-                Swal.close();
-                if (data.status === 'found') {
-                    Swal.fire({
-                        title: 'Confirm Your Details',
-                        html: `
-                            <p>Employee Number: ${data.details.empNo}</p>
-                            <p>Name: ${data.details.name}</p>
-                            <p>Division: ${data.details.division}</p>
-                            <p>Factory: ${data.details.factory}</p>
-                        `,
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, register me!'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            const uid = liff.getDecodedIDToken().sub; // Get UID here instead
-                            registerUser(empNo, empDate, uid);
-                        }
-                    });
-                } else {
-                    Swal.fire('Not Found', 'No matching records found. Please check the information provided and try again.', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                Swal.fire('Error', 'Failed to process your request. Please try again later.', 'error');
-            });
-    }
-
-    function registerUser(empNo, empDate, uid) {
-        Swal.fire({
-            title: 'กำลังลงทะเบียน...',
-            text: 'รอสักครู่',
-            icon: 'info',
-            showConfirmButton: false,
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-
-        fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `action=registerUser&empNo=${encodeURIComponent(empNo)}&empDate=${encodeURIComponent(empDate)}&uid=${encodeURIComponent(uid)}`
+            return response.json();
         })
-        .then(response => response.json())
         .then(data => {
             Swal.close();
             if (data.success) {
-                Swal.fire('Registered!', 'ลงทะเบียนสำเร็จแล้ว', 'success');
+                Swal.fire('Success', 'Data saved successfully.', 'success').then(() => {
+                    displayMessage();
+                });
             } else {
                 Swal.fire('Error', data.message, 'error');
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            Swal.fire('Error', 'Failed to register. Please try again later.', 'error');
+            console.error('There has been a problem with your fetch operation:', error);
+            Swal.fire('Error', 'Network error, please try again later.', 'error');
         });
+}
+
+function displayMessage() {
+    const messageDiv = document.createElement('div');
+    messageDiv.id = 'recordMessage';
+    messageDiv.style.color = 'green';
+    messageDiv.style.marginTop = '20px';
+    messageDiv.style.fontSize = '1.2em';
+    messageDiv.textContent = 'บันทึกข้อมูลลงในระบบเรียบร้อยแล้ว';
+    document.getElementById('userContent').appendChild(messageDiv);
+}
+
+function displayRegisterSection() {
+    document.getElementById('registerSection').style.display = 'block';
+}
+
+function checkUserInfo() {
+    const empNo = document.getElementById('empNoInput').value;
+    const empDate = document.getElementById('empDateInput').value;
+
+    if (!empNo || !empDate) {
+        Swal.fire('Error', 'Please provide both Employee Number and Employment Date.', 'error');
+        return;
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const checkButton = document.getElementById('checkButton');
-        if (checkButton) {
-            checkButton.onclick = checkUserInfo;
-        } else {
-            console.error('checkButton not found');
+    Swal.fire({
+        title: 'กำลังตรวจสอบ',
+        text: 'รอสักครู่',
+        icon: 'info',
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
         }
     });
-    </script>
+
+    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=checkUserInfo&empNo=${empNo}&empDate=${empDate}`)
+        .then(response => response.json())
+        .then(data => {
+            Swal.close();
+            if (data.status === 'found') {
+                Swal.fire({
+                    title: 'Confirm Your Details',
+                    html: `
+                        <p>Employee Number: ${data.details.empNo}</p>
+                        <p>Name: ${data.details.name}</p>
+                        <p>Division: ${data.details.division}</p>
+                        <p>Factory: ${data.details.factory}</p>
+                    `,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, register me!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const uid = liff.getDecodedIDToken().sub; // Get UID here instead
+                        registerUser(empNo, empDate, uid);
+                    }
+                });
+            } else {
+                Swal.fire('Not Found', 'No matching records found. Please check the information provided and try again.', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire('Error', 'Failed to process your request. Please try again later.', 'error');
+        });
+}
+
+function registerUser(empNo, empDate, uid) {
+    Swal.fire({
+        title: 'กำลังลงทะเบียน...',
+        text: 'รอสักครู่',
+        icon: 'info',
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `action=registerUser&empNo=${encodeURIComponent(empNo)}&empDate=${encodeURIComponent(empDate)}&uid=${encodeURIComponent(uid)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        Swal.close();
+        if (data.success) {
+            Swal.fire('Registered!', 'ลงทะเบียนสำเร็จแล้ว', 'success');
+        } else {
+            Swal.fire('Error', data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire('Error', 'Failed to register. Please try again later.', 'error');
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const checkButton = document.getElementById('checkButton');
+    if (checkButton) {
+        checkButton.onclick = checkUserInfo;
+    } else {
+        console.error('checkButton not found');
+    }
+});
+</script>
 </body>
 </html>
-
