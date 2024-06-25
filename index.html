@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App ver 25.06.2024 15:25</title>
+    <title>LIFF App ver 25.06.2024 15:41</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
@@ -287,8 +287,14 @@ function checkUserInfo() {
                     confirmButtonText: 'Yes, register me!'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        const uid = liff.getProfile().then(profile => profile.userId); // Get UID here instead
-                        registerUser(empNo, empDate, uid);
+                        // Fetch the UID and then register the user
+                        liff.getProfile().then(profile => {
+                            const uid = profile.userId;
+                            registerUser(empNo, empDate, uid);
+                        }).catch(err => {
+                            console.error('Failed to get user profile:', err);
+                            Swal.fire('Error', 'Failed to get user profile.', 'error');
+                        });
                     }
                 });
             } else {
@@ -334,6 +340,7 @@ function registerUser(empNo, empDate, uid) {
     });
 }
 
+
 let foodList = [];
 
 function showDishOptions() {
@@ -368,31 +375,27 @@ function showDropdown(type) {
 }
 
 function fetchFoodList(sheetName, column) {
+    console.log(`Fetching food list from sheet: ${sheetName}, column: ${column}`);
     fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getFoodList&sheetName=${sheetName}&column=${column}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.statusText}`);
+            }
+            return response.json();
+        })
         .then(data => {
+            console.log("Food list data:", data);
             if (data.success) {
                 foodList = data.data;
                 populateFoodDropdown(foodList);
             } else {
-                Swal.fire('Error', 'Failed to fetch food list.', 'error');
+                Swal.fire('Error', data.message || 'Failed to fetch food list.', 'error');
             }
         })
         .catch(error => {
             console.error('Error fetching food list:', error);
-            Swal.fire('Error', 'Failed to fetch food list.', 'error');
+            Swal.fire('Error', `Failed to fetch food list: ${error.message}`, 'error');
         });
-}
-
-function populateFoodDropdown(list) {
-    const dropdown = document.getElementById('foodDropdown');
-    dropdown.innerHTML = '';
-    list.forEach(item => {
-        const option = document.createElement('option');
-        option.value = item;
-        option.textContent = item;
-        dropdown.appendChild(option);
-    });
 }
 
 function recordSelection() {
@@ -417,7 +420,7 @@ function recordSelection() {
     fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=saveRedeemData&empNo=${encodeURIComponent(empNo)}&factory=${encodeURIComponent(factory)}&code=${encodeURIComponent(selectedFood)}`)
         .then(response => {
             if (!response.ok) {
-                throw new Error('Network response was not ok.');
+                throw new Error(`Network response was not ok: ${response.statusText}`);
             }
             return response.json();
         })
@@ -428,13 +431,25 @@ function recordSelection() {
                     displayMessage();
                 });
             } else {
-                Swal.fire('Error', data.message, 'error');
+                Swal.fire('Error', data.message || 'Failed to save data.', 'error');
             }
         })
         .catch(error => {
-            console.error('There has been a problem with your fetch operation:', error);
-            Swal.fire('Error', 'Network error, please try again later.', 'error');
+            console.error('Error saving data:', error);
+            Swal.fire('Error', `Network error: ${error.message}`, 'error');
         });
+}
+
+
+function populateFoodDropdown(list) {
+    const dropdown = document.getElementById('foodDropdown');
+    dropdown.innerHTML = '';
+    list.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item;
+        option.textContent = item;
+        dropdown.appendChild(option);
+    });
 }
 
 function displayMessage() {
