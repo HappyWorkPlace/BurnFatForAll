@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App ver 25.06.2024 15:41</title>
+    <title>LIFF App ver 25.06.2024 16:15</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
@@ -398,6 +398,17 @@ function fetchFoodList(sheetName, column) {
         });
 }
 
+function populateFoodDropdown(list) {
+    const dropdown = document.getElementById('foodDropdown');
+    dropdown.innerHTML = '';
+    list.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item;
+        option.textContent = item;
+        dropdown.appendChild(option);
+    });
+}
+
 function recordSelection() {
     const empNo = document.getElementById('empNo').textContent;
     const factory = document.getElementById('factory').textContent;
@@ -441,16 +452,6 @@ function recordSelection() {
 }
 
 
-function populateFoodDropdown(list) {
-    const dropdown = document.getElementById('foodDropdown');
-    dropdown.innerHTML = '';
-    list.forEach(item => {
-        const option = document.createElement('option');
-        option.value = item;
-        option.textContent = item;
-        dropdown.appendChild(option);
-    });
-}
 
 function displayMessage() {
     const messageDiv = document.createElement('div');
