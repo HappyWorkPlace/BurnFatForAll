@@ -212,7 +212,7 @@ function displayUserInfo(userName) {
 
 function getUserData(uid) {
     console.log("Fetching user data for UID:", uid);
-    fetch(`https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?action=getUserData&uid=${uid}`)
+    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserData&uid=${uid}`)
         .then(response => {
             console.log("User data response received");
             if (!response.ok) {
@@ -267,7 +267,7 @@ function checkUserInfo() {
         }
     });
 
-    fetch(`https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?action=checkUserInfo&empNo=${empNo}&empDate=${empDate}`)
+    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=checkUserInfo&empNo=${empNo}&empDate=${empDate}`)
         .then(response => response.json())
         .then(data => {
             Swal.close();
@@ -312,7 +312,7 @@ function registerUser(empNo, empDate, uid) {
             Swal.showLoading();
         }
     });
-    fetch(`https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec`, {
+    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -368,7 +368,7 @@ function showDropdown(type) {
 }
 
 function fetchFoodList(sheetName, column) {
-    fetch(`https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?action=getFoodList&sheetName=${sheetName}&column=${column}`)
+    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getFoodList&sheetName=${sheetName}&column=${column}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -414,7 +414,7 @@ function recordSelection() {
         }
     });
 
-    fetch(`https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?action=saveRedeemData&empNo=${encodeURIComponent(empNo)}&factory=${encodeURIComponent(factory)}&code=${encodeURIComponent(selectedFood)}`)
+    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=saveRedeemData&empNo=${encodeURIComponent(empNo)}&factory=${encodeURIComponent(factory)}&code=${encodeURIComponent(selectedFood)}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok.');
