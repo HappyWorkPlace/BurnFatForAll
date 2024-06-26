@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App ver 26.06.2024 17:06</title>
+    <title>LIFF App ver 26.06.2024 23:06</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
 <!--     <link rel="stylesheet" href="styles.css"> -->
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -157,13 +157,13 @@
 
 .grayscale {
     filter: grayscale(100%);
-    width: 60px; /* Smaller size for grayscale icons */
-    height: 60px; /* Smaller size for grayscale icons */
+    width: 30px; /* Smaller size for grayscale icons */
+    height: 30px; /* Smaller size for grayscale icons */
 }
 
 .icon img.selected {
-    width: 100px; /* Larger size for selected icons */
-    height: 100px; /* Larger size for selected icons */
+    width: 110px; /* Larger size for selected icons */
+    height: 110px; /* Larger size for selected icons */
 }
 
     </style>
@@ -178,12 +178,13 @@
         </div>
     <div id="userContent">
         <div id="inputSection" style="display:none;">
-            <h2>กรุณาระบุอาหารที่รับประทาน</h2>
             <p><strong>EmpNo:</strong> <span id="empNo"></span></p>
             <p><strong>Name:</strong> <span id="name"></span></p>
             <p><strong>Division:</strong> <span id="division"></span></p>
             <p><strong>Factory:</strong> <span id="factory"></span></p>
+            <h2>กรุณาระบุอาหารที่รับประทาน</h2>
             <div class="icon-container">
+                
                 <div class="icon">
                     <img id="withRiceImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/กับข้าว.JPG" alt="กับข้าว" onclick="selectWithRice()">
                     <button onclick="selectWithRice()">กับข้าว</button>
