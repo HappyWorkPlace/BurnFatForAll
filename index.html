@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App ver 26.06.2024 09:16</title>
+    <title>LIFF App ver 26.06.2024 09:55</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -36,7 +36,7 @@
 
         p, input[type=text], button {
             margin: 10px 0;
-            padding: 10px;
+            padding: 5px;
         }
 
         input[type=text] {
@@ -116,12 +116,13 @@
     <p id="userInfo">รอสักครู่..</p>
     <div id="userContent">
         <div id="inputSection" style="display:none;">
-            <h2>Input Page</h2>
-            <p><strong>Employee Number:</strong> <span id="empNo"></span></p>
+            <h2>กินดี Healthy Life</h2>
+            <p><strong>EmpNo:</strong> <span id="empNo"></span></p>
             <p><strong>Name:</strong> <span id="name"></span></p>
             <p><strong>Division:</strong> <span id="division"></span></p>
             <p><strong>Factory:</strong> <span id="factory"></span></p>
-            <p><strong>Points:</strong> <span id="points"></span></p>
+<!--        <p><strong>Points:</strong> <span id="points"></span></p> -->
+            <h2>กรุณาระบุอาหารที่รับประทาน</h2>
             
             <div class="icon-container">
                 <div class="icon">
@@ -133,7 +134,6 @@
                     <button onclick="showOverRiceOptions()">อาหารจานเดียว</button>
                 </div>
             </div>
-            
             <div id="dishOptions" class="icon-container" style="display:none;">
                 <div class="icon">
                     <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/ต้ม.JPG" alt="ต้ม" onclick="showDropdown('ต้ม')">
@@ -199,7 +199,7 @@ function initializeLiff(myLiffId) {
 }
 
 function displayUserInfo(userName) {
-    document.getElementById('userInfo').innerHTML = `<p>สวัสดีค่ะคุณ ${userName}</p><p>วันนี้มาสุขภาพดีไปด้วยกันนะคะ</p>`;
+    document.getElementById('userInfo').innerHTML = `<p>สวัสดีค่ะคุณ ${userName}</p>`;
 }
 
 function getUserData(uid) {
