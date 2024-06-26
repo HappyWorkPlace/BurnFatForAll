@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App ver 26.06.2024 13:23</title>
+    <title>LIFF App ver 26.06.2024 13:48</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -502,7 +502,7 @@ function recordSelection() {
             .then(data => {
                 Swal.close();
                 if (data.status === 'exists') {
-                    Swal.fire('วันนี้คุณบันทึกข้อมูลไปแล้ว', `คุณบันทึกข้อมูลไปแล้วเมื่อ ${data.lastTimestamp}. พรุ่งนี้ค่อยมาใหม่นะ`, 'info');
+                    Swal.fire('วันนี้คุณบันทึกข้อมูลไปแล้ว', `คุณบันทึกข้อมูลไปแล้วเมื่อ ${new Date(data.lastTimestamp).toLocaleString()}. พรุ่งนี้ค่อยมาใหม่นะ`, 'info');
                 } else {
                     saveSelection(empNo, factory, selectedFood, uid);
                 }
@@ -563,6 +563,5 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 </script>
-
 </body>
 </html>
