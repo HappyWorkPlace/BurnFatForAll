@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App ver 26.06.2024 14:46</title>
+    <title>LIFF App ver 26.06.2024 17:06</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
 <!--     <link rel="stylesheet" href="styles.css"> -->
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -100,6 +100,16 @@
             background-color: #0056b3;
         }
         
+        button.gray {
+            background-color: gray;
+            cursor: default;
+        }
+        
+        button.gray:hover {
+            background-color: gray;
+        }
+
+        
         #alertMessage {
             color: #dc3545;
             padding: 10px;
@@ -137,17 +147,25 @@
             flex: 1;
         }
         
-        .icon img {
-            width: 80px;
-            height: 80px;
-            display: block;
-            margin: 0 auto 10px;
-            transition: filter 0.3s;
-        }
+.icon img {
+    width: 80px;
+    height: 80px;
+    display: block;
+    margin: 0 auto 10px;
+    transition: filter 0.3s, width 0.3s, height 0.3s; /* Added width and height transition */
+}
 
-        .grayscale {
-            filter: grayscale(100%);
-        }
+.grayscale {
+    filter: grayscale(100%);
+    width: 60px; /* Smaller size for grayscale icons */
+    height: 60px; /* Smaller size for grayscale icons */
+}
+
+.icon img.selected {
+    width: 100px; /* Larger size for selected icons */
+    height: 100px; /* Larger size for selected icons */
+}
+
     </style>
 </head>
 <body>
@@ -414,10 +432,11 @@ function registerUser(empNo, empDate, uid) {
         Swal.fire('Error', 'Failed to register. Please try again later.', 'error');
     });
 }
-
 function selectWithRice() {
     document.getElementById('withRiceImg').classList.remove('grayscale');
+    document.getElementById('withRiceImg').classList.add('selected');
     document.getElementById('singleDishImg').classList.add('grayscale');
+    document.getElementById('singleDishImg').classList.remove('selected');
     document.getElementById('dishOptions').style.display = 'flex';
     document.getElementById('dropdownContainer').style.display = 'none';
     clearDishIcons();
@@ -425,7 +444,9 @@ function selectWithRice() {
 
 function selectSingleDish() {
     document.getElementById('withRiceImg').classList.add('grayscale');
+    document.getElementById('withRiceImg').classList.remove('selected');
     document.getElementById('singleDishImg').classList.remove('grayscale');
+    document.getElementById('singleDishImg').classList.add('selected');
     document.getElementById('dishOptions').style.display = 'none';
     document.getElementById('dropdownContainer').style.display = 'block';
     populateFoodDropdown(foodLists.singleDish);
@@ -433,14 +454,19 @@ function selectSingleDish() {
 
 function clearDishIcons() {
     document.getElementById('boiledImg').classList.add('grayscale');
+    document.getElementById('boiledImg').classList.remove('selected');
     document.getElementById('friedImg').classList.add('grayscale');
+    document.getElementById('friedImg').classList.remove('selected');
     document.getElementById('curryImg').classList.add('grayscale');
+    document.getElementById('curryImg').classList.remove('selected');
     document.getElementById('grilledImg').classList.add('grayscale');
+    document.getElementById('grilledImg').classList.remove('selected');
 }
 
 function selectDishType(type, imgId) {
     clearDishIcons();
     document.getElementById(imgId).classList.remove('grayscale');
+    document.getElementById(imgId).classList.add('selected');
     showDropdown(type);
 }
 
