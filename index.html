@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App ver 26.06.2024 11:35</title>
+    <title>LIFF App ver 26.06.2024 11:41</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -142,6 +142,11 @@
             height: 80px;
             display: block;
             margin: 0 auto 10px;
+            transition: filter 0.3s;
+        }
+
+        .grayscale {
+            filter: grayscale(100%);
         }
     </style>
 </head>
@@ -162,12 +167,12 @@
             <p><strong>Factory:</strong> <span id="factory"></span></p>
             <div class="icon-container">
                 <div class="icon">
-                    <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/กับข้าว.JPG" alt="กับข้าว" onclick="showDishOptions()">
-                    <button onclick="showDishOptions()">กับข้าว</button>
+                    <img id="withRiceImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/กับข้าว.JPG" alt="กับข้าว" onclick="selectWithRice()">
+                    <button onclick="selectWithRice()">กับข้าว</button>
                 </div>
                 <div class="icon">
-                    <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/อาหารจานเดียว.JPG" alt="อาหารจานเดียว" onclick="showOverRiceOptions()">
-                    <button onclick="showOverRiceOptions()">อาหารจานเดียว</button>
+                    <img id="singleDishImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/อาหารจานเดียว.JPG" alt="อาหารจานเดียว" onclick="selectSingleDish()">
+                    <button onclick="selectSingleDish()">อาหารจานเดียว</button>
                 </div>
             </div>
             <div id="dishOptions" class="icon-container" style="display:none;">
@@ -202,7 +207,20 @@
         </div>
     </div>
     <div id="alertMessage"></div>
-<script>
+    <script>
+        function selectWithRice() {
+            document.getElementById('withRiceImg').classList.remove('grayscale');
+            document.getElementById('singleDishImg').classList.add('grayscale');
+            document.getElementById('dishOptions').style.display = 'flex';
+            document.getElementById('dropdownContainer').style.display = 'none';
+        }
+
+        function selectSingleDish() {
+            document.getElementById('withRiceImg').classList.add('grayscale');
+            document.getElementById('singleDishImg').classList.remove('grayscale');
+            document.getElementById('dishOptions').style.display = 'none';
+            document.getElementById('dropdownContainer').style.display = 'none';
+        }
 window.onload = function() {
     console.log("Window loaded, initializing LIFF");
     initializeLiff('2004752543-O6bmBeMw');
