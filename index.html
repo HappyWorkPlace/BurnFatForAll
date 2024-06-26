@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App ver 26.06.2024 12:30</title>
+    <title>LIFF App ver 26.06.2024 12:40</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -256,8 +256,10 @@ function preloadFoodLists() {
     fetchFoodList('SideDish', 'B', (data) => { foodLists.sideDish.fried = data; });
     fetchFoodList('SideDish', 'C', (data) => { foodLists.sideDish.curry = data; });
     fetchFoodList('SideDish', 'D', (data) => { foodLists.sideDish.grilled = data; });
-    fetchFoodList('OverRice', 'A', (data) => { foodLists.withRice = data; });
-    fetchFoodList('SingleDish', 'A', (data) => { foodLists.singleDish = data; });
+    fetchFoodList('OverRice', 'A', (data) => { 
+        foodLists.withRice = data;
+        foodLists.singleDish = data; // Preloading the same list for singleDish
+    });
 }
 
 function fetchFoodList(sheetName, column, callback) {
