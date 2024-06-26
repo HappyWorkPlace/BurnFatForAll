@@ -9,6 +9,39 @@
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
     <style>
+    .header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff; /* White background */
+    border: 1px solid #ddd; /* Border color */
+    border-radius: 10px; /* Border radius to match the form */
+    padding: 20px; /* Padding to match the form */
+    margin: 5px auto; /* Margin to match the form */
+    box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.2); /* Shadow to match the form */
+    max-width: 300px; /* Width to match the form */
+  }
+
+  .header-icon {
+    height: 50px;
+    width: 50px;
+    margin-right: 10px;
+
+  }
+
+  .header-text-black {
+  color: black;
+  font-size: 22px;
+  font-weight: bold;
+  //text-align: center;
+}
+
+.header-text-blue {
+  color: darkblue;
+  font-size: 18px;
+  font-weight: bold;
+
+}
         body {
             font-family: 'Kanit', sans-serif;
             background-color: #f9f9f9;
@@ -28,14 +61,15 @@
         }
 
         h2 {
-            color: #007BFF;
-            border-bottom: 2px solid #007BFF;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
+          color: #007BFF;
+          /* border-bottom: 2px solid #007BFF; */
+          padding-bottom: 10px;
+          margin-bottom: 20px;
+          text-align: center; 
         }
 
         p, input[type=text], button {
-            margin: 10px 0;
+            margin: 5px 0;
             padding: 5px;
         }
 
@@ -114,14 +148,20 @@
 </head>
 <body>
     <p id="userInfo">รอสักครู่..</p>
+    <div class="header">
+      <img class="header-icon" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/LogoProject.JPG" alt="Logo">
+    <div>
+        <h1 class="header-text-black">กินดี Healthy Life</h1>
+    </div>
+    </div>
     <div id="userContent">
         <div id="inputSection" style="display:none;">
-            <h2>กินดี Healthy Life</h2>
+            <h2>บันทึก</h2>
             <p><strong>EmpNo:</strong> <span id="empNo"></span></p>
             <p><strong>Name:</strong> <span id="name"></span></p>
             <p><strong>Division:</strong> <span id="division"></span></p>
             <p><strong>Factory:</strong> <span id="factory"></span></p>
-<!--        <p><strong>Points:</strong> <span id="points"></span></p> -->
+<!--        <p><strong>s:</strong> <span id="s"></span></p> -->
             <h2>กรุณาระบุอาหารที่รับประทาน</h2>
             
             <div class="icon-container">
@@ -232,7 +272,7 @@ function displayInputSection(userData) {
     document.getElementById('name').textContent = userData[1];
     document.getElementById('division').textContent = userData[2];
     document.getElementById('factory').textContent = userData[4];
-    document.getElementById('points').textContent = userData[7];
+    // document.getElementById('s').textContent = userData[7];
 }
 
 function displayRegisterSection() {
