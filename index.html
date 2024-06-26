@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App ver 26.06.2024 11:41</title>
+    <title>LIFF App ver 26.06.2024 12:19</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -177,20 +177,20 @@
             </div>
             <div id="dishOptions" class="icon-container" style="display:none;">
                 <div class="icon">
-                    <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/ต้ม.JPG" alt="ต้ม" onclick="showDropdown('ต้ม')">
-                    <button onclick="showDropdown('ต้ม')">ต้ม</button>
+                    <img id="boiledImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/ต้ม.JPG" alt="ต้ม" onclick="selectDishType('ต้ม', 'boiledImg')">
+                    <button onclick="selectDishType('ต้ม', 'boiledImg')">ต้ม</button>
                 </div>
                 <div class="icon">
-                    <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/ผัด.png" alt="ผัด" onclick="showDropdown('ผัด')">
-                    <button onclick="showDropdown('ผัด')">ผัด</button>
+                    <img id="friedImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/ผัด.png" alt="ผัด" onclick="selectDishType('ผัด', 'friedImg')">
+                    <button onclick="selectDishType('ผัด', 'friedImg')">ผัด</button>
                 </div>
                 <div class="icon">
-                    <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/แกง.JPG" alt="แกง" onclick="showDropdown('แกง')">
-                    <button onclick="showDropdown('แกง')">แกง</button>
+                    <img id="curryImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/แกง.JPG" alt="แกง" onclick="selectDishType('แกง', 'curryImg')">
+                    <button onclick="selectDishType('แกง', 'curryImg')">แกง</button>
                 </div>
                 <div class="icon">
-                    <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/ปิ้งย่าง.JPG" alt="นึ่ง/ปิ้ง/ย่าง" onclick="showDropdown('นึ่ง/ปิ้ง/ย่าง')">
-                    <button onclick="showDropdown('นึ่ง/ปิ้ง/ย่าง')">นึ่ง/ปิ้ง/ย่าง</button>
+                    <img id="grilledImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/ปิ้งย่าง.JPG" alt="นึ่ง/ปิ้ง/ย่าง" onclick="selectDishType('นึ่ง/ปิ้ง/ย่าง', 'grilledImg')">
+                    <button onclick="selectDishType('นึ่ง/ปิ้ง/ย่าง', 'grilledImg')">นึ่ง/ปิ้ง/ย่าง</button>
                 </div>
             </div>
             
@@ -208,19 +208,6 @@
     </div>
     <div id="alertMessage"></div>
     <script>
-        function selectWithRice() {
-            document.getElementById('withRiceImg').classList.remove('grayscale');
-            document.getElementById('singleDishImg').classList.add('grayscale');
-            document.getElementById('dishOptions').style.display = 'flex';
-            document.getElementById('dropdownContainer').style.display = 'none';
-        }
-
-        function selectSingleDish() {
-            document.getElementById('withRiceImg').classList.add('grayscale');
-            document.getElementById('singleDishImg').classList.remove('grayscale');
-            document.getElementById('dishOptions').style.display = 'none';
-            document.getElementById('dropdownContainer').style.display = 'none';
-        }
 window.onload = function() {
     console.log("Window loaded, initializing LIFF");
     initializeLiff('2004752543-O6bmBeMw');
@@ -389,134 +376,160 @@ function registerUser(empNo, empDate, uid) {
 
 let foodList = [];
 
-function showDishOptions() {
-    document.getElementById('dishOptions').style.display = 'flex';
-    document.getElementById('dropdownContainer').style.display = 'none';
-}
-
-function showOverRiceOptions() {
-    document.getElementById('dishOptions').style.display = 'none';
-    document.getElementById('dropdownContainer').style.display = 'block';
-    fetchFoodList('OverRice', 'A');
-}
-
-function showDropdown(type) {
-    let column;
-    switch(type) {
-        case 'ต้ม':
-            column = 'A';
-            break;
-        case 'ผัด':
-            column = 'B';
-            break;
-        case 'แกง':
-            column = 'C';
-            break;
-        case 'นึ่ง/ปิ้ง/ย่าง':
-            column = 'D';
-            break;
-    }
-    fetchFoodList('SideDish', column);
-    document.getElementById('dropdownContainer').style.display = 'block';
-}
-
-function fetchFoodList(sheetName, column) {
-    console.log(`Fetching food list from sheet: ${sheetName}, column: ${column}`);
-    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getFoodList&sheetName=${sheetName}&column=${column}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Network response was not ok: ${response.statusText}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log("Food list data:", data);
-            if (data.success) {
-                foodList = data.data;
-                populateFoodDropdown(foodList);
-            } else {
-                Swal.fire('Error', data.message || 'Failed to fetch food list.', 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching food list:', error);
-            Swal.fire('Error', `Failed to fetch food list: ${error.message}`, 'error');
-        });
-}
-
-function populateFoodDropdown(list) {
-    const dropdown = document.getElementById('foodDropdown');
-    dropdown.innerHTML = '';
-    list.forEach(item => {
-        const option = document.createElement('option');
-        option.value = item;
-        option.textContent = item;
-        dropdown.appendChild(option);
-    });
-}
-
-function recordSelection() {
-    const empNo = document.getElementById('empNo').textContent;
-    const factory = document.getElementById('factory').textContent;
-    const selectedFood = document.getElementById('foodDropdown').value;
-
-    if (!selectedFood) {
-        Swal.fire('Error', 'Please select an item from the dropdown.', 'error');
-        return;
-    }
-
-    Swal.fire({
-        title: 'Saving data',
-        text: 'รอสักครู่..',
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
+        function selectWithRice() {
+            document.getElementById('withRiceImg').classList.remove('grayscale');
+            document.getElementById('singleDishImg').classList.add('grayscale');
+            document.getElementById('dishOptions').style.display = 'flex';
+            document.getElementById('dropdownContainer').style.display = 'none';
+            clearDishIcons();
         }
-    });
 
-    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=saveRedeemData&empNo=${encodeURIComponent(empNo)}&factory=${encodeURIComponent(factory)}&code=${encodeURIComponent(selectedFood)}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Network response was not ok: ${response.statusText}`);
+        function selectSingleDish() {
+            document.getElementById('withRiceImg').classList.add('grayscale');
+            document.getElementById('singleDishImg').classList.remove('grayscale');
+            document.getElementById('dishOptions').style.display = 'none';
+            document.getElementById('dropdownContainer').style.display = 'block';
+            fetchFoodList('OverRice', 'A');
+        }
+
+        function clearDishIcons() {
+            document.getElementById('boiledImg').classList.add('grayscale');
+            document.getElementById('friedImg').classList.add('grayscale');
+            document.getElementById('curryImg').classList.add('grayscale');
+            document.getElementById('grilledImg').classList.add('grayscale');
+        }
+
+        function selectDishType(type, imgId) {
+            clearDishIcons();
+            document.getElementById(imgId).classList.remove('grayscale');
+            showDropdown(type);
+        }
+
+        function showDishOptions() {
+            document.getElementById('dishOptions').style.display = 'flex';
+            document.getElementById('dropdownContainer').style.display = 'none';
+        }
+
+        function showOverRiceOptions() {
+            document.getElementById('dishOptions').style.display = 'none';
+            document.getElementById('dropdownContainer').style.display = 'block';
+            fetchFoodList('OverRice', 'A');
+        }
+
+        function showDropdown(type) {
+            let column;
+            switch(type) {
+                case 'ต้ม':
+                    column = 'A';
+                    break;
+                case 'ผัด':
+                    column = 'B';
+                    break;
+                case 'แกง':
+                    column = 'C';
+                    break;
+                case 'นึ่ง/ปิ้ง/ย่าง':
+                    column = 'D';
+                    break;
             }
-            return response.json();
-        })
-        .then(data => {
-            Swal.close();
-            if (data.success) {
-                Swal.fire('Success', 'Data saved successfully.', 'success').then(() => {
-                    displayMessage();
+            fetchFoodList('SideDish', column);
+            document.getElementById('dropdownContainer').style.display = 'block';
+        }
+
+        function fetchFoodList(sheetName, column) {
+            console.log(`Fetching food list from sheet: ${sheetName}, column: ${column}`);
+            fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getFoodList&sheetName=${sheetName}&column=${column}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Network response was not ok: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Food list data:", data);
+                    if (data.success) {
+                        populateFoodDropdown(data.data);
+                    } else {
+                        Swal.fire('Error', data.message || 'Failed to fetch food list.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching food list:', error);
+                    Swal.fire('Error', `Failed to fetch food list: ${error.message}`, 'error');
                 });
-            } else {
-                Swal.fire('Error', data.message || 'Failed to save data.', 'error');
+        }
+
+        function populateFoodDropdown(list) {
+            const dropdown = document.getElementById('foodDropdown');
+            dropdown.innerHTML = '';
+            list.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item;
+                option.textContent = item;
+                dropdown.appendChild(option);
+            });
+        }
+
+        function recordSelection() {
+            const empNo = document.getElementById('empNo').textContent;
+            const factory = document.getElementById('factory').textContent;
+            const selectedFood = document.getElementById('foodDropdown').value;
+
+            if (!selectedFood) {
+                Swal.fire('Error', 'Please select an item from the dropdown.', 'error');
+                return;
             }
-        })
-        .catch(error => {
-            console.error('Error saving data:', error);
-            Swal.fire('Error', `Network error: ${error.message}`, 'error');
+
+            Swal.fire({
+                title: 'Saving data',
+                text: 'รอสักครู่..',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=saveRedeemData&empNo=${encodeURIComponent(empNo)}&factory=${encodeURIComponent(factory)}&code=${encodeURIComponent(selectedFood)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Network response was not ok: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    Swal.close();
+                    if (data.success) {
+                        Swal.fire('Success', 'Data saved successfully.', 'success').then(() => {
+                            displayMessage();
+                        });
+                    } else {
+                        Swal.fire('Error', data.message || 'Failed to save data.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error saving data:', error);
+                    Swal.fire('Error', `Network error: ${error.message}`, 'error');
+                });
+        }
+
+        function displayMessage() {
+            const messageDiv = document.createElement('div');
+            messageDiv.id = 'recordMessage';
+            messageDiv.style.color = 'green';
+            messageDiv.style.marginTop = '20px';
+            messageDiv.style.fontSize = '1.2em';
+            messageDiv.textContent = 'บันทึกข้อมูลลงในระบบเรียบร้อยแล้ว';
+            document.getElementById('userContent').appendChild(messageDiv);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const checkButton = document.getElementById('checkButton');
+            if (checkButton) {
+                checkButton.onclick = checkUserInfo;
+            } else {
+                console.error('checkButton not found');
+            }
         });
-}
-
-
-
-function displayMessage() {
-    const messageDiv = document.createElement('div');
-    messageDiv.id = 'recordMessage';
-    messageDiv.style.color = 'green';
-    messageDiv.style.marginTop = '20px';
-    messageDiv.style.fontSize = '1.2em';
-    messageDiv.textContent = 'บันทึกข้อมูลลงในระบบเรียบร้อยแล้ว';
-    document.getElementById('userContent').appendChild(messageDiv);
-}
-
-document.addEventListener('DOMContentLoaded', function () {
-    const checkButton = document.getElementById('checkButton');
-    if (checkButton) {
-        checkButton.onclick = checkUserInfo;
-    } else {
-        console.error('checkButton not found');
-    }
-});
 </script>
 </body>
 </html>
