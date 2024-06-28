@@ -1,3 +1,10 @@
+function displayInputSection(userData) {
+    document.getElementById('inputSection').style.display = 'block';
+    document.getElementById('empNo').textContent = userData[0];
+    document.getElementById('name').textContent = userData[1];
+    document.getElementById('division').textContent = userData[2];
+    document.getElementById('factory').textContent = userData[4];
+}
 function recordSelection() {
     const empNo = document.getElementById('empNo').textContent;
     const factory = document.getElementById('factory').textContent;
