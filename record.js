@@ -38,7 +38,7 @@ function recordSelection() {
 }
 
 function checkUserColumnJ(uid, empNo, factory, selectedFood) {
-    fetch(`https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?action=checkUserColumnJ&uid=${uid}`)
+    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=checkUserColumnJ&uid=${uid}`)
         .then(response => response.json())
         .then(data => {
             Swal.close();
@@ -67,7 +67,7 @@ function saveSelection(empNo, factory, selectedFood, uid) {
         }
     });
 
-    fetch(`https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?action=saveRedeemData&empNo=${encodeURIComponent(empNo)}&factory=${encodeURIComponent(factory)}&code=${encodeURIComponent(selectedFood)}`)
+    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=saveRedeemData&empNo=${encodeURIComponent(empNo)}&factory=${encodeURIComponent(factory)}&code=${encodeURIComponent(selectedFood)}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`Network response was not ok: ${response.statusText}`);
