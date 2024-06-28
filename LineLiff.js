@@ -1,4 +1,26 @@
-
+function getUserData(uid) {
+    console.log("Fetching user data for UID:", uid);
+    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserData&uid=${uid}`)
+        .then(response => {
+            console.log("User data response received");
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("User data:", data);
+            if (data.error) {
+                displayRegisterSection();
+            } else {
+                displayInputSection(data.data);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user data:', error);
+            Swal.fire('Error', 'Failed to fetch user data.', 'error');
+        });
+}
 function displayUserInfo(userName) {
     document.getElementById('userInfo').innerHTML = `<p>สวัสดีค่ะคุณ ${userName}</p>`;
 }
@@ -33,3 +55,12 @@ function initializeLiff(myLiffId) {
         Swal.fire('Error', 'Initialization failed.', 'error');
     });
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    const checkButton = document.getElementById('checkButton');
+    if (checkButton) {
+        checkButton.onclick = checkUserInfo;
+    } else {
+        console.error('checkButton not found');
+    }
+});
