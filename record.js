@@ -28,19 +28,21 @@ function recordSelection() {
     liff.getProfile()
         .then(profile => {
             const uid = profile.userId;
+            console.log('User profile obtained:', profile); // Debug log
             checkUserColumnJ(uid, empNo, factory, selectedFood);
         })
         .catch(err => {
             console.error('Failed to get user profile:', err);
-            Swal.fire('Error', 'Failed to get user profile.', 'error');
+            Swal.fire('Error', 'Failed to get user profile. Please try again later.', 'error');
         });
 }
 
 function checkUserColumnJ(uid, empNo, factory, selectedFood) {
-    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=checkUserColumnJ&uid=${uid}`)
+    fetch(`https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?action=checkUserColumnJ&uid=${uid}`)
         .then(response => response.json())
         .then(data => {
             Swal.close();
+            console.log('Check user column J response:', data); // Debug log
             if (data.status === 'TRUE') {
                 saveSelection(empNo, factory, selectedFood, uid);
             } else if (data.status === 'FALSE') {
@@ -65,7 +67,7 @@ function saveSelection(empNo, factory, selectedFood, uid) {
         }
     });
 
-    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=saveRedeemData&empNo=${encodeURIComponent(empNo)}&factory=${encodeURIComponent(factory)}&code=${encodeURIComponent(selectedFood)}`)
+    fetch(`https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?action=saveRedeemData&empNo=${encodeURIComponent(empNo)}&factory=${encodeURIComponent(factory)}&code=${encodeURIComponent(selectedFood)}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`Network response was not ok: ${response.statusText}`);
@@ -73,6 +75,7 @@ function saveSelection(empNo, factory, selectedFood, uid) {
             return response.json();
         })
         .then(data => {
+            console.log('Save selection response:', data); // Debug log
             Swal.close();
             if (data.success) {
                 Swal.fire('Success', 'Data saved successfully.', 'success').then(() => {
