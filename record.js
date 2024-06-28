@@ -37,12 +37,13 @@ function checkUserColumnJ(uid, empNo, factory, selectedFood) {
     fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=checkUserColumnJ&uid=${uid}`)
         .then(response => response.json())
         .then(data => {
-            Swal.close();
             if (data.status === 'TRUE') {
                 saveSelection(empNo, factory, selectedFood, uid);
             } else if (data.status === 'FALSE') {
+                Swal.close();
                 Swal.fire('Error', `วันนี้คุณบันทึกข้อมูลไปแล้วเมื่อ ${new Date(data.lastTimestamp).toLocaleString()}. พรุ่งนี้ค่อยมาใหม่นะ`, 'info');
             } else {
+                Swal.close();
                 Swal.fire('Error', 'Failed to check user status.', 'error');
             }
         })
@@ -53,15 +54,6 @@ function checkUserColumnJ(uid, empNo, factory, selectedFood) {
 }
 
 function saveSelection(empNo, factory, selectedFood, uid) {
-    Swal.fire({
-        title: 'Saving data',
-        text: 'รอสักครู่..',
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
-
     fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=saveRedeemData&empNo=${encodeURIComponent(empNo)}&factory=${encodeURIComponent(factory)}&code=${encodeURIComponent(selectedFood)}`)
         .then(response => {
             if (!response.ok) {
