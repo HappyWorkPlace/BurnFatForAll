@@ -4,8 +4,15 @@ function moveToNext(current, nextFieldId) {
     }
 }
 function convertToUpper(inputElement) {
-    inputElement.value = inputElement.value.toUpperCase();
-}
+            inputElement.value = inputElement.value.toUpperCase();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const empNoInput = document.getElementById('empNoInput');
+            empNoInput.addEventListener('input', function() {
+                convertToUpper(this);
+            });
+        });
 function getEmpDateInput() {
     const dateFields = [
         document.getElementById('date1').value,
