@@ -1,3 +1,14 @@
+/* Global Styles */
+body {
+    font-family: 'Kanit', sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+    font-size: 16px; /* Standard font size */
+}
+
+/* Header */
 .header {
     display: flex;
     align-items: center;
@@ -20,24 +31,17 @@
 
 .header-text-black {
     color: black;
-    font-size: 20px; /* Adjusted for smaller screens */
+    font-size: 1.25em; /* Adjusted to em for better scalability */
     font-weight: bold;
 }
 
 .header-text-blue {
     color: darkblue;
-    font-size: 18px;
+    font-size: 1.125em; /* Adjusted to em for better scalability */
     font-weight: bold;
 }
 
-body {
-    font-family: 'Kanit', sans-serif;
-    background-color: #f9f9f9;
-    margin: 0;
-    padding: 20px;
-    color: #333;
-}
-
+/* Content Area */
 #userContent {
     background-color: #ffffff;
     padding: 20px;
@@ -52,12 +56,14 @@ h2 {
     color: #007BFF;
     padding-bottom: 10px;
     margin-bottom: 20px;
-    text-align: center; 
+    text-align: center;
+    font-size: 1.5em; /* Standard font size */
 }
 
-p, input[type=text], button {
+p {
     margin: 5px 0;
     padding: 2px;
+    font-size: 1em; /* Standard font size */
 }
 
 input[type=text] {
@@ -66,6 +72,7 @@ input[type=text] {
     border-radius: 5px;
     box-sizing: border-box;
     transition: border-color 0.3s;
+    font-size: 1em; /* Standard font size */
 }
 
 input[type=text]:focus {
@@ -79,7 +86,7 @@ button {
     border: none;
     text-decoration: none;
     display: inline-block;
-    font-size: 16px;
+    font-size: 1em; /* Standard font size */
     margin: 4px 2px;
     cursor: pointer;
     border-radius: 5px;
@@ -112,6 +119,7 @@ button.gray:hover {
     border-radius: 5px;
     box-sizing: border-box;
     transition: border-color 0.3s;
+    font-size: 1em; /* Standard font size */
 }
 
 #foodDropdown:focus {
@@ -123,6 +131,7 @@ button.gray:hover {
     padding: 10px;
 }
 
+/* Icons */
 .icon-container {
     display: flex;
     justify-content: center;
@@ -155,6 +164,7 @@ button.gray:hover {
     height: 110px; /* Larger size for selected icons */
 }
 
+/* Date Input Fields */
 #emp-date {
     display: flex;
     justify-content: center; /* Center align the date input fields */
@@ -164,8 +174,8 @@ button.gray:hover {
 
 #emp-date input {
     text-align: center;
-    font-size: 1.2em;
-    width: 2em;
+    font-size: 1em; /* Standard font size */
+    width: 1.5em; /* Reduced width of input fields */
 }
 
 #emp-date span {
@@ -174,6 +184,7 @@ button.gray:hover {
     text-align: center;
 }
 
+/* Media Queries */
 @media (max-width: 600px) {
     .header {
         flex-direction: column;
