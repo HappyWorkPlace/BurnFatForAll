@@ -1,3 +1,25 @@
+function moveToNext(current, nextFieldId) {
+    if (current.value.length >= current.maxLength) {
+        document.getElementById(nextFieldId).focus();
+    }
+}
+
+function getEmpDateInput() {
+    const dateFields = [
+        document.getElementById('date1').value,
+        document.getElementById('date2').value,
+        document.getElementById('date3').value,
+        document.getElementById('date4').value,
+        document.getElementById('date5').value,
+        document.getElementById('date6').value,
+        document.getElementById('date7').value,
+        document.getElementById('date8').value,
+        document.getElementById('date9').value,
+        document.getElementById('date10').value
+    ];
+    const empDate = `${dateFields.slice(0, 2).join('')}/${dateFields.slice(2, 4).join('')}/${dateFields.slice(4).join('')}`;
+    return empDate;
+}
 
 function displayRegisterSection() {
     document.getElementById('registerSection').style.display = 'block';
@@ -5,7 +27,7 @@ function displayRegisterSection() {
 
 function checkUserInfo() {
     const empNo = document.getElementById('empNoInput').value;
-    const empDate = document.getElementById('empDateInput').value;
+    const empDate = getEmpDateInput();
 
     if (!empNo || !empDate) {
         Swal.fire('Error', 'Please provide both Employee Number and Employment Date.', 'error');
