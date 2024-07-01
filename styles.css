@@ -37,7 +37,7 @@ body {
 
 .header-text-blue {
     color: darkblue;
-    font-size: 1.125em; /* Adjusted to em for better scalability */
+    font-size: 1.25em; /* Adjusted to em for better scalability */
     font-weight: bold;
 }
 
@@ -61,7 +61,7 @@ h2 {
 }
 
 p {
-    margin: 5px 0;
+    margin: 10px 0; /* Increased margin for better spacing */
     padding: 2px;
     font-size: 1em; /* Standard font size */
 }
@@ -73,6 +73,7 @@ input[type=text] {
     box-sizing: border-box;
     transition: border-color 0.3s;
     font-size: 1em; /* Standard font size */
+    margin-bottom: 10px; /* Added margin-bottom for better spacing */
 }
 
 input[type=text]:focus {
@@ -87,7 +88,8 @@ button {
     text-decoration: none;
     display: inline-block;
     font-size: 1em; /* Standard font size */
-    margin: 4px 2px;
+    margin: 10px 0; /* Increased margin for better spacing */
+    padding: 10px 20px; /* Added padding for better button size */
     cursor: pointer;
     border-radius: 5px;
     transition: background-color 0.3s;
@@ -120,6 +122,7 @@ button.gray:hover {
     box-sizing: border-box;
     transition: border-color 0.3s;
     font-size: 1em; /* Standard font size */
+    margin-bottom: 10px; /* Added margin-bottom for better spacing */
 }
 
 #foodDropdown:focus {
@@ -168,8 +171,9 @@ button.gray:hover {
 #emp-date {
     display: flex;
     justify-content: center; /* Center align the date input fields */
-    gap: 5px;
+    gap: 2px; /* Reduced gap between input fields */
     flex-wrap: wrap; /* Allow input fields to wrap on smaller screens */
+    margin-bottom: 10px; /* Added margin-bottom for better spacing */
 }
 
 #emp-date input {
