@@ -185,9 +185,9 @@ button.gray:hover {
 }
 
 #emp-date input {
-    text-align: center;
+/*     text-align: center; */
     font-size: 1em; /* Standard font size */
-    width: 1.5em; /* Reduced width of input fields */
+/*     width: 1.5em; /* Reduced width of input fields */ */
 }
 
 #emp-date span {
