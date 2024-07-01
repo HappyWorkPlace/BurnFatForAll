@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App ver 01.07.2024 17:00</title>
+    <title>LIFF App ver 01.07.2024 23:10</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -63,7 +63,7 @@
         <div id="registerSection" style="display:none;">
             <h2>Register Page</h2>
             <label for="empNoInput">1.กรอกรหัสพนักงาน</label>
-            <input type="text" id="empNoInput" placeholder="Enter Employee Number">
+            <input type="text" id="empNoInput" placeholder="กรอกรหัสพนักงาน" oninput="convertToUpper(this)">
             <label for="emp-date">2.กรอกวันที่เข้างาน: วัน/เดือน/ปี ค.ศ.<br>ตัวอย่าง: 20/04/1950 (ปี ค.ศ.)</label>
             <div id="emp-date">
                 <input type="text" id="date1" name="date1" maxlength="1" size="1" min="0" max="9" oninput="moveToNext(this, 'date2')">
