@@ -63,10 +63,24 @@
         <div id="registerSection" style="display:none;">
             <h2>Register Page</h2>
             <input type="text" id="empNoInput" placeholder="Enter Employee Number">
-            <input type="text" id="empDateInput" placeholder="กรอก ปีเดือนวัน เข้างาน เช่น 20100109(ค.ศ.)">
+            <label for="emp-date">2.กรอกวันเข้างาน: DD/MM/YYYY<br>ตัวอย่าง: 20/04/1950 (ปี ค.ศ.)</label>
+            <div id="emp-date" style="display: flex; gap: 5px;">
+                <input type="text" id="date1" name="date1" maxlength="1" size="1" min="0" max="9" oninput="moveToNext(this, 'date2')">
+                <input type="text" id="date2" name="date2" maxlength="1" size="1" min="0" max="9" oninput="moveToNext(this, 'date3')">
+                <span>/</span>
+                <input type="text" id="date3" name="date3" maxlength="1" size="1" min="0" max="9" oninput="moveToNext(this, 'date4')">
+                <input type="text" id="date4" name="date4" maxlength="1" size="1" min="0" max="9" oninput="moveToNext(this, 'date5')">
+                <span>/</span>
+                <input type="text" id="date5" name="date5" maxlength="1" size="1" min="0" max="9" oninput="moveToNext(this, 'date6')">
+                <input type="text" id="date6" name="date6" maxlength="1" size="1" min="0" max="9" oninput="moveToNext(this, 'date7')">
+                <input type="text" id="date7" name="date7" maxlength="1" size="1" min="0" max="9" oninput="moveToNext(this, 'date8')">
+                <input type="text" id="date8" name="date8" maxlength="1" size="1" min="0" max="9" oninput="moveToNext(this, 'date9')">
+                <input type="text" id="date9" name="date9" maxlength="1" size="1" min="0" max="9" oninput="moveToNext(this, 'date10')">
+                <input type="text" id="date10" name="date10" maxlength="1" size="1" min="0" max="9">
+            </div>
             <button id="checkButton" onclick="checkUserInfo()">ตรวจสอบข้อมูล</button>
         </div>
-    </div>
+
 <div id="alertMessage"></div>
     <script src="LineLiff.js"></script>
     <script src="fetchfood.js"></script>
