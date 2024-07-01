@@ -158,14 +158,22 @@ button.gray:hover {
 /* Date Input Fields */
 #emp-date {
     display: flex;
-    justify-content: center;
+    justify-content: left;
     gap: 2px;
     flex-wrap: wrap;
     margin-bottom: 10px;
 }
 
 #emp-date input {
+    text-align: center;
     font-size: 1em;
+    width: 2.5em; /* Adjusted width for smaller input fields */
+}
+
+#emp-date span {
+    display: inline-block;
+    width: 1em;
+    text-align: center;
 }
 
 /* Media Queries */
