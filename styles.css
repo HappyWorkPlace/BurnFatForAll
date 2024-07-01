@@ -66,6 +66,13 @@ p {
     font-size: 1em; /* Standard font size */
 }
 
+label {
+    display: block;
+    margin: 15px 0 5px; /* Adjusted for better spacing */
+    font-size: 1em;
+    color: #333;
+}
+
 input[type=text] {
     width: calc(100% - 20px);
     border: 2px solid #ddd;
@@ -73,6 +80,7 @@ input[type=text] {
     box-sizing: border-box;
     transition: border-color 0.3s;
     font-size: 1em; /* Standard font size */
+    padding: 10px; /* Added padding for better input size */
     margin-bottom: 10px; /* Added margin-bottom for better spacing */
 }
 
