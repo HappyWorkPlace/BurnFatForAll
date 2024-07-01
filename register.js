@@ -13,9 +13,7 @@ function getEmpDateInput() {
         document.getElementById('date5').value,
         document.getElementById('date6').value,
         document.getElementById('date7').value,
-        document.getElementById('date8').value,
-        document.getElementById('date9').value,
-        document.getElementById('date10').value
+        document.getElementById('date8').value
     ];
     const empDate = `${dateFields.slice(0, 2).join('')}/${dateFields.slice(2, 4).join('')}/${dateFields.slice(4).join('')}`;
     return empDate;
