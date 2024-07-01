@@ -3,7 +3,9 @@ function moveToNext(current, nextFieldId) {
         document.getElementById(nextFieldId).focus();
     }
 }
-
+function convertToUpper(inputElement) {
+    inputElement.value = inputElement.value.toUpperCase();
+}
 function getEmpDateInput() {
     const dateFields = [
         document.getElementById('date1').value,
