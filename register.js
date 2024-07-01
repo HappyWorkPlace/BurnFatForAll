@@ -113,7 +113,9 @@ function registerUser(empNo, empDate, uid) {
     .then(data => {
         Swal.close();
         if (data.success) {
-            Swal.fire('Registered!', 'ลงทะเบียนสำเร็จแล้ว', 'success');
+            Swal.fire('Registered!', 'ลงทะเบียนสำเร็จแล้ว', 'success').then(() => {
+                    showBlankPage();
+                });
         } else {
             Swal.fire('Error', data.message, 'error');
         }
