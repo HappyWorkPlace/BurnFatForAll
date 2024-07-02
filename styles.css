@@ -192,9 +192,9 @@ button.gray:hover {
     transition: background-color 0.3s;
 }
 
-/* .food-button:hover {
-    background-color: #90ee90;
-} */
+.food-button:hover {
+    background-color: lightgray;
+}
 
 @media (max-width: 600px) {
     .header {
