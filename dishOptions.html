@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dish Options</title>
+    <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="userContent">
+        <h2>กรุณาระบุอาหารที่รับประทาน</h2>
+        <div class="icon-container">
+            <div class="icon">
+                <img id="boiledImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/ต้ม.JPG" alt="ต้ม" onclick="selectDishType('ต้ม', 'boiledImg')">
+                <button onclick="selectDishType('ต้ม', 'boiledImg')">ต้ม</button>
+            </div>
+            <div class="icon">
+                <img id="friedImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/ผัด.png" alt="ผัด" onclick="selectDishType('ผัด', 'friedImg')">
+                <button onclick="selectDishType('ผัด', 'friedImg')">ผัด</button>
+            </div>
+            <div class="icon">
+                <img id="curryImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/แกง.JPG" alt="แกง" onclick="selectDishType('แกง', 'curryImg')">
+                <button onclick="selectDishType('แกง', 'curryImg')">แกง</button>
+            </div>
+            <div class="icon">
+                <img id="grilledImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/ปิ้งย่าง.JPG" alt="นึ่ง/ปิ้ง/ย่าง" onclick="selectDishType('นึ่ง/ปิ้ง/ย่าง', 'grilledImg')">
+                <button onclick="selectDishType('นึ่ง/ปิ้ง/ย่าง', 'grilledImg')">นึ่ง/ปิ้ง/ย่าง</button>
+            </div>
+        </div>
+    </div>
+    <script src="scripts.js"></script>
+</body>
+</html>
