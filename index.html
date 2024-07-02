@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIFF App ver 2.07.2024 14:47</title>
+    <title>LIFF App ver 2.07.2024 15:00</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -62,42 +62,46 @@
         <div id="dishOptionsSection" style="display:none;">
             <h2>กรุณาระบุประเภทกับข้าวที่รับประทาน</h2>
             <div class="icon-container">
-                <div class="icon">
-                    <img id="boiledImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/ต้ม.JPG" alt="ต้ม" onclick="selectDishType('ต้ม', 'boiledImg')">
-                    <button onclick="selectDishType('ต้ม', 'boiledImg')">ต้ม</button>
+                <div>
+                    <div class="icon">
+                        <img id="boiledImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/ต้ม.JPG" alt="ต้ม" onclick="selectDishType('ต้ม', 'boiledImg')">
+                        <button class="food-button" onclick="selectDishType('ต้ม', 'boiledImg')">ต้ม</button>
+                    </div>
+                    <div class="icon">
+                        <img id="friedImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/ผัด.png" alt="ผัด" onclick="selectDishType('ผัด', 'friedImg')">
+                        <button class="food-button" onclick="selectDishType('ผัด', 'friedImg')">ผัด</button>
+                    </div>
                 </div>
-                <div class="icon">
-                    <img id="friedImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/ผัด.png" alt="ผัด" onclick="selectDishType('ผัด', 'friedImg')">
-                    <button onclick="selectDishType('ผัด', 'friedImg')">ผัด</button>
+                <div>
+                    <div class="icon">
+                        <img id="curryImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/แกง.JPG" alt="แกง" onclick="selectDishType('แกง', 'curryImg')">
+                        <button class="food-button" onclick="selectDishType('แกง', 'curryImg')">แกง</button>
+                    </div>
+                    <div class="icon">
+                        <img id="grilledImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/ปิ้งย่าง.JPG" alt="นึ่ง/ปิ้ง/ย่าง" onclick="selectDishType('นึ่ง/ปิ้ง/ย่าง', 'grilledImg')">
+                        <button class="food-button" onclick="selectDishType('นึ่ง/ปิ้ง/ย่าง', 'grilledImg')">นึ่ง/ปิ้ง/ย่าง</button>
+                    </div>
                 </div>
-                <div class="icon">
-                    <img id="curryImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/แกง.JPG" alt="แกง" onclick="selectDishType('แกง', 'curryImg')">
-                    <button onclick="selectDishType('แกง', 'curryImg')">แกง</button>
-                </div>
-                <div class="icon">
-                    <img id="grilledImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/ปิ้งย่าง.JPG" alt="นึ่ง/ปิ้ง/ย่าง" onclick="selectDishType('นึ่ง/ปิ้ง/ย่าง', 'grilledImg')">
-                    <button onclick="selectDishType('นึ่ง/ปิ้ง/ย่าง', 'grilledImg')">นึ่ง/ปิ้ง/ย่าง</button>
-                </div>
-            </div>
             </div>
                 <div id="dropdownContainer" style="display:none;">
-                <select id="foodDropdown"></select>
-            <div id="buttonContainer">
-                <button onclick="recordSelection()">บันทึก</button>
-                <button onclick="goBack()">ย้อนกลับ</button>
-            </div>
+                    <select id="foodDropdown"></select>
+                </div>
+                <div id="buttonContainer">
+                    <button onclick="recordSelection()">บันทึก</button>
+                    <button onclick="goBack()">ย้อนกลับ</button>
+                </div>
         </div>
-            <div id="dropdownContainer" style="display:none;">
-                <select id="foodDropdown"></select>
-            </div>
+
         <!-- Single Dish Options Section -->
         <div id="singleDishOptionsSection" style="display:none;">
             <h2>กรุณาระบุอาหารจานเดียวที่รับประทาน</h2>
             <div id="dropdownContainer">
                 <select id="foodDropdown"></select>
             </div>
-            <button onclick="recordSelection()">บันทึก</button>
-            <button onclick="backToMain()">ย้อนกลับ</button>
+            <div id="buttonContainer">
+                <button onclick="recordSelection()">บันทึก</button>
+                <button onclick="goBack()">ย้อนกลับ</button>
+            </div>
         </div>
     </div>
 
