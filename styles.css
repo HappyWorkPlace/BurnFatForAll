@@ -19,12 +19,13 @@ body {
     margin: 20px auto;
     box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.2);
     max-width: 600px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap; /* Change from wrap to nowrap to keep items in a single line */
 }
 
+
 .header-icon {
-    height: 110px;
-    width: 110px;
+    height: 120px;
+    width: 120px;
     margin-right: 10px;
 }
 
@@ -206,8 +207,8 @@ button.gray:hover {
     width: 110px;
 }
     .icon img {
-        width: 80px;
-        height: 80px;
+        width: 100px;
+        height: 100px;
     }
     .grayscale {
         width: 20px;
