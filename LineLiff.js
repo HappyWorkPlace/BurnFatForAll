@@ -51,7 +51,6 @@ function initializeLiff(myLiffId) {
                 console.log("Profile obtained: ", profile);
                 const uid = profile.userId;
                 displayUserInfo(profile.displayName);
-                preloadFoodLists();
                 getUserData(uid);
             }).catch(err => {
                 console.error('Failed to get user profile:', err);
