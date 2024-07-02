@@ -1,14 +1,13 @@
-/* Global Styles */
+/* General Styling */
 body {
     font-family: 'Kanit', sans-serif;
     background-color: #f9f9f9;
     margin: 0;
     padding: 20px;
     color: #333;
-    font-size: 16px; /* Standard font size */
 }
 
-/* Header */
+/* Header Styling */
 .header {
     display: flex;
     align-items: center;
@@ -20,28 +19,22 @@ body {
     margin: 20px auto;
     box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.2);
     max-width: 600px;
-    flex-wrap: wrap; /* Allow header items to wrap on smaller screens */
+    flex-wrap: wrap;
 }
 
 .header-icon {
-    height: 80px; /* Adjusted for smaller screens */
-    width: 80px; /* Adjusted for smaller screens */
+    height: 80px;
+    width: 80px;
     margin-right: 10px;
 }
 
 .header-text-black {
     color: black;
-    font-size: 1.25em; /* Adjusted to em for better scalability */
+    font-size: 20px;
     font-weight: bold;
 }
 
-.header-text-blue {
-    color: darkblue;
-    font-size: 1.25em; /* Adjusted to em for better scalability */
-    font-weight: bold;
-}
-
-/* Content Area */
+/* User Content Styling */
 #userContent {
     background-color: #ffffff;
     padding: 20px;
@@ -57,20 +50,11 @@ h2 {
     padding-bottom: 10px;
     margin-bottom: 20px;
     text-align: center;
-    font-size: 1.5em; /* Standard font size */
 }
 
-p {
-    margin: 10px 0; /* Increased margin for better spacing */
-    padding: 2px;
-    font-size: 1em; /* Standard font size */
-}
-
-label {
-    display: block;
-    margin: 15px 0 5px; /* Adjusted for better spacing */
-    font-size: 1em;
-    color: #333;
+p, input[type=text], button {
+    margin: 10px 0;
+    padding: 8px;
 }
 
 input[type=text] {
@@ -79,9 +63,6 @@ input[type=text] {
     border-radius: 5px;
     box-sizing: border-box;
     transition: border-color 0.3s;
-    font-size: 1em; /* Standard font size */
-    padding: 10px; /* Added padding for better input size */
-    margin-bottom: 10px; /* Added margin-bottom for better spacing */
 }
 
 input[type=text]:focus {
@@ -95,9 +76,8 @@ button {
     border: none;
     text-decoration: none;
     display: inline-block;
-    font-size: 1em; /* Standard font size */
-    margin: 10px 0; /* Increased margin for better spacing */
-    padding: 10px 20px; /* Added padding for better button size */
+    font-size: 16px;
+    margin: 4px 2px;
     cursor: pointer;
     border-radius: 5px;
     transition: background-color 0.3s;
@@ -116,12 +96,14 @@ button.gray:hover {
     background-color: gray;
 }
 
+/* Alert Message Styling */
 #alertMessage {
     color: #dc3545;
     padding: 10px;
     text-align: center;
 }
 
+/* Dropdown Styling */
 #foodDropdown {
     width: 100%;
     padding: 10px;
@@ -129,8 +111,6 @@ button.gray:hover {
     border-radius: 5px;
     box-sizing: border-box;
     transition: border-color 0.3s;
-    font-size: 1em; /* Standard font size */
-    margin-bottom: 10px; /* Added margin-bottom for better spacing */
 }
 
 #foodDropdown:focus {
@@ -142,7 +122,7 @@ button.gray:hover {
     padding: 10px;
 }
 
-/* Icons */
+/* Icon Container Styling */
 .icon-container {
     display: flex;
     justify-content: center;
@@ -157,37 +137,35 @@ button.gray:hover {
 }
 
 .icon img {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     display: block;
     margin: 0 auto 10px;
-    transition: filter 0.3s, width 0.3s, height 0.3s; /* Added width and height transition */
+    transition: filter 0.3s, width 0.3s, height 0.3s;
 }
 
 .grayscale {
     filter: grayscale(100%);
-    width: 30px; /* Smaller size for grayscale icons */
-    height: 30px; /* Smaller size for grayscale icons */
+    width: 30px;
+    height: 30px;
 }
 
 .icon img.selected {
-    width: 110px; /* Larger size for selected icons */
-    height: 110px; /* Larger size for selected icons */
+    width: 110px;
+    height: 110px;
 }
 
-/* Date Input Fields */
+/* Date Input Styling */
 #emp-date {
     display: flex;
-    justify-content: left; /* Center align the date input fields */
-    gap: 2px; /* Reduced gap between input fields */
-    flex-wrap: wrap; /* Allow input fields to wrap on smaller screens */
-    margin-bottom: 10px; /* Added margin-bottom for better spacing */
+    justify-content: center;
+    gap: 5px;
+    flex-wrap: wrap;
 }
 
 #emp-date input {
     text-align: center;
-    font-size: 1em; /* Standard font size */
-    width: 1.5em; /* Reduced width of input fields */
+    width: 2em;
 }
 
 #emp-date span {
@@ -196,7 +174,27 @@ button.gray:hover {
     text-align: center;
 }
 
-/* Media Queries */
+/* Button Container Styling */
+#buttonContainer {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.food-button {
+    background-color: lightgreen;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.food-button:hover {
+    background-color: #90ee90;
+}
+
 @media (max-width: 600px) {
     .header {
         flex-direction: column;
@@ -206,15 +204,15 @@ button.gray:hover {
         margin-bottom: 10px;
     }
     .icon img {
-        width: 60px;
-        height: 60px;
+        width: 80px;
+        height: 80px;
     }
     .grayscale {
         width: 20px;
         height: 20px;
     }
     .icon img.selected {
-        width: 80px;
-        height: 80px;
+        width: 100px;
+        height: 100px;
     }
 }
