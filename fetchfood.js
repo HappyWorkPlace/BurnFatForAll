@@ -31,19 +31,26 @@ function backToMain() {
 }
 
 function preloadFoodLists() {
-    fetchFoodList('SideDish', 'A', (data) => { foodLists.sideDish.boiled = data; });
-    fetchFoodList('SideDish', 'B', (data) => { foodLists.sideDish.fried = data; });
-    fetchFoodList('SideDish', 'C', (data) => { foodLists.sideDish.curry = data; });
-    fetchFoodList('SideDish', 'D', (data) => { foodLists.sideDish.grilled = data; });
-    fetchFoodList('OverRice', 'A', (data) => { 
+    let promises = [];
+    promises.push(fetchFoodList('SideDish', 'A', (data) => { foodLists.sideDish.boiled = data; }));
+    promises.push(fetchFoodList('SideDish', 'B', (data) => { foodLists.sideDish.fried = data; }));
+    promises.push(fetchFoodList('SideDish', 'C', (data) => { foodLists.sideDish.curry = data; }));
+    promises.push(fetchFoodList('SideDish', 'D', (data) => { foodLists.sideDish.grilled = data; }));
+    promises.push(fetchFoodList('OverRice', 'A', (data) => { 
         foodLists.withRice = data;
-        foodLists.singleDish = data; // Preloading the same list for singleDish
-        console.log('Single Dish List:', foodLists.singleDish); // Add a log to debug the list
+        foodLists.singleDish = data;
+    }));
+
+    Promise.all(promises).then(() => {
+        console.log('Single Dish List:', foodLists.singleDish);
+        populateFoodDropdown(foodLists.singleDish);
+    }).catch(error => {
+        console.error('Error loading food lists:', error);
     });
 }
 
 function fetchFoodList(sheetName, column, callback) {
-    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getFoodList&sheetName=${sheetName}&column=${column}`)
+    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getFoodList&sheetName=${sheetName}&column=${column}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`Network response was not ok: ${response.statusText}`);
@@ -62,6 +69,7 @@ function fetchFoodList(sheetName, column, callback) {
             Swal.fire('Error', `Failed to fetch food list: ${error.message}`, 'error');
         });
 }
+
 
 function selectDishType(type, imgId) {
     clearDishIcons();
