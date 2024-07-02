@@ -25,9 +25,11 @@ function getUserData(uid) {
             Swal.fire('Error', 'Failed to fetch user data.', 'error');
         });
 }
+
 function displayUserInfo(userName) {
     document.getElementById('userInfo').innerHTML = `<p>สวัสดีค่ะคุณ ${userName}</p>`;
 }
+
 window.onload = function() {
     console.log("Window loaded, initializing LIFF");
     initializeLiff('2004752543-O6bmBeMw');
