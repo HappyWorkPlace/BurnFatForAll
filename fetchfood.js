@@ -43,6 +43,17 @@ function fetchFoodList(sheetName, column, callback) {
         });
 }
 
+function clearDishIcons() {
+    document.getElementById('boiledImg').classList.add('grayscale');
+    document.getElementById('boiledImg').classList.remove('selected');
+    document.getElementById('friedImg').classList.add('grayscale');
+    document.getElementById('friedImg').classList.remove('selected');
+    document.getElementById('curryImg').classList.add('grayscale');
+    document.getElementById('curryImg').classList.remove('selected');
+    document.getElementById('grilledImg').classList.add('grayscale');
+    document.getElementById('grilledImg').classList.remove('selected');
+}
+
 function selectDishType(type, imgId) {
     clearDishIcons();
     document.getElementById(imgId).classList.remove('grayscale');
