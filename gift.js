@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initializeLiff() {
     liff.init({
-        liffId: "2004752543-O6bmBeMw'" // Replace with your LIFF ID
+        liffId: "2004752543-O6bmBeMw" // Replace with your LIFF ID
     }).then(() => {
         if (liff.isLoggedIn()) {
             liff.getProfile().then(profile => {
