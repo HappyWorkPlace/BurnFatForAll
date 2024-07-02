@@ -21,7 +21,7 @@ function showDishOptions() {
 function showSingleDishOptions() {
     document.getElementById('inputSection').style.display = 'none';
     document.getElementById('singleDishOptionsSection').style.display = 'block';
-    populateFoodDropdown(foodLists.singleDish, 'foodDropdown'); // Ensure the ID matches the one in HTML
+    populateFoodDropdown(foodLists.singleDish);
 }
 
 function backToMain() {
