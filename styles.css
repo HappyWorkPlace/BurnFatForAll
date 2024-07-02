@@ -145,7 +145,7 @@ button.gray:hover {
 }
 
 .grayscale {
-    filter: grayscale(100%);
+    filter: grayscale(30%);
     width: 30px;
     height: 30px;
 }
@@ -178,7 +178,7 @@ button.gray:hover {
 #buttonContainer {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 50px;
     margin-top: 20px;
 }
 
