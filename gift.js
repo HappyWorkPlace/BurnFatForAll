@@ -1,10 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
-    initializeLiff('2004752543-O6bmBeMw');
+    initializeLiff();
 });
 
 function initializeLiff() {
     liff.init({
-        liffId: "YOUR_LIFF_ID" // Replace with your LIFF ID
+        liffId: "2004752543-O6bmBeMw'" // Replace with your LIFF ID
     }).then(() => {
         if (liff.isLoggedIn()) {
             liff.getProfile().then(profile => {
