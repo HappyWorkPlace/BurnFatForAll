@@ -201,19 +201,20 @@ button.gray:hover {
         flex-direction: column;
         align-items: center;
     }
-    .header-icon {
-        margin-bottom: 10px;
-    }
+.header-icon {
+    height: 110px;
+    width: 110px;
+}
     .icon img {
-        width: 100px;
-        height: 100px;
+        width: 80px;
+        height: 80px;
     }
     .grayscale {
         width: 20px;
         height: 20px;
     }
     .icon img.selected {
-        width: 100px;
-        height: 100px;
+        width: 110px;
+        height: 110px;
     }
 }
