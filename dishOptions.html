@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dish Options</title>
+    <title>Single Dish Options</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 </head>
 <body>
     <div id="userContent">
@@ -31,7 +33,7 @@
         <div id="dropdownContainer" style="display:none;">
             <select id="foodDropdown"></select>
         </div>
-        <button onclick="recordSelection()">บันทึก</button>
+        <button id="checkButton" onclick="recordSelection()">บันทึก</button>
     </div>
     <script src="LineLiff.js"></script>
     <script src="fetchfood.js"></script>
