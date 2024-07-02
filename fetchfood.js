@@ -1,93 +1,77 @@
-document.addEventListener('DOMContentLoaded', preloadFoodLists);
-
-let foodLists = {
-    withRice: [],
-    singleDish: [],
-    sideDish: {
-        boiled: [],
-        fried: [],
-        curry: [],
-        grilled: []
-    }
-};
-
-function preloadFoodLists() {
-    fetchFoodList('SideDish', 'A', (data) => { foodLists.sideDish.boiled = data; });
-    fetchFoodList('SideDish', 'B', (data) => { foodLists.sideDish.fried = data; });
-    fetchFoodList('SideDish', 'C', (data) => { foodLists.sideDish.curry = data; });
-    fetchFoodList('SideDish', 'D', (data) => { foodLists.sideDish.grilled = data; });
-    fetchFoodList('OverRice', 'A', (data) => { 
-        foodLists.withRice = data;
-        foodLists.singleDish = data; // Preloading the same list for singleDish
-    });
+function navigateTo(page) {
+    window.location.href = page;
 }
 
-function fetchFoodList(sheetName, column, callback) {
-    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getFoodList&sheetName=${sheetName}&column=${column}`)
+function getUserData(uid) {
+    console.log("Fetching user data for UID:", uid);
+    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserData&uid=${uid}`)
         .then(response => {
+            console.log("User data response received");
             if (!response.ok) {
-                throw new Error(`Network response was not ok: ${response.statusText}`);
+                throw new Error('Network response was not ok.');
             }
             return response.json();
         })
         .then(data => {
-            if (data.success) {
-                callback(data.data);
+            console.log("User data:", data);
+            if (data.error) {
+                displayRegisterSection();
             } else {
-                Swal.fire('Error', data.message || 'Failed to fetch food list.', 'error');
+                displayInputSection(data.data);
             }
         })
         .catch(error => {
-            console.error('Error fetching food list:', error);
-            Swal.fire('Error', `Failed to fetch food list: ${error.message}`, 'error');
+            console.error('Error fetching user data:', error);
+            Swal.fire('Error', 'Failed to fetch user data.', 'error');
         });
 }
 
-function clearDishIcons() {
-    document.getElementById('boiledImg').classList.add('grayscale');
-    document.getElementById('boiledImg').classList.remove('selected');
-    document.getElementById('friedImg').classList.add('grayscale');
-    document.getElementById('friedImg').classList.remove('selected');
-    document.getElementById('curryImg').classList.add('grayscale');
-    document.getElementById('curryImg').classList.remove('selected');
-    document.getElementById('grilledImg').classList.add('grayscale');
-    document.getElementById('grilledImg').classList.remove('selected');
+function displayUserInfo(userName) {
+    document.getElementById('userInfo').innerHTML = `<p>สวัสดีค่ะคุณ ${userName}</p>`;
 }
 
-function selectDishType(type, imgId) {
-    clearDishIcons();
-    document.getElementById(imgId).classList.remove('grayscale');
-    document.getElementById(imgId).classList.add('selected');
-    showDropdown(type);
-}
-
-function showDropdown(type) {
-    let list;
-    switch(type) {
-        case 'ต้ม':
-            list = foodLists.sideDish.boiled;
-            break;
-        case 'ผัด':
-            list = foodLists.sideDish.fried;
-            break;
-        case 'แกง':
-            list = foodLists.sideDish.curry;
-            break;
-        case 'นึ่ง/ปิ้ง/ย่าง':
-            list = foodLists.sideDish.grilled;
-            break;
+window.onload = function() {
+    console.log("Window loaded, initializing LIFF");
+    if (typeof liff !== 'undefined') {
+        initializeLiff('2004752543-O6bmBeMw');
+    } else {
+        console.error("LIFF SDK is not defined");
+        Swal.fire('Error', 'LIFF SDK is not loaded. Please check your script inclusion.', 'error');
     }
-    populateFoodDropdown(list);
-    document.getElementById('dropdownContainer').style.display = 'block';
-}
+};
 
-function populateFoodDropdown(list) {
-    const dropdown = document.getElementById('foodDropdown');
-    dropdown.innerHTML = '';
-    list.forEach(item => {
-        const option = document.createElement('option');
-        option.value = item;
-        option.textContent = item;
-        dropdown.appendChild(option);
+function initializeLiff(myLiffId) {
+    liff.init({
+        liffId: myLiffId
+    }).then(() => {
+        console.log("LIFF initialized");
+        if (liff.isLoggedIn()) {
+            console.log("User is logged in, getting profile");
+            liff.getProfile().then(profile => {
+                console.log("Profile obtained: ", profile);
+                const uid = profile.userId;
+                displayUserInfo(profile.displayName);
+                preloadFoodLists();
+                getUserData(uid);
+            }).catch(err => {
+                console.error('Failed to get user profile:', err);
+                Swal.fire('Error', 'Failed to get user profile.', 'error');
+            });
+        } else {
+            console.log("User is not logged in, logging in");
+            liff.login();
+        }
+    }).catch(err => {
+        console.error('LIFF Initialization failed:', err);
+        Swal.fire('Error', 'Initialization failed.', 'error');
     });
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    const checkButton = document.getElementById('checkButton');
+    if (checkButton) {
+        checkButton.onclick = checkUserInfo;
+    } else {
+        console.error('checkButton not found');
+    }
+});
