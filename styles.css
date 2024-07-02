@@ -183,7 +183,7 @@ button.gray:hover {
 }
 
 .food-button {
-    background-color: white;
+    background-color: gray;
     border: none;
     padding: 10px;
     border-radius: 5px;
