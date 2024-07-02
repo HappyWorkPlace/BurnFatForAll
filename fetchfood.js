@@ -12,6 +12,22 @@ let foodLists = {
         grilled: []
     }
 };
+function showDishOptions() {
+    document.getElementById('inputSection').style.display = 'none';
+    document.getElementById('dishOptionsSection').style.display = 'block';
+}
+
+function showSingleDishOptions() {
+    document.getElementById('inputSection').style.display = 'none';
+    document.getElementById('singleDishOptionsSection').style.display = 'block';
+    populateFoodDropdown(foodLists.singleDish);
+}
+
+function backToMain() {
+    document.getElementById('dishOptionsSection').style.display = 'none';
+    document.getElementById('singleDishOptionsSection').style.display = 'none';
+    document.getElementById('inputSection').style.display = 'block';
+}
 
 function preloadFoodLists() {
     fetchFoodList('SideDish', 'A', (data) => { foodLists.sideDish.boiled = data; });
