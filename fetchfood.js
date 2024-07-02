@@ -1,3 +1,5 @@
+document.addEventListener('DOMContentLoaded', preloadFoodLists);
+
 let foodLists = {
     withRice: [],
     singleDish: [],
@@ -9,24 +11,14 @@ let foodLists = {
     }
 };
 
-function preloadFoodLists(callback) {
-    let completedRequests = 0;
-
-    function requestCompleted() {
-        completedRequests++;
-        if (completedRequests === 5) {
-            callback();
-        }
-    }
-
-    fetchFoodList('SideDish', 'A', (data) => { foodLists.sideDish.boiled = data; requestCompleted(); });
-    fetchFoodList('SideDish', 'B', (data) => { foodLists.sideDish.fried = data; requestCompleted(); });
-    fetchFoodList('SideDish', 'C', (data) => { foodLists.sideDish.curry = data; requestCompleted(); });
-    fetchFoodList('SideDish', 'D', (data) => { foodLists.sideDish.grilled = data; requestCompleted(); });
+function preloadFoodLists() {
+    fetchFoodList('SideDish', 'A', (data) => { foodLists.sideDish.boiled = data; });
+    fetchFoodList('SideDish', 'B', (data) => { foodLists.sideDish.fried = data; });
+    fetchFoodList('SideDish', 'C', (data) => { foodLists.sideDish.curry = data; });
+    fetchFoodList('SideDish', 'D', (data) => { foodLists.sideDish.grilled = data; });
     fetchFoodList('OverRice', 'A', (data) => { 
         foodLists.withRice = data;
-        foodLists.singleDish = data;
-        requestCompleted();
+        foodLists.singleDish = data; // Preloading the same list for singleDish
     });
 }
 
@@ -49,37 +41,6 @@ function fetchFoodList(sheetName, column, callback) {
             console.error('Error fetching food list:', error);
             Swal.fire('Error', `Failed to fetch food list: ${error.message}`, 'error');
         });
-}
-
-function selectWithRice() {
-    document.getElementById('withRiceImg').classList.remove('grayscale');
-    document.getElementById('withRiceImg').classList.add('selected');
-    document.getElementById('singleDishImg').classList.add('grayscale');
-    document.getElementById('singleDishImg').classList.remove('selected');
-    document.getElementById('dishOptions').style.display = 'flex';
-    document.getElementById('dropdownContainer').style.display = 'none';
-    clearDishIcons();
-}
-
-function selectSingleDish() {
-    document.getElementById('withRiceImg').classList.add('grayscale');
-    document.getElementById('withRiceImg').classList.remove('selected');
-    document.getElementById('singleDishImg').classList.remove('grayscale');
-    document.getElementById('singleDishImg').classList.add('selected');
-    document.getElementById('dishOptions').style.display = 'none';
-    document.getElementById('dropdownContainer').style.display = 'block';
-    populateFoodDropdown(foodLists.singleDish);
-}
-
-function clearDishIcons() {
-    document.getElementById('boiledImg').classList.add('grayscale');
-    document.getElementById('boiledImg').classList.remove('selected');
-    document.getElementById('friedImg').classList.add('grayscale');
-    document.getElementById('friedImg').classList.remove('selected');
-    document.getElementById('curryImg').classList.add('grayscale');
-    document.getElementById('curryImg').classList.remove('selected');
-    document.getElementById('grilledImg').classList.add('grayscale');
-    document.getElementById('grilledImg').classList.remove('selected');
 }
 
 function selectDishType(type, imgId) {
@@ -119,10 +80,3 @@ function populateFoodDropdown(list) {
         dropdown.appendChild(option);
     });
 }
-
-// Preload food lists on page load
-document.addEventListener('DOMContentLoaded', function () {
-    preloadFoodLists(() => {
-        console.log('Food lists preloaded');
-    });
-});
