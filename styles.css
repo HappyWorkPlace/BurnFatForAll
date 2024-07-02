@@ -184,7 +184,7 @@ button.gray:hover {
 }
 
 .food-button {
-    background-color: gray;
+    background-color: lightgray;
     border: none;
     padding: 10px;
     border-radius: 5px;
@@ -192,9 +192,9 @@ button.gray:hover {
     transition: background-color 0.3s;
 }
 
-.food-button:hover {
+/* .food-button:hover {
     background-color: #90ee90;
-}
+} */
 
 @media (max-width: 600px) {
     .header {
@@ -205,8 +205,8 @@ button.gray:hover {
         margin-bottom: 10px;
     }
     .icon img {
-        width: 80px;
-        height: 80px;
+        width: 100px;
+        height: 100px;
     }
     .grayscale {
         width: 20px;
