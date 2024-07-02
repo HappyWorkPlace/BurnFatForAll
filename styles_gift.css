@@ -1,0 +1,57 @@
+body {
+    font-family: 'Kanit', sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+
+.container {
+    max-width: 400px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.points-display {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.2);
+}
+
+.points-display h2 {
+    margin: 0;
+    color: #007BFF;
+}
+
+.points-display p {
+    font-size: 2em;
+    margin: 10px 0 0 0;
+}
+
+.gift-buttons {
+    display: grid;
+    gap: 10px;
+}
+
+.gift-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 15px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.gift-button:hover {
+    background-color: #45a049;
+}
+
+.gift-button.disabled {
+    background-color: #888888;
+    cursor: not-allowed;
+}
