@@ -12,6 +12,7 @@ let foodLists = {
         grilled: []
     }
 };
+
 function showDishOptions() {
     document.getElementById('inputSection').style.display = 'none';
     document.getElementById('dishOptionsSection').style.display = 'block';
@@ -37,6 +38,7 @@ function preloadFoodLists() {
     fetchFoodList('OverRice', 'A', (data) => { 
         foodLists.withRice = data;
         foodLists.singleDish = data; // Preloading the same list for singleDish
+        console.log('Single Dish List:', foodLists.singleDish); // Add a log to debug the list
     });
 }
 
