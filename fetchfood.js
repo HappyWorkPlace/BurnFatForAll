@@ -21,6 +21,7 @@ function showDishOptions() {
 function showSingleDishOptions() {
     document.getElementById('inputSection').style.display = 'none';
     document.getElementById('singleDishOptionsSection').style.display = 'block';
+    populateFoodDropdown(foodLists.singleDish, 'foodDropdownSingleDish');
 }
 
 function backToMain() {
@@ -35,11 +36,14 @@ function preloadFoodLists() {
     promises.push(fetchFoodList('SideDish', 'B', (data) => { foodLists.sideDish.fried = data; }));
     promises.push(fetchFoodList('SideDish', 'C', (data) => { foodLists.sideDish.curry = data; }));
     promises.push(fetchFoodList('SideDish', 'D', (data) => { foodLists.sideDish.grilled = data; }));
-    promises.push(fetchFoodList('OverRice', 'A', (data) => { foodLists.singleDish = data;}));
+    promises.push(fetchFoodList('OverRice', 'A', (data) => { 
+        foodLists.withRice = data;
+        foodLists.singleDish = data; // Preloading the same list for singleDish
+    }));
 
     Promise.all(promises).then(() => {
         console.log('Single Dish List:', foodLists.singleDish);
-        // populateFoodDropdown(foodLists.singleDish);
+        // populateFoodDropdown(foodLists.singleDish); // This line is commented out intentionally
     }).catch(error => {
         console.error('Error loading food lists:', error);
     });
@@ -65,7 +69,6 @@ function fetchFoodList(sheetName, column, callback) {
             Swal.fire('Error', `Failed to fetch food list: ${error.message}`, 'error');
         });
 }
-
 
 function selectDishType(type, imgId) {
     clearDishIcons();
@@ -94,8 +97,8 @@ function showDropdown(type) {
     document.getElementById('dropdownContainer').style.display = 'block';
 }
 
-function populateFoodDropdown(list) {
-    const dropdown = document.getElementById('foodDropdown');
+function populateFoodDropdown(list, dropdownId) {
+    const dropdown = document.getElementById(dropdownId);
     if (!dropdown) {
         console.error('Dropdown element not found');
         return;
@@ -108,7 +111,6 @@ function populateFoodDropdown(list) {
         dropdown.appendChild(option);
     });
 }
-
 
 function clearDishIcons() {
     document.getElementById('boiledImg').classList.add('grayscale');
