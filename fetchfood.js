@@ -21,7 +21,7 @@ function showDishOptions() {
 function showSingleDishOptions() {
     document.getElementById('inputSection').style.display = 'none';
     document.getElementById('singleDishOptionsSection').style.display = 'block';
-    populateFoodDropdown(foodLists.singleDish);
+    populateFoodDropdown(foodLists.singleDish, 'foodDropdownSingleDish');
 }
 
 function backToMain() {
@@ -86,12 +86,12 @@ function showDropdown(type) {
             list = foodLists.sideDish.grilled;
             break;
     }
-    populateFoodDropdown(list);
+    populateFoodDropdown(list, 'foodDropdown');
     document.getElementById('dropdownContainer').style.display = 'block';
 }
 
-function populateFoodDropdown(list) {
-    const dropdown = document.getElementById('foodDropdown');
+function populateFoodDropdown(list, dropdownId) {
+    const dropdown = document.getElementById(dropdownId);
     dropdown.innerHTML = '';
     list.forEach(item => {
         const option = document.createElement('option');
