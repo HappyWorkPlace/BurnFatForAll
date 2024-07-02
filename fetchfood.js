@@ -8,14 +8,25 @@ let foodLists = {
         grilled: []
     }
 };
-function preloadFoodLists() {
-    fetchFoodList('SideDish', 'A', (data) => { foodLists.sideDish.boiled = data; });
-    fetchFoodList('SideDish', 'B', (data) => { foodLists.sideDish.fried = data; });
-    fetchFoodList('SideDish', 'C', (data) => { foodLists.sideDish.curry = data; });
-    fetchFoodList('SideDish', 'D', (data) => { foodLists.sideDish.grilled = data; });
+
+function preloadFoodLists(callback) {
+    let completedRequests = 0;
+
+    function requestCompleted() {
+        completedRequests++;
+        if (completedRequests === 5) {
+            callback();
+        }
+    }
+
+    fetchFoodList('SideDish', 'A', (data) => { foodLists.sideDish.boiled = data; requestCompleted(); });
+    fetchFoodList('SideDish', 'B', (data) => { foodLists.sideDish.fried = data; requestCompleted(); });
+    fetchFoodList('SideDish', 'C', (data) => { foodLists.sideDish.curry = data; requestCompleted(); });
+    fetchFoodList('SideDish', 'D', (data) => { foodLists.sideDish.grilled = data; requestCompleted(); });
     fetchFoodList('OverRice', 'A', (data) => { 
         foodLists.withRice = data;
-        foodLists.singleDish = data; // Preloading the same list for singleDish
+        foodLists.singleDish = data;
+        requestCompleted();
     });
 }
 
@@ -39,6 +50,7 @@ function fetchFoodList(sheetName, column, callback) {
             Swal.fire('Error', `Failed to fetch food list: ${error.message}`, 'error');
         });
 }
+
 function selectWithRice() {
     document.getElementById('withRiceImg').classList.remove('grayscale');
     document.getElementById('withRiceImg').classList.add('selected');
@@ -107,3 +119,10 @@ function populateFoodDropdown(list) {
         dropdown.appendChild(option);
     });
 }
+
+// Preload food lists on page load
+document.addEventListener('DOMContentLoaded', function () {
+    preloadFoodLists(() => {
+        console.log('Food lists preloaded');
+    });
+});
