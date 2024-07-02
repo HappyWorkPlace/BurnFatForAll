@@ -32,7 +32,12 @@ function displayUserInfo(userName) {
 
 window.onload = function() {
     console.log("Window loaded, initializing LIFF");
-    initializeLiff('2004752543-O6bmBeMw');
+    if (typeof liff !== 'undefined') {
+        initializeLiff('2004752543-O6bmBeMw');
+    } else {
+        console.error("LIFF SDK is not defined");
+        Swal.fire('Error', 'LIFF SDK is not loaded. Please check your script inclusion.', 'error');
+    }
 };
 
 function initializeLiff(myLiffId) {
