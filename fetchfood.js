@@ -21,7 +21,6 @@ function showDishOptions() {
 function showSingleDishOptions() {
     document.getElementById('inputSection').style.display = 'none';
     document.getElementById('singleDishOptionsSection').style.display = 'block';
-    populateFoodDropdown(foodLists.singleDish);
 }
 
 function backToMain() {
@@ -36,14 +35,11 @@ function preloadFoodLists() {
     promises.push(fetchFoodList('SideDish', 'B', (data) => { foodLists.sideDish.fried = data; }));
     promises.push(fetchFoodList('SideDish', 'C', (data) => { foodLists.sideDish.curry = data; }));
     promises.push(fetchFoodList('SideDish', 'D', (data) => { foodLists.sideDish.grilled = data; }));
-    promises.push(fetchFoodList('OverRice', 'A', (data) => { 
-        foodLists.withRice = data;
-        foodLists.singleDish = data;
-    }));
+    promises.push(fetchFoodList('OverRice', 'A', (data) => { foodLists.singleDish = data;}));
 
     Promise.all(promises).then(() => {
         console.log('Single Dish List:', foodLists.singleDish);
-        populateFoodDropdown(foodLists.singleDish);
+        // populateFoodDropdown(foodLists.singleDish);
     }).catch(error => {
         console.error('Error loading food lists:', error);
     });
