@@ -145,7 +145,7 @@ button.gray:hover {
 }
 
 .grayscale {
-    filter: grayscale(30%);
+    filter: grayscale(80%);
     width: 30px;
     height: 30px;
 }
@@ -183,7 +183,7 @@ button.gray:hover {
 }
 
 .food-button {
-    background-color: lightgreen;
+    background-color: white;
     border: none;
     padding: 10px;
     border-radius: 5px;
