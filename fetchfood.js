@@ -90,8 +90,12 @@ function showDropdown(type) {
     document.getElementById('dropdownContainer').style.display = 'block';
 }
 
-function populateFoodDropdown(list, dropdownId) {
-    const dropdown = document.getElementById(dropdownId);
+function populateFoodDropdown(list) {
+    const dropdown = document.getElementById('foodDropdown');
+    if (!dropdown) {
+        console.error('Dropdown element not found');
+        return;
+    }
     dropdown.innerHTML = '';
     list.forEach(item => {
         const option = document.createElement('option');
@@ -100,6 +104,7 @@ function populateFoodDropdown(list, dropdownId) {
         dropdown.appendChild(option);
     });
 }
+
 
 function clearDishIcons() {
     document.getElementById('boiledImg').classList.add('grayscale');
