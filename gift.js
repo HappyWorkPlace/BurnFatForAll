@@ -1,39 +1,26 @@
 document.addEventListener('DOMContentLoaded', function() {
-    initializeLiff();
+    initializeLiff('2004752543-O6bmBeMw'); 
 });
 
-function initializeLiff() {
-    liff.init({
-        liffId: "2004752543-O6bmBeMw" // Replace with your actual LIFF ID
-    }).then(() => {
-        if (liff.isLoggedIn()) {
-            liff.getProfile().then(profile => {
-                const uid = profile.userId;
-                fetchUserPoints(uid);
-                fetchGiftList(uid);
-            }).catch(err => {
-                console.error('Failed to get profile', err);
-            });
-        } else {
-            liff.login();
-        }
-    }).catch(err => {
-        console.error('LIFF initialization failed', err);
-    });
-}
-
-function fetchUserPoints(uid) {
-    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserData&uid=${uid}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                document.getElementById('points-value').textContent = data.data[7]; // Adjust this to match your data structure
+function initializeLiff(myLiffId) {
+    liff.init({ liffId: myLiffId })
+        .then(() => {
+            if (liff.isLoggedIn()) {
+                liff.getProfile().then(profile => {
+                    const uid = profile.userId;
+                    fetchGiftList(uid);
+                    fetchUserPoints(uid);
+                }).catch(err => {
+                    console.error('Error fetching profile:', err);
+                    displayError('ไม่สามารถดึงข้อมูลผู้ใช้ได้');
+                });
             } else {
-                console.error('Error fetching user points:', data.message);
+                liff.login();
             }
         })
         .catch(err => {
-            console.error('Error fetching user points:', err);
+            console.error('LIFF initialization failed:', err);
+            displayError('ไม่สามารถเริ่มการทำงานของ LIFF ได้');
         });
 }
 
@@ -44,53 +31,75 @@ function fetchGiftList(uid) {
             if (data.success) {
                 updateGiftButtons(data.data);
             } else {
-                console.error('Error fetching gift list:', data.message);
+                displayError('ไม่สามารถดึงข้อมูลของขวัญได้');
             }
         })
         .catch(err => {
             console.error('Error fetching gift list:', err);
+            displayError('ไม่สามารถดึงข้อมูลของขวัญได้');
         });
 }
 
-function updateGiftButtons(giftData) {
-    giftData.forEach(gift => {
-        const button = document.getElementById(`gift-${gift.level}`);
+function fetchUserPoints(uid) {
+    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserPoints&uid=${uid}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('points-value').innerText = data.points;
+            } else {
+                displayError('ไม่สามารถดึงคะแนนของผู้ใช้ได้');
+            }
+        })
+        .catch(err => {
+            console.error('Error fetching user points:', err);
+            displayError('ไม่สามารถดึงคะแนนของผู้ใช้ได้');
+        });
+}
+
+function updateGiftButtons(giftStatus) {
+    giftStatus.forEach(gift => {
+        const button = document.getElementById(`btn-level-${gift.level}`);
         if (button) {
-            button.classList.remove('disabled');
-            button.addEventListener('click', () => redeemGift(gift.level));
-        } else {
-            console.error(`Button for gift level ${gift.level} not found`);
+            if (gift.enabled) {
+                button.classList.remove('disabled');
+                button.disabled = false;
+                button.addEventListener('click', () => redeemGift(gift.level));
+            } else {
+                button.classList.add('disabled');
+                button.disabled = true;
+            }
         }
     });
 }
 
 function redeemGift(level) {
     Swal.fire({
-        title: 'Confirm Redemption',
-        text: `Are you sure you want to redeem the gift for level ${level}?`,
-        icon: 'warning',
+        title: 'คุณต้องการแลกของรางวัลหรือไม่?',
         showCancelButton: true,
-        confirmButtonText: 'Yes, redeem it!',
-        cancelButtonText: 'No, cancel'
-    }).then((result) => {
+        confirmButtonText: 'ใช่',
+        cancelButtonText: 'ยกเลิก'
+    }).then(result => {
         if (result.isConfirmed) {
-            // Proceed with redemption
-            // Adjust the API call as necessary
-            fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=redeemGift&level=${level}&uid=${uid}`)
+            const uid = liff.getProfile().userId;
+            fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=redeemGift&uid=${uid}&level=${level}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        Swal.fire('Redeemed!', 'Your gift has been redeemed.', 'success');
-                        document.getElementById(`gift-${level}`).classList.add('disabled');
-                        document.getElementById(`gift-${level}`).disabled = true;
+                        Swal.fire('สำเร็จ', 'คุณแลกของรางวัลสำเร็จ', 'success');
+                        document.getElementById(`btn-level-${level}`).classList.add('disabled');
+                        document.getElementById(`btn-level-${level}`).disabled = true;
                     } else {
-                        Swal.fire('Error', data.message, 'error');
+                        Swal.fire('ผิดพลาด', data.message, 'error');
                     }
                 })
                 .catch(err => {
                     console.error('Error redeeming gift:', err);
-                    Swal.fire('Error', 'Failed to redeem gift.', 'error');
+                    Swal.fire('ผิดพลาด', 'ไม่สามารถแลกของรางวัลได้', 'error');
                 });
         }
     });
+}
+
+function displayError(message) {
+    document.body.innerHTML = `<div class="container"><p>${message}</p></div>`;
 }
