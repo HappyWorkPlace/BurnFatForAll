@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     initializeLiff('2004752543-O6bmBeMw'); 
 });
 
@@ -29,7 +29,12 @@ function fetchUserPoints(uid) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                document.getElementById('points-value').innerText = data.points;
+                const pointsElement = document.getElementById('points-value');
+                if (pointsElement) {
+                    pointsElement.innerText = data.points;
+                } else {
+                    console.error('Points element not found');
+                }
             } else {
                 console.error('Error fetching user points:', data.message);
                 document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
@@ -59,13 +64,14 @@ function fetchGiftList(uid) {
 }
 
 function updateGiftButtons(gifts, uid) {
+    const points = parseInt(document.getElementById('points-value').innerText, 10);
     gifts.forEach(gift => {
         const button = document.getElementById(`gift${gift.Level}`);
         if (button) {
-            button.disabled = gift.Balance <= 0;
+            button.disabled = gift.Balance <= 0 || points < gift.Level;
             if (!button.disabled) {
                 checkIfRedeemed(uid, gift.Level).then(redeemed => {
-                    button.disabled = redeemed || document.getElementById('points-value').innerText < gift.Level;
+                    button.disabled = redeemed;
                 });
             }
         } else {
@@ -84,7 +90,8 @@ function checkIfRedeemed(uid, level) {
         });
 }
 
-function redeemGift(uid, level) {
+function redeemGift(level) {
+    const uid = liff.getProfile().then(profile => profile.userId);
     fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=redeemGift&uid=${uid}&level=${level}`)
         .then(response => response.json())
         .then(data => {
@@ -101,4 +108,3 @@ function redeemGift(uid, level) {
             Swal.fire('ผิดพลาด', 'ไม่สามารถรับของรางวัลได้', 'error');
         });
 }
-
