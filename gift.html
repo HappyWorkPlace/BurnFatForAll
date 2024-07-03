@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gift Redemption</title>
+    <title>Gift Redemption 3Jul24 23:49</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <style>
         body {
@@ -67,16 +67,19 @@
             transform: none;
         }
     </style>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="gift.js"></script>
 </head>
 <body>
     <div class="container">
         <div class="points-title">Point ของคุณ</div>
-        <div class="points-value">71</div>
-        <button class="gift-button">15 points</button>
-        <button class="gift-button">30 points</button>
-        <button class="gift-button">45 points</button>
-        <button class="gift-button">60 points</button>
-        <button class="gift-button disabled">75 points</button>
+        <div id="points-value" class="points-value">0</div>
+        <button id="btn-level-15" class="gift-button disabled">15 points</button>
+        <button id="btn-level-30" class="gift-button disabled">30 points</button>
+        <button id="btn-level-45" class="gift-button disabled">45 points</button>
+        <button id="btn-level-60" class="gift-button disabled">60 points</button>
+        <button id="btn-level-75" class="gift-button disabled">75 points</button>
     </div>
 </body>
 </html>
