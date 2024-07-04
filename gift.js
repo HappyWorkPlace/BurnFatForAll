@@ -9,8 +9,9 @@ function initializeLiff(myLiffId) {
         if (liff.isLoggedIn()) {
             liff.getProfile().then(profile => {
                 const uid = profile.userId;
-                fetchUserPoints(uid);
-                fetchGiftList(uid);
+                fetchUserPoints(uid).then(points => {
+                    fetchGiftList(uid, points);
+                });
             }).catch(err => {
                 console.error('Failed to get profile:', err);
                 document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
@@ -25,7 +26,7 @@ function initializeLiff(myLiffId) {
 }
 
 function fetchUserPoints(uid) {
-    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserPoints&uid=${uid}`)
+    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserPoints&uid=${uid}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -35,23 +36,26 @@ function fetchUserPoints(uid) {
                 } else {
                     console.error('Points element not found');
                 }
+                return data.points;
             } else {
                 console.error('Error fetching user points:', data.message);
                 document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
+                return 0;
             }
         })
         .catch(error => {
             console.error('Error fetching user points:', error);
             document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
+            return 0;
         });
 }
 
-function fetchGiftList(uid) {
+function fetchGiftList(uid, points) {
     fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getGiftList`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                updateGiftButtons(data.gifts, uid);
+                updateGiftButtons(data.gifts, uid, points);
             } else {
                 console.error('Error fetching gift list:', data.message);
                 document.getElementById('gift-container').innerText = 'ไม่สามารถดึงข้อมูลของขวัญได้';
@@ -63,8 +67,7 @@ function fetchGiftList(uid) {
         });
 }
 
-function updateGiftButtons(gifts, uid) {
-    const points = parseInt(document.getElementById('points-value').innerText, 10);
+function updateGiftButtons(gifts, uid, points) {
     gifts.forEach(gift => {
         const button = document.getElementById(`gift${gift.Level}`);
         if (button) {
@@ -91,20 +94,24 @@ function checkIfRedeemed(uid, level) {
 }
 
 function redeemGift(level) {
-    const uid = liff.getProfile().then(profile => profile.userId);
-    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=redeemGift&uid=${uid}&level=${level}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                Swal.fire('สำเร็จ', 'คุณได้ทำการรับของรางวัลแล้ว', 'success').then(() => {
-                    location.reload();
-                });
-            } else {
-                Swal.fire('ผิดพลาด', data.message, 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error redeeming gift:', error);
-            Swal.fire('ผิดพลาด', 'ไม่สามารถรับของรางวัลได้', 'error');
-        });
+    liff.getProfile().then(profile => {
+        const uid = profile.userId;
+        fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=redeemGift&uid=${uid}&level=${level}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire('สำเร็จ', 'คุณได้ทำการรับของรางวัลแล้ว', 'success').then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire('ผิดพลาด', data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error redeeming gift:', error);
+                Swal.fire('ผิดพลาด', 'ไม่สามารถรับของรางวัลได้', 'error');
+            });
+    }).catch(err => {
+        console.error('Failed to get profile:', err);
+    });
 }
