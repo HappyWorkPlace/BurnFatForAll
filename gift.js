@@ -75,13 +75,13 @@ function updateGiftButtons(gifts, uid, points) {
             if (gift.Balance > 0 && pointsValue >= gift.Level) {
                 checkIfRedeemed(uid, gift.Level).then(redeemed => {
                     if (redeemed) {
-                        button.classList.add('disabled');
-                        button.disabled = true;
+                        disableButton(button);
+                    } else {
+                        enableButton(button);
                     }
                 });
             } else {
-                button.classList.add('disabled');
-                button.disabled = true;
+                disableButton(button);
             }
         } else {
             console.error(`Button for gift level ${gift.Level} not found`);
@@ -120,4 +120,16 @@ function redeemGift(level) {
     }).catch(err => {
         console.error('Failed to get profile:', err);
     });
+}
+
+function disableButton(button) {
+    button.classList.add('disabled');
+    button.disabled = true;
+    button.style.pointerEvents = 'none';  // Prevent clicking
+}
+
+function enableButton(button) {
+    button.classList.remove('disabled');
+    button.disabled = false;
+    button.style.pointerEvents = 'auto';  // Allow clicking
 }
