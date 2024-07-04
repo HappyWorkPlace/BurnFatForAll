@@ -74,9 +74,13 @@ function updateGiftButtons(gifts, uid, points) {
         if (button) {
             if (gift.Balance > 0 && pointsValue >= gift.Level) {
                 checkIfRedeemed(uid, gift.Level).then(redeemed => {
-                    button.disabled = redeemed;
+                    if (redeemed) {
+                        button.classList.add('disabled');
+                        button.disabled = true;
+                    }
                 });
             } else {
+                button.classList.add('disabled');
                 button.disabled = true;
             }
         } else {
