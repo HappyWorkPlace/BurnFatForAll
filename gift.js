@@ -9,8 +9,15 @@ function initializeLiff(myLiffId) {
         if (liff.isLoggedIn()) {
             liff.getProfile().then(profile => {
                 const uid = profile.userId;
-                fetchUserPoints(uid);
-                fetchGiftList(uid);
+                Promise.all([fetchUserPoints(uid), fetchGiftList(uid)])
+                    .then(([points, gifts]) => {
+                        updateGiftButtons(gifts, uid, points);
+                        displayPoints(points);
+                    }).catch(err => {
+                        console.error('Error fetching data:', err);
+                        document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
+                        document.getElementById('gift-container').innerText = 'ไม่สามารถดึงข้อมูลของขวัญได้';
+                    });
             }).catch(err => {
                 console.error('Failed to get profile:', err);
                 document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
@@ -25,52 +32,46 @@ function initializeLiff(myLiffId) {
 }
 
 function fetchUserPoints(uid) {
-    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserPoints&uid=${uid}`)
+    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserPoints&uid=${uid}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                const pointsElement = document.getElementById('points-value');
-                if (pointsElement) {
-                    pointsElement.innerText = data.points;
-                } else {
-                    console.error('Points element not found');
-                }
+                return data.points;
             } else {
                 console.error('Error fetching user points:', data.message);
-                document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
+                throw new Error('Error fetching user points');
             }
         })
         .catch(error => {
             console.error('Error fetching user points:', error);
-            document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
+            throw error;
         });
 }
 
 function fetchGiftList(uid) {
-    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getGiftList`)
+    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getGiftList`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                const points = parseInt(document.getElementById('points-value').innerText, 10);
-                updateGiftButtons(data.gifts, uid, points);
+                return data.gifts;
             } else {
                 console.error('Error fetching gift list:', data.message);
-                document.getElementById('gift-container').innerText = 'ไม่สามารถดึงข้อมูลของขวัญได้';
+                throw new Error('Error fetching gift list');
             }
         })
         .catch(error => {
             console.error('Error fetching gift list:', error);
-            document.getElementById('gift-container').innerText = 'ไม่สามารถดึงข้อมูลของขวัญได้';
+            throw error;
         });
 }
 
 function updateGiftButtons(gifts, uid, points) {
-    gifts.forEach(gift => {
+    const buttonPromises = gifts.map(gift => {
         const button = document.getElementById(`gift${gift.Level}`);
         if (button) {
             button.disabled = gift.Balance <= 0 || points < gift.Level;
             if (!button.disabled) {
-                checkIfRedeemed(uid, gift.Level).then(redeemed => {
+                return checkIfRedeemed(uid, gift.Level).then(redeemed => {
                     if (redeemed) {
                         disableButton(button);
                     } else {
@@ -79,11 +80,15 @@ function updateGiftButtons(gifts, uid, points) {
                 });
             } else {
                 disableButton(button);
+                return Promise.resolve();
             }
         } else {
             console.error(`Button for gift level ${gift.Level} not found`);
+            return Promise.resolve();
         }
     });
+
+    return Promise.all(buttonPromises);
 }
 
 function checkIfRedeemed(uid, level) {
@@ -125,4 +130,13 @@ function disableButton(button) {
 function enableButton(button) {
     button.classList.remove('disabled');
     button.style.pointerEvents = 'auto';
+}
+
+function displayPoints(points) {
+    const pointsElement = document.getElementById('points-value');
+    if (pointsElement) {
+        pointsElement.innerText = points;
+    } else {
+        console.error('Points element not found');
+    }
 }
