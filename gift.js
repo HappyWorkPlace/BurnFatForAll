@@ -1,6 +1,6 @@
-document.addEventListener('DOMContentLoaded', function () {
+window.onload = function () {
     initializeLiff('2004752543-O6bmBeMw'); 
-});
+};
 
 function initializeLiff(myLiffId) {
     liff.init({
@@ -68,14 +68,16 @@ function fetchGiftList(uid, points) {
 }
 
 function updateGiftButtons(gifts, uid, points) {
+    const pointsValue = parseInt(points, 10);
     gifts.forEach(gift => {
         const button = document.getElementById(`gift${gift.Level}`);
         if (button) {
-            button.disabled = gift.Balance <= 0 || points < gift.Level;
-            if (!button.disabled) {
+            if (gift.Balance > 0 && pointsValue >= gift.Level) {
                 checkIfRedeemed(uid, gift.Level).then(redeemed => {
                     button.disabled = redeemed;
                 });
+            } else {
+                button.disabled = true;
             }
         } else {
             console.error(`Button for gift level ${gift.Level} not found`);
