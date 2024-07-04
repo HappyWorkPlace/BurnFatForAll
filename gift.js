@@ -1,6 +1,6 @@
-window.onload = function () {
+document.addEventListener('DOMContentLoaded', function () {
     initializeLiff('2004752543-O6bmBeMw'); 
-};
+});
 
 function initializeLiff(myLiffId) {
     liff.init({
@@ -9,9 +9,8 @@ function initializeLiff(myLiffId) {
         if (liff.isLoggedIn()) {
             liff.getProfile().then(profile => {
                 const uid = profile.userId;
-                fetchUserPoints(uid).then(points => {
-                    fetchGiftList(uid, points);
-                });
+                fetchUserPoints(uid);
+                fetchGiftList(uid);
             }).catch(err => {
                 console.error('Failed to get profile:', err);
                 document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
@@ -26,7 +25,7 @@ function initializeLiff(myLiffId) {
 }
 
 function fetchUserPoints(uid) {
-    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserPoints&uid=${uid}`)
+    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserPoints&uid=${uid}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -36,25 +35,23 @@ function fetchUserPoints(uid) {
                 } else {
                     console.error('Points element not found');
                 }
-                return data.points;
             } else {
                 console.error('Error fetching user points:', data.message);
                 document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
-                return 0;
             }
         })
         .catch(error => {
             console.error('Error fetching user points:', error);
             document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
-            return 0;
         });
 }
 
-function fetchGiftList(uid, points) {
+function fetchGiftList(uid) {
     fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getGiftList`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                const points = parseInt(document.getElementById('points-value').innerText, 10);
                 updateGiftButtons(data.gifts, uid, points);
             } else {
                 console.error('Error fetching gift list:', data.message);
@@ -68,11 +65,11 @@ function fetchGiftList(uid, points) {
 }
 
 function updateGiftButtons(gifts, uid, points) {
-    const pointsValue = parseInt(points, 10);
     gifts.forEach(gift => {
         const button = document.getElementById(`gift${gift.Level}`);
         if (button) {
-            if (gift.Balance > 0 && pointsValue >= gift.Level) {
+            button.disabled = gift.Balance <= 0 || points < gift.Level;
+            if (!button.disabled) {
                 checkIfRedeemed(uid, gift.Level).then(redeemed => {
                     if (redeemed) {
                         disableButton(button);
@@ -117,19 +114,15 @@ function redeemGift(level) {
                 console.error('Error redeeming gift:', error);
                 Swal.fire('ผิดพลาด', 'ไม่สามารถรับของรางวัลได้', 'error');
             });
-    }).catch(err => {
-        console.error('Failed to get profile:', err);
     });
 }
 
 function disableButton(button) {
     button.classList.add('disabled');
-    button.disabled = true;
-    button.style.pointerEvents = 'none';  // Prevent clicking
+    button.style.pointerEvents = 'none';
 }
 
 function enableButton(button) {
     button.classList.remove('disabled');
-    button.disabled = false;
-    button.style.pointerEvents = 'auto';  // Allow clicking
+    button.style.pointerEvents = 'auto';
 }
