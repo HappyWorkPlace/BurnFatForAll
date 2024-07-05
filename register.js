@@ -58,9 +58,9 @@ function checkUserInfo() {
             Swal.close();
             if (data.status === 'found') {
                 Swal.fire({
-                    title: 'Confirm Your Details',
+                    title: 'ตรวจสอบข้อมูล',
                     html: `
-                        <p>Employee Number: ${data.details.empNo}</p>
+                        <p>EmpNo: ${data.details.empNo}</p>
                         <p>Name: ${data.details.name}</p>
                         <p>Division: ${data.details.division}</p>
                         <p>Factory: ${data.details.factory}</p>
@@ -69,7 +69,7 @@ function checkUserInfo() {
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, register me!'
+                    confirmButtonText: 'สมัครเข้าร่วม'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         liff.getProfile().then(profile => {
