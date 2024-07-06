@@ -109,23 +109,36 @@ function checkIfRedeemed(uid, level) {
 function redeemGift(level) {
     liff.getProfile().then(profile => {
         const uid = profile.userId;
-        fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=redeemGift&uid=${uid}&level=${level}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire('สำเร็จ', 'คุณได้ทำการรับของรางวัลแล้ว', 'success').then(() => {
-                        location.reload();
+        // แสดง Swal หมุนๆ พร้อมรูปภาพ
+        Swal.fire({
+            title: 'กำลังจองของรางวัล',
+            html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/picture/giftAnimattion.gif" alt="loading" style="width:50px;height:50px;"><p>กรุณารอสักครู่...</p>',
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+                fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=redeemGift&uid=${uid}&level=${level}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        Swal.close(); // ปิด Swal หมุนๆ เมื่อ fetch สำเร็จ
+                        if (data.success) {
+                            Swal.fire('สำเร็จ', 'คุณได้ทำการรับของรางวัลแล้ว', 'success').then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('ผิดพลาด', data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error redeeming gift:', error);
+                        Swal.close(); // ปิด Swal หมุนๆ เมื่อ fetch ล้มเหลว
+                        Swal.fire('ผิดพลาด', 'ไม่สามารถรับของรางวัลได้', 'error');
                     });
-                } else {
-                    Swal.fire('ผิดพลาด', data.message, 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error redeeming gift:', error);
-                Swal.fire('ผิดพลาด', 'ไม่สามารถรับของรางวัลได้', 'error');
-            });
+            }
+        });
     });
 }
+
 
 function disableButton(button) {
     button.classList.add('disabled');
