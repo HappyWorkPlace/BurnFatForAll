@@ -76,9 +76,13 @@ function saveSelection(empNo, factory, selectedFood, uid) {
         })
         .then(data => {
             console.log('Save selection response:', data); // Debug log
-            Swal.close();
+            // Swal.close();
             if (data.success) {
-                Swal.fire('Success', 'Data saved successfully.', 'success').then(() => {
+                Swal.fire({
+                    // title: 'สำเร็จ',
+                    html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/recordAnimation.gif" alt="success" style="width:300px;height:300px;"><p>บันทึกข้อมูลแล้ว</p>'
+                    // ,icon: 'success'
+                        }).then(() => {
                     showBlankPage();
                 });
             } else {
