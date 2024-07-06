@@ -112,7 +112,7 @@ function redeemGift(level) {
         // แสดง Swal หมุนๆ พร้อมรูปภาพ
         Swal.fire({
             title: 'กำลังจองของรางวัล',
-            html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/giftAnimattion.gif" alt="loading" style="width:150px;height:150px;"><p>กรุณารอสักครู่...</p>',
+            html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/giftAnimattion.gif" alt="loading" style="width:300px;height:300px;"><p>กรุณารอสักครู่...</p>',
             showConfirmButton: false,
             allowOutsideClick: false,
             didOpen: () => {
@@ -124,8 +124,8 @@ function redeemGift(level) {
                         if (data.success) {
                            Swal.fire({
                                 title: 'สำเร็จ',
-                                html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemGIF.gif" alt="success" style="width:150px;height:150px;"><p>คุณได้ทำการรับของรางวัลแล้ว</p>',
-                                icon: 'success'
+                                html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemGIF.gif" alt="success" style="width:300px;height:300px;"><p>กดรับของขวัญแล้ว</p>'
+                               // ,icon: 'success'
                             }).then(() => {
                                 // เปลี่ยนหน้าไปที่เพจเปล่าพร้อมข้อความ
                                 document.body.innerHTML = '<p>บันทึกข้อมูลเรียบร้อยแล้ว</p>';
