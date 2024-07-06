@@ -59,8 +59,8 @@ function checkUserColumnJ(uid, empNo, factory, selectedFood) {
 
 function saveSelection(empNo, factory, selectedFood, uid) {
     Swal.fire({
-        // title: 'Saving data',
-        html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/recordAnimation.gif" alt="success" style="width:150px;height:150px;"><p>รอสักครู่...</p>',
+        title: 'Saving data',
+        text: 'รอสักครู่..',
         allowOutsideClick: false,
         didOpen: () => {
             Swal.showLoading();
@@ -76,13 +76,9 @@ function saveSelection(empNo, factory, selectedFood, uid) {
         })
         .then(data => {
             console.log('Save selection response:', data); // Debug log
-            // Swal.close();
+            Swal.close();
             if (data.success) {
-                Swal.fire({
-                    // title: 'สำเร็จ',
-                    html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/recordAnimation.gif" alt="success" style="width:150px;height:150px;"><p>บันทึกข้อมูลแล้ว</p>'
-                    // ,icon: 'success'
-                        }).then(() => {
+                Swal.fire('Success', 'บันทึกข้อมูลเรียบร้อยแล้ว', 'success').then(() => {
                     showBlankPage();
                 });
             } else {
