@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    initializeLiff('2004752543-O6bmBeMw'); 
+    initializeLiff('2004752543-26ldj6RO'); 
 });
 
 function initializeLiff(myLiffId) {
