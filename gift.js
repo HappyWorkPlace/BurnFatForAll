@@ -122,8 +122,13 @@ function redeemGift(level) {
                     .then(data => {
                         Swal.close(); // ปิด Swal หมุนๆ เมื่อ fetch สำเร็จ
                         if (data.success) {
-                            Swal.fire('สำเร็จ', 'คุณได้ทำการรับของรางวัลแล้ว', 'success').then(() => {
-                                location.reload();
+                           Swal.fire({
+                                title: 'สำเร็จ',
+                                html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemGIF.gif" alt="success" style="width:50px;height:50px;"><p>คุณได้ทำการรับของรางวัลแล้ว</p>',
+                                icon: 'success'
+                            }).then(() => {
+                                // เปลี่ยนหน้าไปที่เพจเปล่าพร้อมข้อความ
+                                document.body.innerHTML = '<p>บันทึกข้อมูลเรียบร้อยแล้ว</p>';
                             });
                         } else {
                             Swal.fire('ผิดพลาด', data.message, 'error');
