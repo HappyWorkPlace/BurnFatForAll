@@ -60,7 +60,7 @@ function checkUserColumnJ(uid, empNo, factory, selectedFood) {
 function saveSelection(empNo, factory, selectedFood, uid) {
     Swal.fire({
         // title: 'Saving data',
-        html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/recordAnimation.gif" alt="success" style="width:150px;height:150px;"><p>รอสักครู่...</p>'
+        html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/recordAnimation.gif" alt="success" style="width:150px;height:150px;"><p>รอสักครู่...</p>',
         allowOutsideClick: false,
         didOpen: () => {
             Swal.showLoading();
