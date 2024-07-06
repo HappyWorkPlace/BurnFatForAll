@@ -112,7 +112,7 @@ function redeemGift(level) {
         // แสดง Swal หมุนๆ พร้อมรูปภาพ
         Swal.fire({
             title: 'กำลังจองของรางวัล',
-            html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/picture/giftAnimattion.gif" alt="loading" style="width:50px;height:50px;"><p>กรุณารอสักครู่...</p>',
+            html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/giftAnimattion.gif" alt="loading" style="width:50px;height:50px;"><p>กรุณารอสักครู่...</p>',
             showConfirmButton: false,
             allowOutsideClick: false,
             didOpen: () => {
