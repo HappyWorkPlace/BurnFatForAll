@@ -169,7 +169,7 @@ function initializeLiff(myLiffId) {
 function fetchDataAndUpdateUI(uid) {
     Promise.all([fetchUserData(uid), fetchGiftList()])
         .then(([userData, gifts]) => {
-            const points = userData[COLS.points - 1]; // Assuming points is at index 5
+            const points = userData[5]; // Assuming points is at index 5
             displayPoints(points);
             updateGiftCards(userData, gifts);
         }).catch(err => {
