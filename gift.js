@@ -36,7 +36,7 @@ function fetchDataAndUpdateUI(uid) {
 }
 
 function fetchUserPoints(uid) {
-    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserPoints&uid=${uid}`)
+    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserPoints&uid=${uid}`, { mode: 'no-cors' })
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -58,7 +58,7 @@ function fetchUserPoints(uid) {
 }
 
 function fetchGiftList() {
-    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getGiftList`)
+    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getGiftList`, { mode: 'no-cors' })
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -107,7 +107,7 @@ function updateGiftButtons(gifts, uid, points) {
 }
 
 function checkIfRedeemed(uid, level) {
-    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=checkIfRedeemed&uid=${uid}&level=${level}`)
+    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=checkIfRedeemed&uid=${uid}&level=${level}`, { mode: 'no-cors' })
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -132,7 +132,7 @@ function redeemGift(level) {
             allowOutsideClick: false,
             didOpen: () => {
                 Swal.showLoading();
-                fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=redeemGift&uid=${uid}&level=${level}`)
+                fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=redeemGift&uid=${uid}&level=${level}`, { mode: 'no-cors' })
                     .then(response => response.json())
                     .then(data => {
                         Swal.close(); // ปิด Swal หมุนๆ เมื่อ fetch สำเร็จ
