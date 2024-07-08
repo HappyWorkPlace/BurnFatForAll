@@ -24,10 +24,12 @@ function initializeLiff(myLiffId) {
 }
 
 function fetchDataAndUpdateUI(uid) {
-    Promise.all([fetchUserData(uid), fetchGiftList(), fetchRedemptionDate(uid)])
-        .then(([userData, gifts, redemptionDates]) => {
+    fetchUserData(uid)
+        .then(userData => {
             displayPoints(userData.data[5]);
-            updateGiftButtons(gifts, userData, redemptionDates);
+            return fetchGiftList().then(gifts => {
+                updateGiftButtons(gifts, userData);
+            });
         })
         .catch(err => {
             console.error('Error fetching data:', err);
@@ -70,83 +72,23 @@ function fetchGiftList() {
         });
 }
 
-function fetchRedemptionDate(uid) {
-    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getRedemptionDate&uid=${uid}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                return data.redemptionDates;
-            } else {
-                console.error('Error fetching redemption dates:', data.message);
-                throw new Error('Error fetching redemption dates');
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching redemption dates:', error);
-            throw error;
-        });
-}
-
-function updateGiftButtons(gifts, uid, points) {
-    const buttonPromises = gifts.map(gift => {
+function updateGiftButtons(gifts, userData) {
+    const points = userData.data[5];
+    gifts.forEach(gift => {
         const button = document.getElementById(`gift${gift.Level}`);
-        const balanceElement = document.getElementById(`gift${gift.Level}-balance`);
-        const dateElement = document.getElementById(`gift${gift.Level}-date`);
-
-        if (button && balanceElement && dateElement) {
-            balanceElement.innerText = `คงเหลือ: ${gift.Balance}`;
-            button.disabled = gift.Balance <= 0 || points < gift.Level;
-
-            if (!button.disabled) {
-                return checkIfRedeemed(uid, gift.Level).then(redeemedData => {
-                    button.disabled = redeemedData.redeemed;
-                    if (button.disabled) {
-                        dateElement.innerText = `วันที่แลก: ${redeemedData.date}`;
-                        disableButton(button);
-                    } else {
-                        dateElement.innerText = '';
-                        enableButton(button);
-                    }
-                });
-            } else {
+        const balanceText = document.getElementById(`gift${gift.Level}-balance`);
+        if (button) {
+            button.disabled = gift.Balance <= 0 || points < gift.Level || userData.data[getColumnByLevel(gift.Level)] === 'N';
+            if (button.disabled) {
                 disableButton(button);
-                return Promise.resolve();
+            } else {
+                enableButton(button);
             }
-        } else {
-            console.error(`Button or balance/date element for gift level ${gift.Level} not found`);
-            return Promise.resolve();
+        }
+        if (balanceText) {
+            balanceText.innerText = `คงเหลือ: ${gift.Balance}`;
         }
     });
-
-    return Promise.all(buttonPromises);
-}
-
-function checkIfRedeemed(uid, level) {
-    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=checkIfRedeemed&uid=${uid}&level=${level}`)
-        .then(response => response.json())
-        .then(data => {
-            return { redeemed: data.redeemed, date: data.date || '' };
-        })
-        .catch(error => {
-            console.error('Error checking if redeemed:', error);
-            return { redeemed: false, date: '' };
-        });
-}
-function fetchRedemptionDate(uid) {
-    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getRedemptionDate&uid=${uid}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                return data.redemptionDates;
-            } else {
-                console.error('Error fetching redemption dates:', data.message);
-                throw new Error('Error fetching redemption dates');
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching redemption dates:', error);
-            throw error;
-        });
 }
 
 function redeemGift(level) {
@@ -209,15 +151,15 @@ function displayPoints(points) {
 function getColumnByLevel(level) {
     switch (level) {
         case 15:
-            return 6; // Column 'G'
+            return 6;
         case 30:
-            return 7; // Column 'H'
+            return 7;
         case 45:
-            return 8; // Column 'I'
+            return 8;
         case 60:
-            return 9; // Column 'J'
+            return 9;
         case 75:
-            return 10; // Column 'K'
+            return 10;
         default:
             return null;
     }
