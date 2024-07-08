@@ -98,9 +98,50 @@
     <div class="container" id="gift-container">
         <div class="points-title">Point ของคุณ</div>
         <div class="points-value" id="points-value">0</div>
+        <div class="gift-card" id="gift15-card">
+            <img src="image-url-15.jpg" alt="แก้วน้ำ">
+            <div class="gift-details">
+                <h3>แก้วน้ำ</h3>
+                <p>จำนวนคงเหลือ <span id="gift15-balance">XX</span></p>
+            </div>
+            <button class="gift-button" id="gift15" onclick="redeemGift(15)">Claim</button>
+        </div>
+        <div class="gift-card" id="gift30-card">
+            <img src="image-url-30.jpg" alt="จาน">
+            <div class="gift-details">
+                <h3>จาน</h3>
+                <p>จำนวนคงเหลือ <span id="gift30-balance">XX</span></p>
+            </div>
+            <button class="gift-button" id="gift30" onclick="redeemGift(30)">Claim</button>
+        </div>
+        <div class="gift-card" id="gift45-card">
+            <img src="image-url-45.jpg" alt="กระติก">
+            <div class="gift-details">
+                <h3>กระติก</h3>
+                <p>จำนวนคงเหลือ <span id="gift45-balance">XX</span></p>
+            </div>
+            <button class="gift-button" id="gift45" onclick="redeemGift(45)">Claim</button>
+        </div>
+        <div class="gift-card" id="gift60-card">
+            <img src="image-url-60.jpg" alt="ร่ม">
+            <div class="gift-details">
+                <h3>ร่ม</h3>
+                <p>จำนวนคงเหลือ <span id="gift60-balance">XX</span></p>
+            </div>
+            <button class="gift-button" id="gift60" onclick="redeemGift(60)">Claim</button>
+        </div>
+        <div class="gift-card" id="gift75-card">
+            <img src="image-url-75.jpg" alt="Iphone">
+            <div class="gift-details">
+                <h3>Iphone</h3>
+                <p>จำนวนคงเหลือ <span id="gift75-balance">XX</span></p>
+            </div>
+            <button class="gift-button" id="gift75" onclick="redeemGift(75)">Claim</button>
+        </div>
     </div>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <script>document.addEventListener('DOMContentLoaded', function () {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
     initializeLiff('2004752543-26ldj6RO');
 });
 
@@ -132,7 +173,7 @@ function fetchDataAndUpdateUI(uid) {
             return fetchGiftList();
         })
         .then(gifts => {
-            updateGiftButtons(gifts, uid);
+            updateGiftCards(gifts, uid);
         })
         .catch(err => {
             console.error('Error fetching data:', err);
@@ -175,40 +216,39 @@ function fetchGiftList() {
         });
 }
 
-function updateGiftButtons(gifts, uid) {
-    const giftContainer = document.getElementById('gift-container');
+function updateGiftCards(gifts, uid) {
     gifts.forEach(gift => {
-        const giftCard = document.createElement('div');
-        giftCard.className = 'gift-card';
-        giftCard.innerHTML = `
-            <img src="${gift.Image || 'default-image-url.jpg'}" alt="${gift.Gift_Name}">
-            <div class="gift-details">
-                <h3>${gift.Gift_Name}</h3>
-                <p>จำนวนคงเหลือ ${gift.Balance}</p>
-            </div>
-            <button class="gift-button" id="gift${gift.Level}" onclick="redeemGift(${gift.Level})">Claim</button>
-        `;
-        giftContainer.appendChild(giftCard);
-        updateButtonState(gift, uid);
+        const balanceElement = document.getElementById(`gift${gift.Level}-balance`);
+        const button = document.getElementById(`gift${gift.Level}`);
+        if (balanceElement) {
+            balanceElement.innerText = gift.Balance;
+        }
+        if (button) {
+            button.disabled = gift.Balance <= 0;
+            if (!button.disabled) {
+                checkIfRedeemed(uid, gift.Level).then(redeemed => {
+                    button.disabled = redeemed;
+                    if (button.disabled) {
+                        disableButton(button);
+                    } else {
+                        enableButton(button);
+                    }
+                });
+            } else {
+                disableButton(button);
+            }
+        }
     });
 }
 
-function updateButtonState(gift, uid) {
-    const button = document.getElementById(`gift${gift.Level}`);
-    if (button) {
-        fetchUserData(uid).then(userData => {
-            const points = userData[5];  // Assuming points are in column F
-            const redeemed = userData[gift.Level / 15 + 6];  // Assuming levels are in columns G-K
-
-            if (gift.Balance <= 0 || points < gift.Level || redeemed === 'N') {
-                button.disabled = true;
-                button.classList.add('disabled');
-            } else {
-                button.disabled = false;
-                button.classList.remove('disabled');
-            }
+function checkIfRedeemed(uid, level) {
+    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=checkIfRedeemed&uid=${uid}&level=${level}`)
+        .then(response => response.json())
+        .then(data => data.redeemed)
+        .catch(error => {
+            console.error('Error checking if redeemed:', error);
+            return false;
         });
-    }
 }
 
 function redeemGift(level) {
@@ -246,6 +286,16 @@ function redeemGift(level) {
     });
 }
 
+function disableButton(button) {
+    button.classList.add('disabled');
+    button.style.pointerEvents = 'none';
+}
+
+function enableButton(button) {
+    button.classList.remove('disabled');
+    button.style.pointerEvents = 'auto';
+}
+
 function displayPoints(points) {
     const pointsElement = document.getElementById('points-value');
     if (pointsElement) {
@@ -254,6 +304,7 @@ function displayPoints(points) {
         console.error('Points element not found');
     }
 }
-</script>
+
+    </script>
 </body>
 </html>
