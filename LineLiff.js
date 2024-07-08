@@ -30,6 +30,20 @@ function displayUserInfo(userName) {
     document.getElementById('userInfo').innerHTML = `<p>สวัสดีค่ะคุณ ${userName}</p>`;
 }
 
+function displayInputSection(userData) {
+    document.getElementById('inputSection').style.display = 'block';
+    document.getElementById('registerSection').style.display = 'none';
+    document.getElementById('empNo').innerText = userData[1];
+    document.getElementById('name').innerText = userData[2];
+    document.getElementById('division').innerText = userData[3];
+    document.getElementById('factory').innerText = userData[4];
+}
+
+function displayRegisterSection() {
+    document.getElementById('inputSection').style.display = 'none';
+    document.getElementById('registerSection').style.display = 'block';
+}
+
 window.onload = function() {
     console.log("Window loaded, initializing LIFF");
     if (typeof liff !== 'undefined') {
