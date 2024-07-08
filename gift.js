@@ -26,8 +26,8 @@ function initializeLiff(myLiffId) {
 function fetchDataAndUpdateUI(uid) {
     Promise.all([fetchUserData(uid), fetchGiftList()])
         .then(([userData, gifts]) => {
-            const points = userData[5]; // Assuming points is at index 5
-            updateGiftButtons(userData, gifts, points);
+            const points = userData.data[5]; // Assuming points is at index 5
+            updateGiftButtons(userData.data, gifts, points);
             displayPoints(points);
         }).catch(err => {
             console.error('Error fetching data:', err);
@@ -46,7 +46,7 @@ function fetchUserData(uid) {
         })
         .then(data => {
             if (data.success) {
-                return data.data;
+                return data;
             } else {
                 throw new Error('Error fetching user data');
             }
@@ -55,18 +55,18 @@ function fetchUserData(uid) {
 
 function fetchGiftList() {
     return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getGiftList`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 return data.gifts;
             } else {
-                console.error('Error fetching gift list:', data.message);
                 throw new Error('Error fetching gift list');
             }
-        })
-        .catch(error => {
-            console.error('Error fetching gift list:', error);
-            throw error;
         });
 }
 
