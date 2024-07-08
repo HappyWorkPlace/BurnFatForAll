@@ -9,18 +9,13 @@ function initializeLiff(myLiffId) {
         if (liff.isLoggedIn()) {
             liff.getProfile().then(profile => {
                 const uid = profile.userId;
-                fetchUserPoints(uid)
-                    .then(points => {
-                        fetchGiftList(uid)
-                            .then(gifts => {
-                                updateGiftButtons(gifts, uid, points);
-                                displayPoints(points);
-                            }).catch(err => {
-                                console.error('Error fetching gift list:', err);
-                                document.getElementById('gift-container').innerText = 'ไม่สามารถดึงข้อมูลของขวัญได้';
-                            });
+                fetchUserData(uid)
+                    .then(userData => {
+                        const points = userData[5]; // Assuming points is at index 5
+                        updateGiftButtons(userData, points);
+                        displayPoints(points);
                     }).catch(err => {
-                        console.error('Error fetching user points:', err);
+                        console.error('Error fetching user data:', err);
                         document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
                     });
             }).catch(err => {
@@ -36,8 +31,8 @@ function initializeLiff(myLiffId) {
     });
 }
 
-function fetchUserPoints(uid) {
-    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserPoints&uid=${uid}`)
+function fetchUserData(uid) {
+    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserData&uid=${uid}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -46,64 +41,46 @@ function fetchUserPoints(uid) {
         })
         .then(data => {
             if (data.success) {
-                return data.points;
+                return data.data;
             } else {
-                throw new Error('Error fetching user points');
+                throw new Error('Error fetching user data');
             }
         });
 }
 
-function fetchGiftList(uid) {
-    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getGiftList`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                return data.gifts;
-            } else {
-                throw new Error('Error fetching gift list');
-            }
-        });
-}
-
-function updateGiftButtons(gifts, uid, points) {
-    const buttonPromises = gifts.map(gift => {
-        const button = document.getElementById(`gift${gift.Level}`);
+function updateGiftButtons(userData, points) {
+    const giftLevels = [15, 30, 45, 60, 75];
+    giftLevels.forEach(level => {
+        const columnIndex = getColumnIndexByLevel(level);
+        const button = document.getElementById(`gift${level}`);
         if (button) {
-            button.disabled = gift.Balance <= 0 || points < gift.Level;
-            if (!button.disabled) {
-                checkIfRedeemed(uid, gift.Level).then(redeemed => {
-                    button.disabled = redeemed;
-                    if (button.disabled) {
-                        disableButton(button);
-                    } else {
-                        enableButton(button);
-                    }
-                });
-            } else {
+            button.disabled = userData[columnIndex] === 'N' || points < level;
+            if (button.disabled) {
                 disableButton(button);
+            } else {
+                enableButton(button);
             }
         } else {
-            console.error(`Button for gift level ${gift.Level} not found`);
+            console.error(`Button for gift level ${level} not found`);
         }
     });
-
-    return Promise.all(buttonPromises);
 }
 
-function checkIfRedeemed(uid, level) {
-    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=checkIfRedeemed&uid=${uid}&level=${level}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => data.redeemed);
+function getColumnIndexByLevel(level) {
+    switch (level) {
+        case 15:
+            return 6; // Column G
+        case 30:
+            return 7; // Column H
+        case 45:
+            return 8; // Column I
+        case 60:
+            return 9; // Column J
+        case 75:
+            return 10; // Column K
+        default:
+            return null;
+    }
 }
 
 function redeemGift(level) {
