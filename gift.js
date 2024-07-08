@@ -9,7 +9,15 @@ function initializeLiff(myLiffId) {
         if (liff.isLoggedIn()) {
             liff.getProfile().then(profile => {
                 const uid = profile.userId;
-                fetchDataAndUpdateUI(uid);
+                fetchUserData(uid)
+                    .then(userData => {
+                        const points = userData[5]; // Assuming points is at index 5
+                        updateGiftButtons(userData, points);
+                        displayPoints(points);
+                    }).catch(err => {
+                        console.error('Error fetching user data:', err);
+                        document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
+                    });
             }).catch(err => {
                 console.error('Failed to get profile:', err);
                 document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
@@ -23,72 +31,56 @@ function initializeLiff(myLiffId) {
     });
 }
 
-function fetchDataAndUpdateUI(uid) {
-    fetchUserData(uid)
-        .then(userData => {
-            displayPoints(userData.data[5]);
-            return fetchGiftList().then(gifts => {
-                updateGiftButtons(gifts, userData);
-            });
-        })
-        .catch(err => {
-            console.error('Error fetching data:', err);
-            document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
-            document.getElementById('gift-container').innerText = 'ไม่สามารถดึงข้อมูลของขวัญได้';
-        });
-}
-
 function fetchUserData(uid) {
     return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserData&uid=${uid}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
-                return data;
+                return data.data;
             } else {
-                console.error('Error fetching user data:', data.message);
                 throw new Error('Error fetching user data');
             }
-        })
-        .catch(error => {
-            console.error('Error fetching user data:', error);
-            throw error;
         });
 }
 
-function fetchGiftList() {
-    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getGiftList`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                return data.gifts;
-            } else {
-                console.error('Error fetching gift list:', data.message);
-                throw new Error('Error fetching gift list');
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching gift list:', error);
-            throw error;
-        });
-}
-
-function updateGiftButtons(gifts, userData) {
-    const points = userData.data[5];
-    gifts.forEach(gift => {
-        const button = document.getElementById(`gift${gift.Level}`);
-        const balanceText = document.getElementById(`gift${gift.Level}-balance`);
+function updateGiftButtons(userData, points) {
+    const giftLevels = [15, 30, 45, 60, 75];
+    giftLevels.forEach(level => {
+        const columnIndex = getColumnIndexByLevel(level);
+        const button = document.getElementById(`gift${level}`);
         if (button) {
-            button.disabled = gift.Balance <= 0 || points < gift.Level || userData.data[getColumnByLevel(gift.Level)] === 'N';
+            button.disabled = userData[columnIndex] === 'N' || points < level;
             if (button.disabled) {
                 disableButton(button);
             } else {
                 enableButton(button);
             }
-        }
-        if (balanceText) {
-            balanceText.innerText = `คงเหลือ: ${gift.Balance}`;
+        } else {
+            console.error(`Button for gift level ${level} not found`);
         }
     });
+}
+
+function getColumnIndexByLevel(level) {
+    switch (level) {
+        case 15:
+            return 6; // Column G
+        case 30:
+            return 7; // Column H
+        case 45:
+            return 8; // Column I
+        case 60:
+            return 9; // Column J
+        case 75:
+            return 10; // Column K
+        default:
+            return null;
+    }
 }
 
 function redeemGift(level) {
@@ -145,22 +137,5 @@ function displayPoints(points) {
         pointsElement.innerText = points;
     } else {
         console.error('Points element not found');
-    }
-}
-
-function getColumnByLevel(level) {
-    switch (level) {
-        case 15:
-            return 6;
-        case 30:
-            return 7;
-        case 45:
-            return 8;
-        case 60:
-            return 9;
-        case 75:
-            return 10;
-        default:
-            return null;
     }
 }
