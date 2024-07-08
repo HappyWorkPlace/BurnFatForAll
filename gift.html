@@ -97,13 +97,12 @@
 <body>
     <div class="container" id="gift-container">
         <div class="points-title">Point ของคุณ</div>
-        <div class="points-value" id="points-value">0</div>
+        <div class="points-value" id="points-value">รอสักครู่..</div>
         <div class="gift-card" id="gift15-card">
             <img src="image-url-15.jpg" alt="แก้วน้ำ">
             <div class="gift-details">
                 <h3>แก้วน้ำ</h3>
-                <p>15 คะแนน</p>
-                <p>จำนวนคงเหลือ <span id="gift15-balance">XX</span></p>
+                <p>คะแนน: 15 | จำนวนคงเหลือ <span id="gift15-balance">XX</span></p>
             </div>
             <button class="gift-button disabled" id="gift15" onclick="redeemGift(15)">Claim</button>
         </div>
@@ -111,8 +110,7 @@
             <img src="image-url-30.jpg" alt="จาน">
             <div class="gift-details">
                 <h3>จาน</h3>
-                <p>30 คะแนน</p>
-                <p>จำนวนคงเหลือ <span id="gift30-balance">XX</span></p>
+                <p>คะแนน: 30 | จำนวนคงเหลือ <span id="gift30-balance">XX</span></p>
             </div>
             <button class="gift-button disabled" id="gift30" onclick="redeemGift(30)">Claim</button>
         </div>
@@ -120,8 +118,7 @@
             <img src="image-url-45.jpg" alt="กระติก">
             <div class="gift-details">
                 <h3>กระติก</h3>
-                <p>45 คะแนน</p>
-                <p>จำนวนคงเหลือ <span id="gift45-balance">XX</span></p>
+                <p>คะแนน: 45 | จำนวนคงเหลือ <span id="gift45-balance">XX</span></p>
             </div>
             <button class="gift-button disabled" id="gift45" onclick="redeemGift(45)">Claim</button>
         </div>
@@ -129,8 +126,7 @@
             <img src="image-url-60.jpg" alt="ร่ม">
             <div class="gift-details">
                 <h3>ร่ม</h3>
-                <p>60 คะแนน</p>
-                <p>จำนวนคงเหลือ <span id="gift60-balance">XX</span></p>
+                <p>คะแนน: 60 | จำนวนคงเหลือ <span id="gift60-balance">XX</span></p>
             </div>
             <button class="gift-button disabled" id="gift60" onclick="redeemGift(60)">Claim</button>
         </div>
@@ -138,8 +134,7 @@
             <img src="image-url-75.jpg" alt="Iphone">
             <div class="gift-details">
                 <h3>Iphone</h3>
-                <p>75 คะแนน</p>
-                <p>จำนวนคงเหลือ <span id="gift75-balance">XX</span></p>
+                <p>คะแนน: 75 | จำนวนคงเหลือ <span id="gift75-balance">XX</span></p>
             </div>
             <button class="gift-button disabled" id="gift75" onclick="redeemGift(75)">Claim</button>
         </div>
@@ -147,7 +142,7 @@
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            initializeLiff('2004752543-26ldj6RO');
+            initializeLiff('2004752543-26ldj6RO'); 
         });
 
         function initializeLiff(myLiffId) {
@@ -174,8 +169,8 @@
         function fetchDataAndUpdateUI(uid) {
             Promise.all([fetchUserData(uid), fetchGiftList()])
                 .then(([userData, gifts]) => {
-                    const points = userData[COLS.points - 1];
-                    updateGiftButtons(userData, gifts, points);
+                    const points = userData.data[5]; // Assuming points is at index 5
+                    updateGiftButtons(userData.data, gifts, points);
                     displayPoints(points);
                 }).catch(err => {
                     console.error('Error fetching data:', err);
@@ -194,7 +189,7 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        return data.data;
+                        return data;
                     } else {
                         throw new Error('Error fetching user data');
                     }
@@ -219,21 +214,22 @@
         }
 
         function updateGiftButtons(userData, gifts, points) {
-            gifts.forEach(gift => {
-                const balanceElement = document.getElementById(`gift${gift.Level}-balance`);
-                const button = document.getElementById(`gift${gift.Level}`);
-                if (balanceElement) {
-                    balanceElement.innerText = gift.Balance;
-                }
-                if (button) {
-                    button.disabled = userData[getColumnIndexByLevel(gift.Level)] === 'N' || points < gift.Level || gift.Balance <= 0;
-                    button.innerText = `Claim (${gift.Balance} left)`;
+            const giftLevels = [15, 30, 45, 60, 75];
+            giftLevels.forEach(level => {
+                const columnIndex = getColumnIndexByLevel(level);
+                const button = document.getElementById(`gift${level}`);
+                const gift = gifts.find(g => g.Level == level);
+
+                if (button && gift) {
+                    button.disabled = userData[columnIndex] === 'N' || points < level || gift.Balance <= 0;
 
                     if (button.disabled) {
                         disableButton(button);
                     } else {
                         enableButton(button);
                     }
+                } else {
+                    console.error(`Button for gift level ${level} not found or gift data missing`);
                 }
             });
         }
