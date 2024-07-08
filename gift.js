@@ -9,15 +9,7 @@ function initializeLiff(myLiffId) {
         if (liff.isLoggedIn()) {
             liff.getProfile().then(profile => {
                 const uid = profile.userId;
-                fetchUserData(uid)
-                    .then(userData => {
-                        const points = userData[5]; // Assuming points is at index 5
-                        updateGiftButtons(userData, points);
-                        displayPoints(points);
-                    }).catch(err => {
-                        console.error('Error fetching user data:', err);
-                        document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
-                    });
+                fetchDataAndUpdateUI(uid);
             }).catch(err => {
                 console.error('Failed to get profile:', err);
                 document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
@@ -29,6 +21,19 @@ function initializeLiff(myLiffId) {
         console.error('LIFF initialization failed', err);
         document.getElementById('gift-container').innerText = 'ไม่สามารถดึงข้อมูลของขวัญได้';
     });
+}
+
+function fetchDataAndUpdateUI(uid) {
+    Promise.all([fetchUserData(uid), fetchGiftList()])
+        .then(([userData, gifts]) => {
+            const points = userData[5]; // Assuming points is at index 5
+            updateGiftButtons(userData, gifts, points);
+            displayPoints(points);
+        }).catch(err => {
+            console.error('Error fetching data:', err);
+            document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
+            document.getElementById('gift-container').innerText = 'ไม่สามารถดึงข้อมูลของขวัญได้';
+        });
 }
 
 function fetchUserData(uid) {
@@ -48,20 +53,41 @@ function fetchUserData(uid) {
         });
 }
 
-function updateGiftButtons(userData, points) {
+function fetchGiftList() {
+    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getGiftList`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                return data.gifts;
+            } else {
+                console.error('Error fetching gift list:', data.message);
+                throw new Error('Error fetching gift list');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching gift list:', error);
+            throw error;
+        });
+}
+
+function updateGiftButtons(userData, gifts, points) {
     const giftLevels = [15, 30, 45, 60, 75];
     giftLevels.forEach(level => {
         const columnIndex = getColumnIndexByLevel(level);
         const button = document.getElementById(`gift${level}`);
-        if (button) {
-            button.disabled = userData[columnIndex] === 'N' || points < level;
+        const gift = gifts.find(g => g.Level == level);
+
+        if (button && gift) {
+            button.disabled = userData[columnIndex] === 'N' || points < level || gift.Balance <= 0;
+            button.innerText = `${level} points (${gift.Balance} left)`;
+
             if (button.disabled) {
                 disableButton(button);
             } else {
                 enableButton(button);
             }
         } else {
-            console.error(`Button for gift level ${level} not found`);
+            console.error(`Button for gift level ${level} not found or gift data missing`);
         }
     });
 }
