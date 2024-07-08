@@ -4,7 +4,7 @@ function navigateTo(page) {
 
 function getUserData(uid) {
     console.log("Fetching user data for UID:", uid);
-    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserData&uid=${uid}`)
+    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserData2&uid=${uid}`)
         .then(response => {
             console.log("User data response received");
             if (!response.ok) {
