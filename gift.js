@@ -9,15 +9,7 @@ function initializeLiff(myLiffId) {
         if (liff.isLoggedIn()) {
             liff.getProfile().then(profile => {
                 const uid = profile.userId;
-                fetchUserData(uid)
-                    .then(userData => {
-                        const points = userData[5]; // Assuming points is at index 5
-                        updateGiftButtons(userData, points);
-                        displayPoints(points);
-                    }).catch(err => {
-                        console.error('Error fetching user data:', err);
-                        document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
-                    });
+                fetchDataAndUpdateUI(uid);
             }).catch(err => {
                 console.error('Failed to get profile:', err);
                 document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
@@ -31,56 +23,130 @@ function initializeLiff(myLiffId) {
     });
 }
 
-function fetchUserData(uid) {
-    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserData&uid=${uid}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
+function fetchDataAndUpdateUI(uid) {
+    Promise.all([fetchUserData(uid), fetchGiftList(), fetchRedemptionDate(uid)])
+        .then(([userData, gifts, redemptionDates]) => {
+            displayPoints(userData.data[5]);
+            updateGiftButtons(gifts, userData, redemptionDates);
         })
-        .then(data => {
-            if (data.success) {
-                return data.data;
-            } else {
-                throw new Error('Error fetching user data');
-            }
+        .catch(err => {
+            console.error('Error fetching data:', err);
+            document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
+            document.getElementById('gift-container').innerText = 'ไม่สามารถดึงข้อมูลของขวัญได้';
         });
 }
 
-function updateGiftButtons(userData, points) {
-    const giftLevels = [15, 30, 45, 60, 75];
-    giftLevels.forEach(level => {
-        const columnIndex = getColumnIndexByLevel(level);
-        const button = document.getElementById(`gift${level}`);
-        if (button) {
-            button.disabled = userData[columnIndex] === 'N' || points < level;
-            if (button.disabled) {
-                disableButton(button);
+function fetchUserData(uid) {
+    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserData&uid=${uid}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                return data;
             } else {
-                enableButton(button);
+                console.error('Error fetching user data:', data.message);
+                throw new Error('Error fetching user data');
             }
-        } else {
-            console.error(`Button for gift level ${level} not found`);
-        }
-    });
+        })
+        .catch(error => {
+            console.error('Error fetching user data:', error);
+            throw error;
+        });
 }
 
-function getColumnIndexByLevel(level) {
-    switch (level) {
-        case 15:
-            return 6; // Column G
-        case 30:
-            return 7; // Column H
-        case 45:
-            return 8; // Column I
-        case 60:
-            return 9; // Column J
-        case 75:
-            return 10; // Column K
-        default:
-            return null;
-    }
+function fetchGiftList() {
+    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getGiftList`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                return data.gifts;
+            } else {
+                console.error('Error fetching gift list:', data.message);
+                throw new Error('Error fetching gift list');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching gift list:', error);
+            throw error;
+        });
+}
+
+function fetchRedemptionDate(uid) {
+    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getRedemptionDate&uid=${uid}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                return data.redemptionDates;
+            } else {
+                console.error('Error fetching redemption dates:', data.message);
+                throw new Error('Error fetching redemption dates');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching redemption dates:', error);
+            throw error;
+        });
+}
+
+function updateGiftButtons(gifts, uid, points) {
+    const buttonPromises = gifts.map(gift => {
+        const button = document.getElementById(`gift${gift.Level}`);
+        const balanceElement = document.getElementById(`gift${gift.Level}-balance`);
+        const dateElement = document.getElementById(`gift${gift.Level}-date`);
+
+        if (button && balanceElement && dateElement) {
+            balanceElement.innerText = `คงเหลือ: ${gift.Balance}`;
+            button.disabled = gift.Balance <= 0 || points < gift.Level;
+
+            if (!button.disabled) {
+                return checkIfRedeemed(uid, gift.Level).then(redeemedData => {
+                    button.disabled = redeemedData.redeemed;
+                    if (button.disabled) {
+                        dateElement.innerText = `วันที่แลก: ${redeemedData.date}`;
+                        disableButton(button);
+                    } else {
+                        dateElement.innerText = '';
+                        enableButton(button);
+                    }
+                });
+            } else {
+                disableButton(button);
+                return Promise.resolve();
+            }
+        } else {
+            console.error(`Button or balance/date element for gift level ${gift.Level} not found`);
+            return Promise.resolve();
+        }
+    });
+
+    return Promise.all(buttonPromises);
+}
+
+function checkIfRedeemed(uid, level) {
+    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=checkIfRedeemed&uid=${uid}&level=${level}`)
+        .then(response => response.json())
+        .then(data => {
+            return { redeemed: data.redeemed, date: data.date || '' };
+        })
+        .catch(error => {
+            console.error('Error checking if redeemed:', error);
+            return { redeemed: false, date: '' };
+        });
+}
+function fetchRedemptionDate(uid) {
+    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getRedemptionDate&uid=${uid}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                return data.redemptionDates;
+            } else {
+                console.error('Error fetching redemption dates:', data.message);
+                throw new Error('Error fetching redemption dates');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching redemption dates:', error);
+            throw error;
+        });
 }
 
 function redeemGift(level) {
@@ -137,5 +203,22 @@ function displayPoints(points) {
         pointsElement.innerText = points;
     } else {
         console.error('Points element not found');
+    }
+}
+
+function getColumnByLevel(level) {
+    switch (level) {
+        case 15:
+            return 6; // Column 'G'
+        case 30:
+            return 7; // Column 'H'
+        case 45:
+            return 8; // Column 'I'
+        case 60:
+            return 9; // Column 'J'
+        case 75:
+            return 10; // Column 'K'
+        default:
+            return null;
     }
 }
