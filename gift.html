@@ -43,29 +43,46 @@
             color: #007BFF;
             margin-bottom: 20px;
         }
-        .gift-button {
+        .gift-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-gap: 20px;
+        }
+        .gift-card {
             background-color: #8BC34A;
             color: white;
             border: none;
             border-radius: 25px;
             padding: 15px;
             font-size: 1.2em;
-            margin-bottom: 15px;
             cursor: pointer;
-            width: 100%;
             transition: background-color 0.3s, transform 0.3s;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
-        .gift-button:hover {
+        .gift-card img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
+        }
+        .gift-card:hover {
             background-color: #7CB342;
             transform: translateY(-2px);
         }
-        .gift-button.disabled {
+        .gift-card.disabled {
             background-color: #B0BEC5;
             cursor: not-allowed;
         }
-        .gift-button.disabled:hover {
+        .gift-card.disabled:hover {
             transform: none;
+        }
+        .gift-info {
+            font-size: 0.9em;
+            margin-top: 5px;
+            color: #f3f4f6;
         }
     </style>
 </head>
@@ -73,11 +90,38 @@
     <div class="container" id="gift-container">
         <div class="points-title">Point ของคุณ</div>
         <div class="points-value" id="points-value">0</div>
-        <button class="gift-button disabled" id="gift15" onclick="redeemGift(15)">15 points</button>
-        <button class="gift-button disabled" id="gift30" onclick="redeemGift(30)">30 points</button>
-        <button class="gift-button disabled" id="gift45" onclick="redeemGift(45)">45 points</button>
-        <button class="gift-button disabled" id="gift60" onclick="redeemGift(60)">60 points</button>
-        <button class="gift-button disabled" id="gift75" onclick="redeemGift(75)">75 points</button>
+        <div class="gift-grid">
+            <div class="gift-card disabled" id="gift15" onclick="redeemGift(15)">
+                <img src="https://via.placeholder.com/50" alt="Gift 15">
+                15 points
+                <div class="gift-info" id="gift15-balance">คงเหลือ: 0</div>
+                <div class="gift-info" id="gift15-date"></div>
+            </div>
+            <div class="gift-card disabled" id="gift30" onclick="redeemGift(30)">
+                <img src="https://via.placeholder.com/50" alt="Gift 30">
+                30 points
+                <div class="gift-info" id="gift30-balance">คงเหลือ: 0</div>
+                <div class="gift-info" id="gift30-date"></div>
+            </div>
+            <div class="gift-card disabled" id="gift45" onclick="redeemGift(45)">
+                <img src="https://via.placeholder.com/50" alt="Gift 45">
+                45 points
+                <div class="gift-info" id="gift45-balance">คงเหลือ: 0</div>
+                <div class="gift-info" id="gift45-date"></div>
+            </div>
+            <div class="gift-card disabled" id="gift60" onclick="redeemGift(60)">
+                <img src="https://via.placeholder.com/50" alt="Gift 60">
+                60 points
+                <div class="gift-info" id="gift60-balance">คงเหลือ: 0</div>
+                <div class="gift-info" id="gift60-date"></div>
+            </div>
+            <div class="gift-card disabled" id="gift75" onclick="redeemGift(75)">
+                <img src="https://via.placeholder.com/50" alt="Gift 75">
+                75 points
+                <div class="gift-info" id="gift75-balance">คงเหลือ: 0</div>
+                <div class="gift-info" id="gift75-date"></div>
+            </div>
+        </div>
     </div>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="gift.js"></script>
