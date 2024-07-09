@@ -135,7 +135,7 @@ function displayPoints(points) {
     }
 }
 function checkIfRedeemed(uid, level) {
-    return fetch(`https://script.google.com/macros/s/YOUR_SCRIPT_URL/exec?action=checkIfRedeemed&uid=${uid}&level=${level}`)
+    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=checkIfRedeemed&uid=${uid}&level=${level}`)
         .then(response => response.json())
         .then(data => {
             if (data.redeemed) {
