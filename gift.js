@@ -70,27 +70,6 @@ function fetchGiftList() {
         });
 }
 
-function updateGiftButtons(userData, gifts, points) {
-    const giftLevels = [15, 30, 45, 60, 75];
-    giftLevels.forEach(level => {
-        const columnIndex = getColumnIndexByLevel(level);
-        const button = document.getElementById(`gift${level}`);
-        const gift = gifts.find(g => g.Level == level);
-
-        if (button && gift) {
-            button.disabled = userData[columnIndex] === 'N' || points < level || gift.Balance <= 0;
-            button.innerText = `${level} points (${gift.Balance} left)`;
-
-            if (button.disabled) {
-                disableButton(button);
-            } else {
-                enableButton(button);
-            }
-        } else {
-            console.error(`Button for gift level ${level} not found or gift data missing`);
-        }
-    });
-}
 
 function getColumnIndexByLevel(level) {
     switch (level) {
@@ -147,6 +126,46 @@ function redeemGift(level) {
     });
 }
 
+function displayPoints(points) {
+    const pointsElement = document.getElementById('points-value');
+    if (pointsElement) {
+        pointsElement.innerText = points;
+    } else {
+        console.error('Points element not found');
+    }
+}
+function updateGiftButtons(gifts, uid, points) {
+    const buttonPromises = gifts.map(gift => {
+        const button = document.getElementById(`gift${gift.Level}`);
+        if (button) {
+            button.disabled = gift.Balance <= 0 || points < gift.Level;
+            if (!button.disabled) {
+                return checkIfRedeemed(uid, gift.Level).then(redeemed => {
+                    if (redeemed) {
+                        button.disabled = true;
+                        button.innerText = 'รับสิทธิ์แล้ว';
+                    } else {
+                        enableButton(button);
+                    }
+                });
+            } else {
+                if (gift.Balance <= 0) {
+                    button.innerText = 'ของรางวัลหมด';
+                } else if (points < gift.Level) {
+                    button.innerText = `${gift.Level} points`;
+                }
+                disableButton(button);
+                return Promise.resolve();
+            }
+        } else {
+            console.error(`Button for gift level ${gift.Level} not found`);
+            return Promise.resolve();
+        }
+    });
+
+    return Promise.all(buttonPromises);
+}
+
 function disableButton(button) {
     button.classList.add('disabled');
     button.style.pointerEvents = 'none';
@@ -155,13 +174,4 @@ function disableButton(button) {
 function enableButton(button) {
     button.classList.remove('disabled');
     button.style.pointerEvents = 'auto';
-}
-
-function displayPoints(points) {
-    const pointsElement = document.getElementById('points-value');
-    if (pointsElement) {
-        pointsElement.innerText = points;
-    } else {
-        console.error('Points element not found');
-    }
 }
