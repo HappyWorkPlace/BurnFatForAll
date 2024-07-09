@@ -134,14 +134,30 @@ function displayPoints(points) {
         console.error('Points element not found');
     }
 }
+function checkIfRedeemed(uid, level) {
+    return fetch(`https://script.google.com/macros/s/YOUR_SCRIPT_URL/exec?action=checkIfRedeemed&uid=${uid}&level=${level}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.redeemed) {
+                return "รับสิทธิ์แล้ว";
+            } else {
+                return null;
+            }
+        })
+        .catch(error => {
+            console.error('Error checking if redeemed:', error);
+            return null;
+        });
+}
+
 function updateGiftButtons(gifts, uid, points) {
     const buttonPromises = gifts.map(gift => {
         const button = document.getElementById(`gift${gift.Level}`);
         if (button) {
             button.disabled = gift.Balance <= 0 || points < gift.Level;
             if (!button.disabled) {
-                return checkIfRedeemed(uid, gift.Level).then(redeemed => {
-                    if (redeemed) {
+                return checkIfRedeemed(uid, gift.Level).then(status => {
+                    if (status === "รับสิทธิ์แล้ว") {
                         button.disabled = true;
                         button.innerText = 'รับสิทธิ์แล้ว';
                     } else {
@@ -175,3 +191,4 @@ function enableButton(button) {
     button.classList.remove('disabled');
     button.style.pointerEvents = 'auto';
 }
+
