@@ -23,18 +23,7 @@ function initializeLiff(myLiffId) {
     });
 }
 
-function fetchDataAndUpdateUI(uid) {
-    Promise.all([fetchUserData(uid), fetchGiftList()])
-        .then(([userData, gifts]) => {
-            const points = userData.data[5]; // Assuming points is at index 5
-            updateGiftButtons(userData.data, gifts, points);
-            displayPoints(points);
-        }).catch(err => {
-            console.error('Error fetching data:', err);
-            document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
-            document.getElementById('gift-container').innerText = 'ไม่สามารถดึงข้อมูลของขวัญได้';
-        });
-}
+
 
 function fetchUserData(uid) {
     return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserData&uid=${uid}`)
@@ -135,7 +124,7 @@ function displayPoints(points) {
     }
 }
 function checkIfRedeemed(uid, level) {
-    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=checkIfRedeemed&uid=${uid}&level=${level}`)
+    return fetch(`https://script.google.com/macros/s/YOUR_SCRIPT_URL/exec?action=checkIfRedeemed&uid=${uid}&level=${level}`)
         .then(response => response.json())
         .then(data => {
             if (data.redeemed) {
@@ -150,13 +139,13 @@ function checkIfRedeemed(uid, level) {
         });
 }
 
-function updateGiftButtons(gifts, uid, points) {
+function updateGiftButtons(userData, gifts, points) {
     const buttonPromises = gifts.map(gift => {
         const button = document.getElementById(`gift${gift.Level}`);
         if (button) {
             button.disabled = gift.Balance <= 0 || points < gift.Level;
             if (!button.disabled) {
-                return checkIfRedeemed(uid, gift.Level).then(status => {
+                return checkIfRedeemed(userData[0], gift.Level).then(status => {
                     if (status === "รับสิทธิ์แล้ว") {
                         button.disabled = true;
                         button.innerText = 'รับสิทธิ์แล้ว';
@@ -191,4 +180,18 @@ function enableButton(button) {
     button.classList.remove('disabled');
     button.style.pointerEvents = 'auto';
 }
+
+function fetchDataAndUpdateUI(uid) {
+    Promise.all([fetchUserData(uid), fetchGiftList()])
+        .then(([userData, gifts]) => {
+            const points = userData.data[5]; // Assuming points is at index 5
+            updateGiftButtons(userData.data, gifts, points);
+            displayPoints(points);
+        }).catch(err => {
+            console.error('Error fetching data:', err);
+            document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
+            document.getElementById('gift-container').innerText = 'ไม่สามารถดึงข้อมูลของขวัญได้';
+        });
+}
+
 
