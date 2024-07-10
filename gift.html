@@ -233,26 +233,21 @@ function updateGiftCards(userData, gifts, points) {
         if (balanceElement) {
             balanceElement.innerText = gift.Balance;
         }
-
         if (button) {
-            if (userGiftStatus === 'N') {
-                button.style.display = 'none';
-                redeemedImage.style.display = 'none';
-                outOfStockImage.style.display = 'none';
-            } else if (userGiftStatus === 'R') {
+              if (userGiftStatus === 'R') {
                 button.style.display = 'none';
                 redeemedImage.style.display = 'block';
                 outOfStockImage.style.display = 'none';
-            } else if (userGiftStatus === 'O') {
+              } else if (userGiftStatus === 'O') {
                 button.style.display = 'none';
                 redeemedImage.style.display = 'none';
                 outOfStockImage.style.display = 'block';
-            } else if (userGiftStatus === 'Y') {
-                button.style.display = 'block';
+              } else if (userGiftStatus === 'Y') {
+                button.style.display = 'block'; // แสดงปุ่ม
+                button.disabled = false;       // เปิดใช้งานปุ่ม
                 redeemedImage.style.display = 'none';
                 outOfStockImage.style.display = 'none';
-            }
-        }
+                }
     });
 }
 
