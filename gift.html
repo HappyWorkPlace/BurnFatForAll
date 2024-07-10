@@ -237,22 +237,18 @@ function updateGiftCards(userData, gifts, points) {
         if (button) {
             if (userGiftStatus === 'N') {
                 button.style.display = 'none';
+                redeemedImage.style.display = 'none';
+                outOfStockImage.style.display = 'none';
+            } else if (userGiftStatus === 'R') {
+                button.style.display = 'none';
                 redeemedImage.style.display = 'block';
                 outOfStockImage.style.display = 'none';
-            } else if (gift.Balance <= 0) {
+            } else if (userGiftStatus === 'O') {
                 button.style.display = 'none';
+                redeemedImage.style.display = 'none';
                 outOfStockImage.style.display = 'block';
-                redeemedImage.style.display = 'none';
-            } else if (points < gift.Level) {
-                button.disabled = true;
-                button.classList.add('disabled');
-                button.style.display = 'inline-block';
-                redeemedImage.style.display = 'none';
-                outOfStockImage.style.display = 'none';
-            } else {
-                button.disabled = false;
-                button.classList.remove('disabled');
-                button.style.display = 'inline-block';
+            } else if (userGiftStatus === 'Y') {
+                button.style.display = 'block';
                 redeemedImage.style.display = 'none';
                 outOfStockImage.style.display = 'none';
             }
