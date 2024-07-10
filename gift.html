@@ -61,6 +61,15 @@
         .gift-info {
             flex: 1;
             text-align: left;
+            padding:10px;
+        }
+        .gift-details p {
+        margin: 5px 0; /* ปรับระยะห่างระหว่างบรรทัด */
+        padding: 0; /* ลด padding ภายในแต่ละบรรทัด */
+        }
+
+        .gift-name {
+        margin-bottom: 5px; /* ปรับระยะห่างระหว่างชื่อของขวัญกับรายละเอียด */
         }
         .gift-button, .status-image {
             width: 100px;
@@ -135,7 +144,7 @@
             <div class="gift-details">
                 <p>คะแนน:45</p>
                 <p>จำนวนคงเหลือ <span id="gift45-balance">0</span></p>
-        </div>
+            </div>
         </div>
             <button class="gift-button disabled" id="gift45" onclick="redeemGift(45)">กดรับ</button>
             <span id="gift45-redeemed" style="display: none; font-weight: bold; color: gray;">รับแล้ว</span>
@@ -148,11 +157,13 @@
             <div class="gift-details">
                 <p>คะแนน:60</p>
                 <p>จำนวนคงเหลือ <span id="gift60-balance">0</span></p>
+            </div>
         </div>
             <button class="gift-button disabled" id="gift60" onclick="redeemGift(60)">กดรับ</button>
               <span id="gift60-redeemed" style="display: none; font-weight: bold; color: gray;">รับแล้ว</span>
             <span id="gift60-outofstock" style="display: none; font-weight: bold; color: gray;">ของหมด</span>
         </div>
+            
         <div class="gift-card">
             <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/75.png" alt="Iphone">
         <div class="gift-info">
@@ -160,6 +171,7 @@
             <div class="gift-details">
                 <p>คะแนน:75</p>
                 <p>จำนวนคงเหลือ <span id="gift75-balance">0</span></p>
+            </div>
         </div>
             <button class="gift-button disabled" id="gift75" onclick="redeemGift(75)">กดรับ</button>
               <span id="gift75-redeemed" style="display: none; font-weight: bold; color: gray;">รับแล้ว</span>
