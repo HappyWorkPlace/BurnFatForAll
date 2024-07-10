@@ -222,34 +222,40 @@ function fetchGiftList() {
 }
 
 function updateGiftCards(userData, gifts, points) {
-    gifts.forEach(gift => {
-        const balanceElement = document.getElementById(`gift${gift.Level}-balance`);
-        const button = document.getElementById(`gift${gift.Level}`);
-        const redeemedImage = document.getElementById(`gift${gift.Level}-redeemed`);
-        const outOfStockImage = document.getElementById(`gift${gift.Level}-outofstock`);
-        const columnIndex = getColumnIndexByLevel(gift.Level);
-        const userGiftStatus = userData[columnIndex];
+  gifts.forEach(gift => {
+    const balanceElement = document.getElementById(`gift${gift.Level}-balance`);
+    const button = document.getElementById(`gift${gift.Level}`);
+    const redeemedImage = document.getElementById(`gift${gift.Level}-redeemed`);
+    const outOfStockImage = document.getElementById(`gift${gift.Level}-outofstock`);
+    const columnIndex = getColumnIndexByLevel(gift.Level); // I'm assuming this function exists elsewhere
+    const userGiftStatus = userData[columnIndex]; // Make sure userData is an array
 
-        if (balanceElement) {
-            balanceElement.innerText = gift.Balance;
-        }
-        if (button) {
-              if (userGiftStatus === 'R') {
-                button.style.display = 'none';
-                redeemedImage.style.display = 'block';
-                outOfStockImage.style.display = 'none';
-              } else if (userGiftStatus === 'O') {
-                button.style.display = 'none';
-                redeemedImage.style.display = 'none';
-                outOfStockImage.style.display = 'block';
-              } else if (userGiftStatus === 'Y') {
-                button.style.display = 'block'; // แสดงปุ่ม
-                button.disabled = false;       // เปิดใช้งานปุ่ม
-                redeemedImage.style.display = 'none';
-                outOfStockImage.style.display = 'none';
-                }
-    });
+    if (balanceElement) {
+      balanceElement.innerText = gift.Balance; // Ensure gift.Balance exists
+    }
+
+    // Check if button element exists before manipulating it
+    if (button) { 
+      if (userGiftStatus === 'R') {
+        button.style.display = 'none';
+        redeemedImage.style.display = 'block';
+        outOfStockImage.style.display = 'none';
+      } else if (userGiftStatus === 'O') {
+        button.style.display = 'none';
+        redeemedImage.style.display = 'none';
+        outOfStockImage.style.display = 'block';
+      } else if (userGiftStatus === 'Y') {
+        button.style.display = 'block'; // แสดงปุ่ม
+        button.disabled = false;       // เปิดใช้งานปุ่ม
+        redeemedImage.style.display = 'none';
+        outOfStockImage.style.display = 'none';
+      } else { // Add a default case
+        button.style.display = 'none'; // Or any other default behavior
+      }
+    }
+  });
 }
+
 
 function getColumnIndexByLevel(level) {
     switch (level) {
