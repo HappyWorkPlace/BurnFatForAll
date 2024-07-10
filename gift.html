@@ -87,6 +87,12 @@
         .gift-button.disabled:hover {
             transform: none;
         }
+        .gift-button.enabled {
+            background-color: #4CAF50;
+        }
+        .gift-button.enabled:hover {
+            background-color: #388E3C;
+        }
         .status-image {
             display: none;
         }
@@ -247,16 +253,19 @@ function updateGiftCards(userData, gifts, points) {
       } else if (userGiftStatus === 'Y') {
         button.style.display = 'block'; // แสดงปุ่ม
         button.disabled = false;       // เปิดใช้งานปุ่ม
+        button.classList.add('enabled'); // เปลี่ยนปุ่มเป็นสีเขียว
         redeemedImage.style.display = 'none';
         outOfStockImage.style.display = 'none';
-      } 
-      // else { // Add a default case
-      //   button.style.display = 'none'; // Or any other default behavior
-      // }
+      } else {
+        button.style.display = 'block';
+        button.disabled = true;
+        button.classList.remove('enabled');
+        redeemedImage.style.display = 'none';
+        outOfStockImage.style.display = 'none';
+      }
     }
   });
 }
-
 
 function getColumnIndexByLevel(level) {
     switch (level) {
