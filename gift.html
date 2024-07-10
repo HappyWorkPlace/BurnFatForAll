@@ -45,31 +45,25 @@
         }
         .gift-card {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            background-color: #fff;
-            border-radius: 15px;
+            background-color: #f9f9f9;
+            padding: 10px 20px;
+            border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 10px;
             margin-bottom: 10px;
             width: 100%;
         }
-        .gift-card img {
-            width: 50px;
-            height: 50px;
-            border-radius: 10px;
-            margin-right: 10px;
-        }
-        .gift-details {
-            flex-grow: 1;
+        .gift-info {
             text-align: left;
         }
-        .gift-details h3 {
-            margin: 0;
+        .gift-name {
             font-size: 1.2em;
+            font-weight: bold;
         }
-        .gift-details p {
-            margin: 0;
-            color: #888;
+        .gift-details {
+            font-size: 0.9em;
+            color: #555;
         }
         .gift-button {
             background-color: #8BC34A;
@@ -80,6 +74,7 @@
             font-size: 1em;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         .gift-button:hover {
             background-color: #7CB342;
@@ -92,220 +87,238 @@
         .gift-button.disabled:hover {
             transform: none;
         }
+        .status-image {
+            height: 50px;
+        }
     </style>
 </head>
 <body>
     <div class="container" id="gift-container">
         <div class="points-title">Point ของคุณ</div>
         <div class="points-value" id="points-value">0</div>
-        <div class="gift-card" id="gift15-card">
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/15.png" alt="แก้วน้ำ">
-            <div class="gift-details">
-                <h3>แก้วน้ำ</h3>
-                <p>คะแนน: 15 | จำนวนคงเหลือ <span id="gift15-balance">XX</span></p>
+        <div class="gift-card">
+            <div class="gift-info">
+                <div class="gift-name">แก้วน้ำ</div>
+                <div class="gift-details">คะแนน: 15 | จำนวนคงเหลือ <span id="gift15-balance">0</span></div>
             </div>
-            <button class="gift-button disabled" id="gift15" onclick="redeemGift(15)">Claim</button>
+            <button class="gift-button" id="gift15" onclick="redeemGift(15)">Claim</button>
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemed_sticker.JPG" alt="Redeemed" class="status-image" id="gift15-redeemed" style="display: none;">
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/outstock_sticker.JPG" alt="Out of Stock" class="status-image" id="gift15-outofstock" style="display: none;">
         </div>
-        <div class="gift-card" id="gift30-card">
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/30.png" alt="จาน">
-            <div class="gift-details">
-                <h3>จาน</h3>
-                <p>คะแนน: 30 | จำนวนคงเหลือ <span id="gift30-balance">XX</span></p>
+        <div class="gift-card">
+            <div class="gift-info">
+                <div class="gift-name">จาน</div>
+                <div class="gift-details">คะแนน: 30 | จำนวนคงเหลือ <span id="gift30-balance">0</span></div>
             </div>
-            <button class="gift-button disabled" id="gift30" onclick="redeemGift(30)">Claim</button>
+            <button class="gift-button" id="gift30" onclick="redeemGift(30)">Claim</button>
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemed_sticker.JPG" alt="Redeemed" class="status-image" id="gift30-redeemed" style="display: none;">
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/outstock_sticker.JPG" alt="Out of Stock" class="status-image" id="gift30-outofstock" style="display: none;">
         </div>
-        <div class="gift-card" id="gift45-card">
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/45.png" alt="กระติก">
-            <div class="gift-details">
-                <h3>กระติก</h3>
-                <p>คะแนน: 45 | จำนวนคงเหลือ <span id="gift45-balance">XX</span></p>
+        <div class="gift-card">
+            <div class="gift-info">
+                <div class="gift-name">กระติก</div>
+                <div class="gift-details">คะแนน: 45 | จำนวนคงเหลือ <span id="gift45-balance">0</span></div>
             </div>
-            <button class="gift-button disabled" id="gift45" onclick="redeemGift(45)">Claim</button>
+            <button class="gift-button" id="gift45" onclick="redeemGift(45)">Claim</button>
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemed_sticker.JPG" alt="Redeemed" class="status-image" id="gift45-redeemed" style="display: none;">
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/outstock_sticker.JPG" alt="Out of Stock" class="status-image" id="gift45-outofstock" style="display: none;">
         </div>
-        <div class="gift-card" id="gift60-card">
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/60.png" alt="ร่ม">
-            <div class="gift-details">
-                <h3>ร่ม</h3>
-                <p>คะแนน: 60 | จำนวนคงเหลือ <span id="gift60-balance">XX</span></p>
+        <div class="gift-card">
+            <div class="gift-info">
+                <div class="gift-name">ร่ม</div>
+                <div class="gift-details">คะแนน: 60 | จำนวนคงเหลือ <span id="gift60-balance">0</span></div>
             </div>
-            <button class="gift-button disabled" id="gift60" onclick="redeemGift(60)">Claim</button>
+            <button class="gift-button" id="gift60" onclick="redeemGift(60)">Claim</button>
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemed_sticker.JPG" alt="Redeemed" class="status-image" id="gift60-redeemed" style="display: none;">
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/outstock_sticker.JPG" alt="Out of Stock" class="status-image" id="gift60-outofstock" style="display: none;">
         </div>
-        <div class="gift-card" id="gift75-card">
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/75.png" alt="Iphone">
-            <div class="gift-details">
-                <h3>Iphone</h3>
-                <p>คะแนน: 75 | จำนวนคงเหลือ <span id="gift75-balance">XX</span></p>
+        <div class="gift-card">
+            <div class="gift-info">
+                <div class="gift-name">Iphone</div>
+                <div class="gift-details">คะแนน: 75 | จำนวนคงเหลือ <span id="gift75-balance">0</span></div>
             </div>
-            <button class="gift-button disabled" id="gift75" onclick="redeemGift(75)">Claim</button>
+            <button class="gift-button" id="gift75" onclick="redeemGift(75)">Claim</button>
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemed_sticker.JPG" alt="Redeemed" class="status-image" id="gift75-redeemed" style="display: none;">
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/outstock_sticker.JPG" alt="Out of Stock" class="status-image" id="gift75-outofstock" style="display: none;">
         </div>
     </div>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
-document.addEventListener('DOMContentLoaded', function () {
-    initializeLiff('2004752543-26ldj6RO'); 
-});
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeLiff('2004752543-26ldj6RO'); 
+        });
 
-function initializeLiff(myLiffId) {
-    liff.init({
-        liffId: myLiffId
-    }).then(() => {
-        if (liff.isLoggedIn()) {
+        function initializeLiff(myLiffId) {
+            liff.init({
+                liffId: myLiffId
+            }).then(() => {
+                if (liff.isLoggedIn()) {
+                    liff.getProfile().then(profile => {
+                        const uid = profile.userId;
+                        fetchDataAndUpdateUI(uid);
+                    }).catch(err => {
+                        console.error('Failed to get profile:', err);
+                        document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
+                    });
+                } else {
+                    liff.login();
+                }
+            }).catch(err => {
+                console.error('LIFF initialization failed', err);
+                document.getElementById('gift-container').innerText = 'ไม่สามารถดึงข้อมูลของขวัญได้';
+            });
+        }
+
+        function fetchDataAndUpdateUI(uid) {
+            Promise.all([fetchUserData(uid), fetchGiftList()])
+                .then(([userData, gifts]) => {
+                    const points = userData[5]; // Assuming points is at index 5
+                    displayPoints(points);
+                    updateGiftCards(userData, gifts);
+                }).catch(err => {
+                    console.error('Error fetching data:', err);
+                    document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
+                    document.getElementById('gift-container').innerText = 'ไม่สามารถดึงข้อมูลของขวัญได้';
+                });
+        }
+
+        function fetchUserData(uid) {
+            return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserData&uid=${uid}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        return data.data;
+                    } else {
+                        throw new Error('Error fetching user data');
+                    }
+                });
+        }
+
+        function fetchGiftList() {
+            return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getGiftList`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        return data.gifts;
+                    } else {
+                        throw new Error('Error fetching gift list');
+                    }
+                });
+        }
+
+        function updateGiftCards(userData, gifts) {
+            gifts.forEach(gift => {
+                const balanceElement = document.getElementById(`gift${gift.Level}-balance`);
+                const button = document.getElementById(`gift${gift.Level}`);
+                const redeemedImage = document.getElementById(`gift${gift.Level}-redeemed`);
+                const outOfStockImage = document.getElementById(`gift${gift.Level}-outofstock`);
+                const columnIndex = getColumnIndexByLevel(gift.Level);
+                const userGiftStatus = userData[columnIndex];
+
+                if (balanceElement) {
+                    balanceElement.innerText = gift.Balance;
+                }
+
+                if (button && redeemedImage && outOfStockImage) {
+                    button.disabled = userGiftStatus === 'N' || gift.Balance <= 0;
+                    if (button.disabled) {
+                        button.style.display = 'none';
+                        if (userGiftStatus === 'N') {
+                            redeemedImage.style.display = 'block';
+                            outOfStockImage.style.display = 'none';
+                        } else if (gift.Balance <= 0) {
+                            outOfStockImage.style.display = 'block';
+                            redeemedImage.style.display = 'none';
+                        }
+                    } else {
+                        button.style.display = 'block';
+                        redeemedImage.style.display = 'none';
+                        outOfStockImage.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        function getColumnIndexByLevel(level) {
+            switch (level) {
+                case 15:
+                    return 6; // Column G
+                case 30:
+                    return 7; // Column H
+                case 45:
+                    return 8; // Column I
+                case 60:
+                    return 9; // Column J
+                case 75:
+                    return 10; // Column K
+                default:
+                    return null;
+            }
+        }
+
+        function redeemGift(level) {
             liff.getProfile().then(profile => {
                 const uid = profile.userId;
-                fetchDataAndUpdateUI(uid);
-            }).catch(err => {
-                console.error('Failed to get profile:', err);
-                document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
-            });
-        } else {
-            liff.login();
-        }
-    }).catch(err => {
-        console.error('LIFF initialization failed', err);
-        document.getElementById('gift-container').innerText = 'ไม่สามารถดึงข้อมูลของขวัญได้';
-    });
-}
-
-function fetchDataAndUpdateUI(uid) {
-    Promise.all([fetchUserData(uid), fetchGiftList()])
-        .then(([userData, gifts]) => {
-            const points = userData[5]; // Assuming points is at index 5
-            displayPoints(points);
-            updateGiftCards(userData, gifts);
-        }).catch(err => {
-            console.error('Error fetching data:', err);
-            document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
-            document.getElementById('gift-container').innerText = 'ไม่สามารถดึงข้อมูลของขวัญได้';
-        });
-}
-
-function fetchUserData(uid) {
-    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserData&uid=${uid}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                return data.data;
-            } else {
-                throw new Error('Error fetching user data');
-            }
-        });
-}
-
-function fetchGiftList() {
-    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getGiftList`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                return data.gifts;
-            } else {
-                throw new Error('Error fetching gift list');
-            }
-        });
-}
-
-function updateGiftCards(userData, gifts) {
-    gifts.forEach(gift => {
-        const balanceElement = document.getElementById(`gift${gift.Level}-balance`);
-        const button = document.getElementById(`gift${gift.Level}`);
-        const columnIndex = getColumnIndexByLevel(gift.Level);
-        const userGiftStatus = userData[columnIndex];
-
-        if (balanceElement) {
-            balanceElement.innerText = gift.Balance;
-        }
-
-        if (button) {
-            button.disabled = userGiftStatus === 'N' || gift.Balance <= 0;
-            if (button.disabled) {
-                disableButton(button);
-            } else {
-                enableButton(button);
-            }
-        }
-    });
-}
-
-function getColumnIndexByLevel(level) {
-    switch (level) {
-        case 15:
-            return 6; // Column G
-        case 30:
-            return 7; // Column H
-        case 45:
-            return 8; // Column I
-        case 60:
-            return 9; // Column J
-        case 75:
-            return 10; // Column K
-        default:
-            return null;
-    }
-}
-
-function redeemGift(level) {
-    liff.getProfile().then(profile => {
-        const uid = profile.userId;
-        Swal.fire({
-            title: 'กำลังจองของรางวัล',
-            html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/giftAnimattion.gif" alt="loading" style="width:300px;height:300px;"><p>กรุณารอสักครู่...</p>',
-            showConfirmButton: false,
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-                fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=redeemGift&uid=${uid}&level=${level}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        Swal.close();
-                        if (data.success) {
-                            Swal.fire({
-                                title: 'สำเร็จ',
-                                html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemGIF.gif" alt="success" style="width:300px;height:300px;"><p>กดรับของขวัญแล้ว</p>'
-                            }).then(() => {
-                                document.body.innerHTML = '<p>บันทึกข้อมูลเรียบร้อยแล้ว</p>';
+                Swal.fire({
+                    title: 'กำลังจองของรางวัล',
+                    html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/giftAnimattion.gif" alt="loading" style="width:300px;height:300px;"><p>กรุณารอสักครู่...</p>',
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                        fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=redeemGift&uid=${uid}&level=${level}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                Swal.close();
+                                if (data.success) {
+                                    Swal.fire({
+                                        title: 'สำเร็จ',
+                                        html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemGIF.gif" alt="success" style="width:300px;height:300px;"><p>กดรับของขวัญแล้ว</p>'
+                                    }).then(() => {
+                                        document.body.innerHTML = '<p>บันทึกข้อมูลเรียบร้อยแล้ว</p>';
+                                    });
+                                } else {
+                                    Swal.fire('ผิดพลาด', data.message, 'error');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error redeeming gift:', error);
+                                Swal.close();
+                                Swal.fire('ผิดพลาด', 'ไม่สามารถรับของรางวัลได้', 'error');
                             });
-                        } else {
-                            Swal.fire('ผิดพลาด', data.message, 'error');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error redeeming gift:', error);
-                        Swal.close();
-                        Swal.fire('ผิดพลาด', 'ไม่สามารถรับของรางวัลได้', 'error');
-                    });
+                    }
+                });
+            });
+        }
+
+        function disableButton(button) {
+            button.classList.add('disabled');
+            button.style.pointerEvents = 'none';
+        }
+
+        function enableButton(button) {
+            button.classList.remove('disabled');
+            button.style.pointerEvents = 'auto';
+        }
+
+        function displayPoints(points) {
+            const pointsElement = document.getElementById('points-value');
+            if (pointsElement) {
+                pointsElement.innerText = points;
+            } else {
+                console.error('Points element not found');
             }
-        });
-    });
-}
-
-function disableButton(button) {
-    button.classList.add('disabled');
-    button.style.pointerEvents = 'none';
-}
-
-function enableButton(button) {
-    button.classList.remove('disabled');
-    button.style.pointerEvents = 'auto';
-}
-
-function displayPoints(points) {
-    const pointsElement = document.getElementById('points-value');
-    if (pointsElement) {
-        pointsElement.innerText = points;
-    } else {
-        console.error('Points element not found');
-    }
-}
-
+        }
     </script>
 </body>
 </html>
