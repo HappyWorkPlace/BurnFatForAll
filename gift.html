@@ -149,7 +149,7 @@
     </div>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
     initializeLiff('2004752543-26ldj6RO'); 
 });
 
@@ -179,7 +179,7 @@ function fetchDataAndUpdateUI(uid) {
         .then(([userData, gifts]) => {
             const points = userData[5]; // Assuming points is at index 5
             displayPoints(points);
-            updateGiftCards(userData, gifts);
+            updateGiftCards(userData, gifts, points);
         }).catch(err => {
             console.error('Error fetching data:', err);
             document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
@@ -221,7 +221,7 @@ function fetchGiftList() {
         });
 }
 
-function updateGiftCards(userData, gifts) {
+function updateGiftCards(userData, gifts, points) {
     gifts.forEach(gift => {
         const balanceElement = document.getElementById(`gift${gift.Level}-balance`);
         const button = document.getElementById(`gift${gift.Level}`);
@@ -238,16 +238,24 @@ function updateGiftCards(userData, gifts) {
             if (userGiftStatus === 'N') {
                 button.style.display = 'none';
                 redeemedImage.style.display = 'block';
+                outOfStockImage.style.display = 'none';
             } else if (gift.Balance <= 0) {
                 button.style.display = 'none';
                 outOfStockImage.style.display = 'block';
-            } 
-            // else {
-            //     button.disabled = false;
-            //     button.style.display = 'inline-block';
-            //     redeemedImage.style.display = 'none';
-            //     outOfStockImage.style.display = 'none';
-            // }
+                redeemedImage.style.display = 'none';
+            } else if (points < gift.Level) {
+                button.disabled = true;
+                button.classList.add('disabled');
+                button.style.display = 'inline-block';
+                redeemedImage.style.display = 'none';
+                outOfStockImage.style.display = 'none';
+            } else {
+                button.disabled = false;
+                button.classList.remove('disabled');
+                button.style.display = 'inline-block';
+                redeemedImage.style.display = 'none';
+                outOfStockImage.style.display = 'none';
+            }
         }
     });
 }
@@ -302,16 +310,6 @@ function redeemGift(level) {
             }
         });
     });
-}
-
-function disableButton(button) {
-    button.classList.add('disabled');
-    button.style.pointerEvents = 'none';
-}
-
-function enableButton(button) {
-    button.classList.remove('disabled');
-    button.style.pointerEvents = 'auto';
 }
 
 function displayPoints(points) {
