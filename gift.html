@@ -44,33 +44,33 @@
             margin-bottom: 20px;
         }
         .gift-card {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #f9f9f9;
-            padding: 10px 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            padding: 10px;
             margin-bottom: 10px;
-            width: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .gift-card img {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
         }
         .gift-info {
+            flex: 1;
             text-align: left;
         }
-        .gift-name {
-            font-size: 1.2em;
-            font-weight: bold;
-        }
-        .gift-details {
-            font-size: 0.9em;
-            color: #555;
+        .gift-button, .status-image {
+            width: 100px;
         }
         .gift-button {
             background-color: #8BC34A;
             color: white;
             border: none;
             border-radius: 25px;
-            padding: 10px 15px;
+            padding: 10px;
             font-size: 1em;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.3s;
@@ -88,7 +88,7 @@
             transform: none;
         }
         .status-image {
-            height: 50px;
+            display: none;
         }
     </style>
 </head>
@@ -97,54 +97,59 @@
         <div class="points-title">Point ของคุณ</div>
         <div class="points-value" id="points-value">0</div>
         <div class="gift-card">
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/15.png" alt="แก้วน้ำ">
             <div class="gift-info">
                 <div class="gift-name">แก้วน้ำ</div>
                 <div class="gift-details">คะแนน: 15 | จำนวนคงเหลือ <span id="gift15-balance">0</span></div>
             </div>
-            <button class="gift-button" id="gift15" onclick="redeemGift(15)">Claim</button>
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemed_sticker.JPG" alt="Redeemed" class="status-image" id="gift15-redeemed" style="display: none;">
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/outstock_sticker.JPG" alt="Out of Stock" class="status-image" id="gift15-outofstock" style="display: none;">
+            <button class="gift-button disabled" id="gift15" onclick="redeemGift(15)">Claim</button>
+            <img src="redeemed_sticker.JPG" alt="Redeemed" class="status-image" id="gift15-redeemed" style="display: none;">
+            <img src="outstock_sticker.JPG" alt="Out of Stock" class="status-image" id="gift15-outofstock" style="display: none;">
         </div>
         <div class="gift-card">
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/30.png" alt="จาน">
             <div class="gift-info">
                 <div class="gift-name">จาน</div>
                 <div class="gift-details">คะแนน: 30 | จำนวนคงเหลือ <span id="gift30-balance">0</span></div>
             </div>
-            <button class="gift-button" id="gift30" onclick="redeemGift(30)">Claim</button>
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemed_sticker.JPG" alt="Redeemed" class="status-image" id="gift30-redeemed" style="display: none;">
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/outstock_sticker.JPG" alt="Out of Stock" class="status-image" id="gift30-outofstock" style="display: none;">
+            <button class="gift-button disabled" id="gift30" onclick="redeemGift(30)">Claim</button>
+            <img src="redeemed_sticker.JPG" alt="Redeemed" class="status-image" id="gift30-redeemed" style="display: none;">
+            <img src="outstock_sticker.JPG" alt="Out of Stock" class="status-image" id="gift30-outofstock" style="display: none;">
         </div>
         <div class="gift-card">
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/45.png" alt="กระติก">
             <div class="gift-info">
                 <div class="gift-name">กระติก</div>
                 <div class="gift-details">คะแนน: 45 | จำนวนคงเหลือ <span id="gift45-balance">0</span></div>
             </div>
-            <button class="gift-button" id="gift45" onclick="redeemGift(45)">Claim</button>
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemed_sticker.JPG" alt="Redeemed" class="status-image" id="gift45-redeemed" style="display: none;">
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/outstock_sticker.JPG" alt="Out of Stock" class="status-image" id="gift45-outofstock" style="display: none;">
+            <button class="gift-button disabled" id="gift45" onclick="redeemGift(45)">Claim</button>
+            <img src="redeemed_sticker.JPG" alt="Redeemed" class="status-image" id="gift45-redeemed" style="display: none;">
+            <img src="outstock_sticker.JPG" alt="Out of Stock" class="status-image" id="gift45-outofstock" style="display: none;">
         </div>
         <div class="gift-card">
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/60.png" alt="ร่ม">
             <div class="gift-info">
                 <div class="gift-name">ร่ม</div>
                 <div class="gift-details">คะแนน: 60 | จำนวนคงเหลือ <span id="gift60-balance">0</span></div>
             </div>
-            <button class="gift-button" id="gift60" onclick="redeemGift(60)">Claim</button>
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemed_sticker.JPG" alt="Redeemed" class="status-image" id="gift60-redeemed" style="display: none;">
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/outstock_sticker.JPG" alt="Out of Stock" class="status-image" id="gift60-outofstock" style="display: none;">
+            <button class="gift-button disabled" id="gift60" onclick="redeemGift(60)">Claim</button>
+            <img src="redeemed_sticker.JPG" alt="Redeemed" class="status-image" id="gift60-redeemed" style="display: none;">
+            <img src="outstock_sticker.JPG" alt="Out of Stock" class="status-image" id="gift60-outofstock" style="display: none;">
         </div>
         <div class="gift-card">
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/75.png" alt="Iphone">
             <div class="gift-info">
                 <div class="gift-name">Iphone</div>
                 <div class="gift-details">คะแนน: 75 | จำนวนคงเหลือ <span id="gift75-balance">0</span></div>
             </div>
-            <button class="gift-button" id="gift75" onclick="redeemGift(75)">Claim</button>
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemed_sticker.JPG" alt="Redeemed" class="status-image" id="gift75-redeemed" style="display: none;">
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/outstock_sticker.JPG" alt="Out of Stock" class="status-image" id="gift75-outofstock" style="display: none;">
+            <button class="gift-button disabled" id="gift75" onclick="redeemGift(75)">Claim</button>
+            <img src="redeemed_sticker.JPG" alt="Redeemed" class="status-image" id="gift75-redeemed" style="display: none;">
+            <img src="outstock_sticker.JPG" alt="Out of Stock" class="status-image" id="gift75-outofstock" style="display: none;">
         </div>
     </div>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
- document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function () {
     initializeLiff('2004752543-26ldj6RO'); 
 });
 
@@ -174,7 +179,7 @@ function fetchDataAndUpdateUI(uid) {
         .then(([userData, gifts]) => {
             const points = userData[5]; // Assuming points is at index 5
             displayPoints(points);
-            updateGiftCards(userData, gifts, uid);
+            updateGiftCards(userData, gifts);
         }).catch(err => {
             console.error('Error fetching data:', err);
             document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
@@ -216,17 +221,7 @@ function fetchGiftList() {
         });
 }
 
-function checkIfRedeemed(uid, level) {
-    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=checkIfRedeemed&uid=${uid}&level=${level}`)
-        .then(response => response.json())
-        .then(data => data.redeemed)
-        .catch(error => {
-            console.error('Error checking if redeemed:', error);
-            return false;
-        });
-}
-
-function updateGiftCards(userData, gifts, uid) {
+function updateGiftCards(userData, gifts) {
     gifts.forEach(gift => {
         const balanceElement = document.getElementById(`gift${gift.Level}-balance`);
         const button = document.getElementById(`gift${gift.Level}`);
@@ -239,24 +234,20 @@ function updateGiftCards(userData, gifts, uid) {
             balanceElement.innerText = gift.Balance;
         }
 
-        if (button && redeemedImage && outOfStockImage) {
-            checkIfRedeemed(uid, gift.Level).then(isRedeemed => {
-                button.disabled = userGiftStatus === 'N' || gift.Balance <= 0 || isRedeemed;
-                if (button.disabled) {
-                    button.style.display = 'none';
-                    if (isRedeemed) {
-                        redeemedImage.style.display = 'block';
-                        outOfStockImage.style.display = 'none';
-                    } else if (gift.Balance <= 0) {
-                        outOfStockImage.style.display = 'block';
-                        redeemedImage.style.display = 'none';
-                    }
-                } else {
-                    button.style.display = 'block';
-                    redeemedImage.style.display = 'none';
-                    outOfStockImage.style.display = 'none';
-                }
-            });
+        if (button) {
+            if (userGiftStatus === 'N') {
+                button.style.display = 'none';
+                redeemedImage.style.display = 'block';
+            } else if (gift.Balance <= 0) {
+                button.style.display = 'none';
+                outOfStockImage.style.display = 'block';
+            } 
+            // else {
+            //     button.disabled = false;
+            //     button.style.display = 'inline-block';
+            //     redeemedImage.style.display = 'none';
+            //     outOfStockImage.style.display = 'none';
+            // }
         }
     });
 }
@@ -331,6 +322,7 @@ function displayPoints(points) {
         console.error('Points element not found');
     }
 }
+
     </script>
 </body>
 </html>
