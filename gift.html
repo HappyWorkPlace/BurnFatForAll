@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gift Redemption</title>
+    <title>แลกรับรองรางวัล</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
     <style>
@@ -327,7 +327,7 @@ function redeemGift(level) {
                         if (data.success) {
                             Swal.fire({
                                 title: 'สำเร็จ',
-                                html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemGIF.gif" alt="success" style="width:300px;height:300px;"><p>แลกรับรางวัลระดับ ${level} เรียบร้อย</p>'
+                                html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemGIF.gif" alt="success" style="width:300px;height:300px;"><p>แลกรับรางวัลเรียบร้อยแล้ว</p>'
                             }).then(() => {
                                 document.body.innerHTML = '<p>บันทึกข้อมูลเรียบร้อยแล้ว</p>';
                             });
