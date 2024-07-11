@@ -11,13 +11,17 @@ function recordSelection() {
     const factory = document.getElementById('factory').textContent;
     let selectedFood;
 
+    // ตรวจสอบว่าตัวเลือก dropdown อยู่ใน section ใด
     if (document.getElementById('singleDishOptionsSection').style.display === 'block') {
         selectedFood = document.getElementById('foodDropdownSingleDish').value;
     } else {
         selectedFood = document.getElementById('foodDropdown').value;
     }
 
-    if (!selectedFood) {
+    // Debug log ตรวจสอบค่าที่ถูกเลือกจาก dropdown
+    console.log('Selected food:', selectedFood);
+
+    if (!selectedFood || selectedFood === '') {
         Swal.fire('Error', 'Please select an item from the dropdown.', 'error');
         return;
     }
@@ -42,7 +46,6 @@ function recordSelection() {
             Swal.fire('Error', 'Failed to get user profile. Please try again later.', 'error');
         });
 }
-
 
 function checkUserColumnJ(uid, empNo, factory, selectedFood) {
     fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=checkUserColumnJ&uid=${uid}`)
