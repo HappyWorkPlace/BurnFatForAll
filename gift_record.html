@@ -121,7 +121,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
             if (data.success) {
                 const userInfo = data.records[0];
-                empNoElement.textContent = userInfo.Name;
+                empNoElement.textContent = userInfo.EmpNo;
                 nameElement.textContent = userInfo.Name;
                 divisionElement.textContent = userInfo.Division;
                 factoryElement.textContent = userInfo.Factory;
