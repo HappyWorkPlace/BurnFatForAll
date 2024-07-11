@@ -330,8 +330,11 @@ function redeemGift(level) {
                                 html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemGIF.gif" alt="success" style="width:300px;height:300px;"><p>แลกรับรางวัลเรียบร้อยแล้ว</p>'
                             }).then(() => {
                                 document.body.innerHTML = `
-                                    <p>บันทึกข้อมูลเรียบร้อยแล้ว</p>
-                                    <p>คุณสามารถตรวจสอบข้อมูลได้ที่ <a href="https://liff.line.me/2004752543-O6BZm2yN" target="_blank">Link</a></p>`;
+                                    <div style="text-align: center;">
+                                        <p style="font-weight: bold; color: blue;">บันทึกข้อมูลเรียบร้อยแล้ว</p>
+                                        <p>คุณสามารถตรวจสอบได้ที่ <a href="https://liff.line.me/2004752543-O6BZm2yN" target="_blank">Link</a></p>
+                                    </div>
+                                `;
                             });
                         } else {
                             Swal.fire('ผิดพลาด', data.message, 'error');
