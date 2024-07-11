@@ -64,12 +64,13 @@
             padding:10px;
         }
         .gift-details p {
-        margin: 5px 0; /* ปรับระยะห่างระหว่างบรรทัด */
-        padding: 0; /* ลด padding ภายในแต่ละบรรทัด */
+        margin: 5px 0;
+        padding: 0; 
         }
 
         .gift-name {
-        margin-bottom: 5px; /* ปรับระยะห่างระหว่างชื่อของขวัญกับรายละเอียด */
+        margin-bottom: 5px;
+        font-weight: bold;
         }
         .gift-button, .status-image {
             width: 100px;
@@ -326,7 +327,7 @@ function redeemGift(level) {
                         if (data.success) {
                             Swal.fire({
                                 title: 'สำเร็จ',
-                                html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemGIF.gif" alt="success" style="width:300px;height:300px;"><p>กดรับของขวัญแล้ว</p>'
+                                html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemGIF.gif" alt="success" style="width:300px;height:300px;"><p>แลกรับรางวัลระดับ ${level} เรียบร้อย</p>'
                             }).then(() => {
                                 document.body.innerHTML = '<p>บันทึกข้อมูลเรียบร้อยแล้ว</p>';
                             });
