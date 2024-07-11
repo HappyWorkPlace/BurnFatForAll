@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gift Redemption</title>
+    <title>แลกรับรองรางวัล</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
     <style>
@@ -61,6 +61,16 @@
         .gift-info {
             flex: 1;
             text-align: left;
+            padding:10px;
+        }
+        .gift-details p {
+        margin: 5px 0;
+        padding: 0; 
+        }
+
+        .gift-name {
+        margin-bottom: 5px;
+        font-weight: bold;
         }
         .gift-button, .status-image {
             width: 100px;
@@ -104,53 +114,69 @@
         <div class="points-value" id="points-value">0</div>
         <div class="gift-card">
             <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/15.png" alt="แก้วน้ำ">
-            <div class="gift-info">
-                <div class="gift-name">แก้วน้ำ</div>
-                <div class="gift-details">คะแนน: 15 | จำนวนคงเหลือ <span id="gift15-balance">0</span></div>
+        <div class="gift-info">
+            <div class="gift-name">แก้วน้ำ</div>
+            <div class="gift-details">
+                <p>คะแนน: 15</p>
+                <p>จำนวนคงเหลือ <span id="gift15-balance">0</span></p>
             </div>
-            <button class="gift-button disabled" id="gift15" onclick="redeemGift(15)">Claim</button>
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemed_sticker.JPG" alt="Redeemed" class="status-image" id="gift15-redeemed" style="display: none;">
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/outstock_sticker.JPG" alt="Out of Stock" class="status-image" id="gift15-outofstock" style="display: none;">
+        </div>
+            <button class="gift-button disabled" id="gift15" onclick="redeemGift(15)">กดรับ</button>
+            <span id="gift15-redeemed" style="display: none; font-weight: bold; color: gray;">รับแล้ว</span>
+            <span id="gift15-outofstock" style="display: none; font-weight: bold; color: gray;">ของหมด</span>
         </div>
         <div class="gift-card">
             <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/30.png" alt="จาน">
-            <div class="gift-info">
-                <div class="gift-name">จาน</div>
-                <div class="gift-details">คะแนน: 30 | จำนวนคงเหลือ <span id="gift30-balance">0</span></div>
+        <div class="gift-info">
+            <div class="gift-name">จาน</div>
+            <div class="gift-details">
+                <p>คะแนน: 30</p>
+                <p>จำนวนคงเหลือ <span id="gift30-balance">0</span></p>
             </div>
-            <button class="gift-button disabled" id="gift30" onclick="redeemGift(30)">Claim</button>
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemed_sticker.JPG" alt="Redeemed" class="status-image" id="gift30-redeemed" style="display: none;">
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/outstock_sticker.JPG" alt="Out of Stock" class="status-image" id="gift30-outofstock" style="display: none;">
+        </div>
+            <button class="gift-button disabled" id="gift30" onclick="redeemGift(30)">กดรับ</button>
+            <span id="gift30-redeemed" style="display: none; font-weight: bold; color: gray;">รับแล้ว</span>
+            <span id="gift30-outofstock" style="display: none; font-weight: bold; color: gray;">ของหมด</span>
         </div>
         <div class="gift-card">
             <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/45.png" alt="กระติก">
-            <div class="gift-info">
-                <div class="gift-name">กระติก</div>
-                <div class="gift-details">คะแนน: 45 | จำนวนคงเหลือ <span id="gift45-balance">0</span></div>
+        <div class="gift-info">
+            <div class="gift-name">กระติก</div>
+            <div class="gift-details">
+                <p>คะแนน:45</p>
+                <p>จำนวนคงเหลือ <span id="gift45-balance">0</span></p>
             </div>
-            <button class="gift-button disabled" id="gift45" onclick="redeemGift(45)">Claim</button>
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemed_sticker.JPG" alt="Redeemed" class="status-image" id="gift45-redeemed" style="display: none;">
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/outstock_sticker.JPG" alt="Out of Stock" class="status-image" id="gift45-outofstock" style="display: none;">
+        </div>
+            <button class="gift-button disabled" id="gift45" onclick="redeemGift(45)">กดรับ</button>
+            <span id="gift45-redeemed" style="display: none; font-weight: bold; color: gray;">รับแล้ว</span>
+            <span id="gift45-outofstock" style="display: none; font-weight: bold; color: gray;">ของหมด</span>
         </div>
         <div class="gift-card">
             <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/60.png" alt="ร่ม">
-            <div class="gift-info">
-                <div class="gift-name">ร่ม</div>
-                <div class="gift-details">คะแนน: 60 | จำนวนคงเหลือ <span id="gift60-balance">0</span></div>
+        <div class="gift-info">
+            <div class="gift-name">ร่ม</div>
+            <div class="gift-details">
+                <p>คะแนน:60</p>
+                <p>จำนวนคงเหลือ <span id="gift60-balance">0</span></p>
             </div>
-            <button class="gift-button disabled" id="gift60" onclick="redeemGift(60)">Claim</button>
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemed_sticker.JPG" alt="Redeemed" class="status-image" id="gift60-redeemed" style="display: none;">
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/outstock_sticker.JPG" alt="Out of Stock" class="status-image" id="gift60-outofstock" style="display: none;">
         </div>
+            <button class="gift-button disabled" id="gift60" onclick="redeemGift(60)">กดรับ</button>
+              <span id="gift60-redeemed" style="display: none; font-weight: bold; color: gray;">รับแล้ว</span>
+            <span id="gift60-outofstock" style="display: none; font-weight: bold; color: gray;">ของหมด</span>
+        </div>
+            
         <div class="gift-card">
             <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/75.png" alt="Iphone">
-            <div class="gift-info">
-                <div class="gift-name">Iphone</div>
-                <div class="gift-details">คะแนน: 75 | จำนวนคงเหลือ <span id="gift75-balance">0</span></div>
+        <div class="gift-info">
+            <div class="gift-name">Iphone</div>
+            <div class="gift-details">
+                <p>คะแนน:75</p>
+                <p>จำนวนคงเหลือ <span id="gift75-balance">0</span></p>
             </div>
-            <button class="gift-button disabled" id="gift75" onclick="redeemGift(75)">Claim</button>
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemed_sticker.JPG" alt="Redeemed" class="status-image" id="gift75-redeemed" style="display: none;">
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/outstock_sticker.JPG" alt="Out of Stock" class="status-image" id="gift75-outofstock" style="display: none;">
+        </div>
+            <button class="gift-button disabled" id="gift75" onclick="redeemGift(75)">กดรับ</button>
+              <span id="gift75-redeemed" style="display: none; font-weight: bold; color: gray;">รับแล้ว</span>
+            <span id="gift75-outofstock" style="display: none; font-weight: bold; color: gray;">ของหมด</span>
         </div>
     </div>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -301,14 +327,11 @@ function redeemGift(level) {
                         if (data.success) {
                             Swal.fire({
                                 title: 'สำเร็จ',
-                                html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemGIF.gif" alt="success" style="width:300px;height:300px;"><p>กดรับของขวัญแล้ว</p>'
+                                html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemGIF.gif" alt="success" style="width:300px;height:300px;"><p>แลกรับรางวัลเรียบร้อยแล้ว</p>'
                             }).then(() => {
                                 document.body.innerHTML = `
-                                    <div style="text-align: center;">
-                                        <p style="font-weight: bold; color: blue;">บันทึกข้อมูลเรียบร้อยแล้ว</p>
-                                        <p>คุณสามารถตรวจสอบได้ที่ <a href="https://liff.line.me/2004752543-O6BZm2yN" target="_blank">Link</a></p>
-                                    </div>
-                                `;
+                                    <p>บันทึกข้อมูลเรียบร้อยแล้ว</p>
+                                    <p>คุณสามารถตรวจสอบข้อมูลได้ที่ <a href="https://liff.line.me/2004752543-O6BZm2yN" target="_blank">Link</a></p>`;
                             });
                         } else {
                             Swal.fire('ผิดพลาด', data.message, 'error');
