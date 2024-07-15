@@ -65,8 +65,10 @@
         <div class="title">Point ของคุณ</div>
         <div class="result" id="points-value">0</div>
         <div class="message" id="message"></div>
-        <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/panda.png" alt="Panda" class="panda-image">
-        <a href="https://liff.line.me/2004752543-O6BZm2yN" class="reward-link">ตรวจสอบการแลกรางวัล</a>
+        <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/check_point.JPG" alt="Panda" class="panda-image">
+        <dive>
+            <a href="https://liff.line.me/2004752543-O6BZm2yN" class="reward-link">ตรวจสอบการแลกรางวัล</a>
+        </dive>
     </div>
 
     <script>
@@ -100,7 +102,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        const points = data.data[5]; // Assuming points are in the 6th column (F)
+                        const points = data.data[7]; // Assuming points are in the 6th column (F)
                         document.getElementById('points-value').innerText = points;
                         document.getElementById('message').innerText = `คุณสะสมการรับประทานอาหารที่ดีต่อสุขภาพ อย่างน้อยวันละ 1 มื้อได้ ${points} วันแล้วนะครับ สู้ ๆ นะครับ`;
                     } else {
