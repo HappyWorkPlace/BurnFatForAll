@@ -46,7 +46,6 @@
         .message {
             margin-top: 20px;
             font-size: 1.2em;
-            padding: 5px;
         }
         .panda-image {
             margin-top: 20px;
@@ -66,10 +65,8 @@
         <div class="title">Point ของคุณ</div>
         <div class="result" id="points-value">0</div>
         <div class="message" id="message"></div>
-        <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/check_point.JPG" alt="Panda" class="panda-image">
-        <dive>
-           <p><a href="https://liff.line.me/2004752543-O6BZm2yN" class="reward-link">ตรวจสอบการแลกรางวัล</a></p>
-        </dive>
+        <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/panda.png" alt="Panda" class="panda-image">
+        <a href="https://liff.line.me/2004752543-O6BZm2yN" class="reward-link">ตรวจสอบการแลกรางวัล</a>
     </div>
 
     <script>
@@ -84,7 +81,8 @@
                 if (liff.isLoggedIn()) {
                     liff.getProfile().then(profile => {
                         const uid = profile.userId;
-                        fetchPoints(uid);
+                        const name = profile.displayName;
+                        fetchPoints(uid, name);
                     }).catch(err => {
                         console.error('Failed to get profile:', err);
                         document.getElementById('points-value').innerText = 'Failed to get user profile.';
@@ -98,13 +96,12 @@
             });
         }
 
-        function fetchPoints(uid) {
+        function fetchPoints(uid, name) {
             fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserData2&uid=${uid}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
                         const points = data.data[7]; 
-                        const name = profile.displayName; 
                         document.getElementById('points-value').innerText = points;
                         document.getElementById('message').innerText = `ยินดีด้วยครับ คุณ ${name} ได้สะสมการรับประทานอาหารที่ดีต่อสุขภาพวันละ 1 มื้อได้ ${points} วันแล้วนะครับ สู้ ๆ นะครับคุณ ${name}`;
                     } else {
@@ -114,7 +111,7 @@
                 })
                 .catch(error => {
                     console.error('Error fetching points:', error);
-                    document.getElementById('points-value').innerText = '0';
+                    document.getElementById('points-value').innerText = 'รอสักครู่..';
                     document.getElementById('message').innerText = 'Error fetching points. Please try again later.';
                 });
         }
