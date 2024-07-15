@@ -102,11 +102,12 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        const points = data.data[7]; // Assuming points are in the 6th column (F)
+                        const points = data.data[7]; 
+                        const name = data.data[1]; 
                         document.getElementById('points-value').innerText = points;
-                        document.getElementById('message').innerText = `คุณสะสมการรับประทานอาหารที่ดีต่อสุขภาพ อย่างน้อยวันละ 1 มื้อได้ ${points} วันแล้วนะครับ สู้ ๆ นะครับ`;
+                        document.getElementById('message').innerText = `ยินดีด้วยครับ คุณ ${name} ได้สะสมการรับประทานอาหารที่ดีต่อสุขภาพวันละ 1 มื้อได้ ${points} วันแล้วนะครับ สู้ ๆ นะครับคุณ ${name}`;
                     } else {
-                        document.getElementById('points-value').innerText = '0';
+                        document.getElementById('points-value').innerText = 'รอสักครู่..';
                         document.getElementById('message').innerText = data.message;
                     }
                 })
