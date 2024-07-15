@@ -39,14 +39,34 @@
         }
         .result {
             margin-top: 20px;
+            font-size: 3em;
+            font-weight: bold;
+            color: #007BFF;
+        }
+        .message {
+            margin-top: 20px;
             font-size: 1.2em;
+        }
+        .panda-image {
+            margin-top: 20px;
+            width: 150px;
+            height: auto;
+        }
+        .reward-link {
+            margin-top: 20px;
+            font-size: 1em;
+            color: #007BFF;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="title">Check Your Points</div>
-        <div class="result" id="result">Loading...</div>
+        <div class="title">Point ของคุณ</div>
+        <div class="result" id="points-value">0</div>
+        <div class="message" id="message"></div>
+        <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/panda.png" alt="Panda" class="panda-image">
+        <a href="https://liff.line.me/2004752543-O6BZm2yN" class="reward-link">ตรวจสอบการแลกรางวัล</a>
     </div>
 
     <script>
@@ -64,14 +84,14 @@
                         fetchPoints(uid);
                     }).catch(err => {
                         console.error('Failed to get profile:', err);
-                        document.getElementById('result').innerText = 'Failed to get user profile.';
+                        document.getElementById('points-value').innerText = 'Failed to get user profile.';
                     });
                 } else {
                     liff.login();
                 }
             }).catch(err => {
                 console.error('LIFF initialization failed', err);
-                document.getElementById('result').innerText = 'LIFF initialization failed.';
+                document.getElementById('points-value').innerText = 'LIFF initialization failed.';
             });
         }
 
@@ -81,14 +101,17 @@
                 .then(data => {
                     if (data.success) {
                         const points = data.data[5]; // Assuming points are in the 6th column (F)
-                        document.getElementById('result').innerText = `Your points: ${points}`;
+                        document.getElementById('points-value').innerText = points;
+                        document.getElementById('message').innerText = `คุณสะสมการรับประทานอาหารที่ดีต่อสุขภาพ อย่างน้อยวันละ 1 มื้อได้ ${points} วันแล้วนะครับ สู้ ๆ นะครับ`;
                     } else {
-                        document.getElementById('result').innerText = data.message;
+                        document.getElementById('points-value').innerText = '0';
+                        document.getElementById('message').innerText = data.message;
                     }
                 })
                 .catch(error => {
                     console.error('Error fetching points:', error);
-                    document.getElementById('result').innerText = 'Error fetching points. Please try again later.';
+                    document.getElementById('points-value').innerText = '0';
+                    document.getElementById('message').innerText = 'Error fetching points. Please try again later.';
                 });
         }
     </script>
