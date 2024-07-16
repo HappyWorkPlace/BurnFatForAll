@@ -214,8 +214,8 @@ function fetchDataAndUpdateUI(uid) {
             updateGiftCards(userData, gifts, points);
         }).catch(err => {
             console.error('Error fetching data:', err);
-            document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
-            document.getElementById('gift-container').innerText = 'ไม่สามารถดึงข้อมูลของขวัญได้';
+            document.getElementById('points-value').innerText = 'กรุณาลงทะเบียนก่อน';
+            document.getElementById('gift-container').innerText = 'กรุณาลงทะเบียนก่อน';
         });
 }
 
