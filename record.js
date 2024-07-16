@@ -1,8 +1,8 @@
 function displayInputSection(userData) {
     document.getElementById('inputSection').style.display = 'block';
-    document.getElementById('empNo').textContent = userData[0];
-    document.getElementById('name').textContent = userData[1];
-    document.getElementById('division').textContent = userData[2];
+    document.getElementById('empNo').textContent = userData[1];
+    document.getElementById('name').textContent = userData[2];
+    document.getElementById('division').textContent = userData[3];
     document.getElementById('factory').textContent = userData[4];
 }
 
