@@ -42,16 +42,16 @@
             <input type="text" id="empNoInput" placeholder="กรอกรหัสพนักงาน" oninput="convertToUpper(this)">
             <label for="emp-date">2.กรอกวันที่เข้างาน: วัน/เดือน/ปี ค.ศ.<br>ตัวอย่าง: 20/04/1950 (ปี ค.ศ.)</label>
             <div id="emp-date">
-                <input type="text" id="date1" name="date1" maxlength="1" size="1" min="0" max="9" oninput="moveToNext(this, 'date2')">
-                <input type="text" id="date2" name="date2" maxlength="1" size="1" min="0" max="9" oninput="moveToNext(this, 'date3')">
+                <input type="text" id="date1" name="date1" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date2')">
+                <input type="text" id="date2" name="date2" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date3')">
                 <span>/</span>
-                <input type="text" id="date3" name="date3" maxlength="1" size="1" min="0" max="9" oninput="moveToNext(this, 'date4')">
-                <input type="text" id="date4" name="date4" maxlength="1" size="1" min="0" max="9" oninput="moveToNext(this, 'date5')">
+                <input type="text" id="date3" name="date3" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date4')">
+                <input type="text" id="date4" name="date4" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date5')">
                 <span>/</span>
-                <input type="text" id="date5" name="date5" maxlength="1" size="1" min="0" max="9" oninput="moveToNext(this, 'date6')">
-                <input type="text" id="date6" name="date6" maxlength="1" size="1" min="0" max="9" oninput="moveToNext(this, 'date7')">
-                <input type="text" id="date7" name="date7" maxlength="1" size="1" min="0" max="9" oninput="moveToNext(this, 'date8')">
-                <input type="text" id="date8" name="date8" maxlength="1" size="1" min="0" max="9">
+                <input type="text" id="date5" name="date5" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date6')">
+                <input type="text" id="date6" name="date6" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date7')">
+                <input type="text" id="date7" name="date7" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date8')">
+                <input type="text" id="date8" name="date8" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*">
             </div>
             <button id="checkButton" onclick="checkUserInfo()">ตรวจสอบข้อมูล</button>
         </div>
