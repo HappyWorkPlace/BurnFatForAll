@@ -16,24 +16,19 @@
         <h1 class="header-text-black">กินดี Healthy Life</h1>
     </div>
     <div id="userContent">
-        <!-- Input Section -->
-        <div id="inputSection" style="display:none;">
-            <h2>กรุณาระบุอาหารที่รับประทาน</h2>
-            <p><strong>EmpNo:</strong> <span id="empNo"></span></p>
-            <p><strong>Name:</strong> <span id="name"></span></p>
-            <p><strong>Division:</strong> <span id="division"></span></p>
-            <p><strong>Factory:</strong> <span id="factory"></span></p>
-            <div class="icon-container">
-                <div class="icon">
-                    <img id="withRiceImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/กับข้าว.JPG" alt="กับข้าว" onclick="showDishOptions()">
-                    <button onclick="showDishOptions()">กับข้าว</button>
-                </div>
-                <div class="icon">
-                    <img id="singleDishImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/อาหารจานเดียว.JPG" alt="อาหารจานเดียว" onclick="showSingleDishOptions()">
-                    <button onclick="showSingleDishOptions()">อาหารจานเดียว</button>
-                </div>
-            </div>
+   <!-- Input Section -->
+    <div id="inputSection" style="display:none;">
+        <h2>กรุณาระบุอาหารที่รับประทาน</h2>
+        <p><strong>EmpNo:</strong> <span id="empNo"></span></p>
+        <p><strong>Name:</strong> <span id="name"></span></p>
+        <p><strong>Division:</strong> <span id="division"></span></p>
+        <p><strong>Factory:</strong> <span id="factory"></span></p>
+        <div class="dropdown-container">
+            <input type="text" class="dropdown-input" placeholder="Search...">
+            <div class="dropdown-list" id="foodDropdownList"></div>
+            <button class="save-button" disabled onclick="recordSelection()">Save</button>
         </div>
+    </div>
 
         <!-- Register Section -->
         <div id="registerSection" style="display:none;">
