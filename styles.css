@@ -104,25 +104,61 @@ button.gray:hover {
     text-align: center;
 }
 
-/* Dropdown Styling */
-#foodDropdown, #foodDropdownSingleDish {
-    width: 100%;
-    padding: 10px;
-    border: 2px solid #ddd;
-    border-radius: 5px;
-    box-sizing: border-box;
-    transition: border-color 0.3s;
-    font-size: 16px;
-}
+        .dropdown-container {
+            position: relative;
+            display: inline-block;
+        }
 
-#foodDropdown:focus, #foodDropdownSingleDish:focus {
-    border-color: #007BFF;
-    outline: none;
-}
+        .dropdown-input {
+            box-sizing: border-box;
+            padding: 10px;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
 
-#foodDropdown option {
-    padding: 10px;
-}
+        .dropdown-list {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 200px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .dropdown-list div {
+            color: black;
+            padding: 8px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-list div:hover {
+            background-color: #f1f1f1;
+        }
+
+        .highlight {
+            background-color: yellow;
+        }
+
+        .save-button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: not-allowed;
+        }
+
+        .save-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
 
 /* Icon Container Styling */
 .icon-container {
