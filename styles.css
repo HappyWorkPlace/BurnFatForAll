@@ -53,6 +53,12 @@ h2 {
     margin-bottom: 20px;
     text-align: center;
 }
+#dropdownRecord{
+    color: #007BFF;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    text-align: Left;
+}
 
 p, input[type=text], button {
     margin: 10px 0;
