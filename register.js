@@ -68,6 +68,7 @@ function checkUserInfo() {
                     `,
                     icon: 'question',
                     showCancelButton: true,
+                    cancelButtonText:'ยกเลิก',
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
                     confirmButtonText: 'สมัครเข้าร่วม'
@@ -83,7 +84,7 @@ function checkUserInfo() {
                     }
                 });
             } else {
-                Swal.fire('Not Found', 'ข้อมูลรหัสพนักงานและวันเดือนปีเข้างานไม่ตรงกัน', 'error');
+                Swal.fire('Not Found', 'ไม่พบข้อมูล หรือรหัสพนักงานและวันเดือนปีเข้างานไม่ตรงกัน', 'error');
             }
         })
         .catch(error => {
