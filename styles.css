@@ -206,10 +206,9 @@ button.gray:hover {
     width: 2em;
 }
 
-#emp-date span {
-    display: inline-block;
-    width: 1em;
-    text-align: center;
+.date-separator {
+    margin: 0.2px;
+    font-size: 1.2em;
 }
 
 /* Button Container Styling */
