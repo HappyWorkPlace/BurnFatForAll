@@ -38,7 +38,7 @@ function checkUserInfo() {
     const empDate = getEmpDateInput();
 
     if (!empNo || !empDate) {
-        Swal.fire('Error', 'Please provide both Employee Number and Employment Date.', 'error');
+        Swal.fire('ผิดพลาด', 'กรุณากรอก รหัสพนักงาน และ วัน/เดือน/ปี เข้าทำงานให้ครบถ้วน', 'error');
         return;
     }
 
@@ -78,17 +78,17 @@ function checkUserInfo() {
                             registerUser(empNo, empDate, uid);
                         }).catch(err => {
                             console.error('Failed to get user profile:', err);
-                            Swal.fire('Error', 'Failed to get user profile.', 'error');
+                            Swal.fire('Error', 'ไม่สามารถดึงข้อมูลพนักงานได้', 'error');
                         });
                     }
                 });
             } else {
-                Swal.fire('Not Found', 'No matching records found. Please check the information provided and try again.', 'error');
+                Swal.fire('Not Found', 'ข้อมูลรหัสพนักงานและวันเดือนปีเข้างานไม่ตรงกัน', 'error');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            Swal.fire('Error', 'Failed to process your request. Please try again later.', 'error');
+            Swal.fire('Error', 'Failed to process your request', 'error');
         });
 }
 
@@ -123,6 +123,6 @@ function registerUser(empNo, empDate, uid) {
     })
     .catch(error => {
         console.error('Error:', error);
-        Swal.fire('Error', 'Failed to register. Please try again later.', 'error');
+        Swal.fire('Error', 'ลงทะเบียนล้มเหลว ลองใหม่อีกครั้ง', 'error');
     });
 }
