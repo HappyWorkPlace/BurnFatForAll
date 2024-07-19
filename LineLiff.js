@@ -28,6 +28,7 @@ function getUserData(uid) {
 
 function displayUserInfo(userName) {
     document.getElementById('userInfo').innerHTML = `<p>สวัสดีค่ะคุณ ${userName}</p>`;
+    document.getElementById('loadingMessage').style.display = 'none';
 }
 
 window.onload = function() {
