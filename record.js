@@ -94,8 +94,8 @@ function recordSelection() {
     }
 
     Swal.fire({
-        title: 'Checking data',
-        text: 'รอสักครู่..',
+        title: 'วันนี้บันทึกไปรึยังน้า...',
+        text: 'ตรวจสอบสักครู่..',
         allowOutsideClick: false,
         didOpen: () => {
             Swal.showLoading();
@@ -134,7 +134,7 @@ function checkUserColumnJ(uid, empNo, factory, selectedFood) {
 
 function saveSelection(empNo, factory, selectedFood, uid) {
     Swal.fire({
-        title: 'Saving data',
+        title: 'กำลังบันทึกข้อมูล',
         text: 'รอสักครู่..',
         allowOutsideClick: false,
         didOpen: () => {
