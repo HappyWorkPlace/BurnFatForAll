@@ -206,8 +206,8 @@ button.gray:hover {
     width: 2em;
 }
 
-#emp-date span {
-    margin: 0.2px;
+.date-separator {
+     margin: 0.2px;
     font-size: 1.2em;
 }
 
