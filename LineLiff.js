@@ -15,10 +15,10 @@ function getUserData(uid) {
         .then(data => {
             console.log("User data:", data);
             if (data.error) {
-                hideLoading();
+
                 displayRegisterSection();
             } else {
-                hideLoading();
+
                 displayInputSection(data.data);
             }
         })
