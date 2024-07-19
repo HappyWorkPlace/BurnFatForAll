@@ -4,22 +4,88 @@ function displayInputSection(userData) {
     document.getElementById('name').textContent = userData[2];
     document.getElementById('division').textContent = userData[3];
     document.getElementById('factory').textContent = userData[4];
+
+    // Load food list
+    loadFoodList();
+}
+
+function loadFoodList() {
+    fetch('https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getFoodList')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                populateDropdown(data.data);
+            } else {
+                console.error('Failed to fetch food list:', data.message);
+            }
+        })
+        .catch(error => console.error('Error fetching food list:', error));
+}
+
+function populateDropdown(foodList) {
+    const dropdownList = document.getElementById('foodDropdownList');
+    dropdownList.innerHTML = '';
+    foodList.forEach(food => {
+        const item = document.createElement('div');
+        item.textContent = food;
+        dropdownList.appendChild(item);
+    });
+
+    const input = document.querySelector('.dropdown-input');
+    const items = dropdownList.getElementsByTagName('div');
+    const saveButton = document.querySelector('.save-button');
+
+    input.addEventListener('input', function() {
+        let filter = this.value.toUpperCase();
+        let matchFound = false;
+
+        for (let i = 0; i < items.length; i++) {
+            let txtValue = items[i].textContent || items[i].innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                items[i].style.display = "";
+                items[i].innerHTML = highlight(txtValue, this.value);
+                if (txtValue.toUpperCase() === filter) {
+                    matchFound = true;
+                }
+            } else {
+                items[i].style.display = "none";
+            }
+        }
+
+        dropdownList.style.display = filter ? 'block' : 'none';
+        saveButton.disabled = !matchFound;
+    });
+
+    input.addEventListener('focus', function() {
+        dropdownList.style.display = 'block';
+    });
+
+    dropdownList.addEventListener('click', function(e) {
+        if (e.target && e.target.matches("div")) {
+            input.value = e.target.textContent;
+            dropdownList.style.display = 'none';
+            saveButton.disabled = false;
+        }
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.matches('.dropdown-input')) {
+            dropdownList.style.display = 'none';
+        }
+    });
+}
+
+function highlight(text, query) {
+    const startIndex = text.toUpperCase().indexOf(query.toUpperCase());
+    if (startIndex === -1) return text;
+    const endIndex = startIndex + query.length;
+    return text.slice(0, startIndex) + '<span class="highlight">' + text.slice(startIndex, endIndex) + '</span>' + text.slice(endIndex);
 }
 
 function recordSelection() {
     const empNo = document.getElementById('empNo').textContent;
     const factory = document.getElementById('factory').textContent;
-    let selectedFood;
-
-    // ตรวจสอบว่าตัวเลือก dropdown อยู่ใน section ใด
-    if (document.getElementById('singleDishOptionsSection').style.display === 'block') {
-        selectedFood = document.getElementById('foodDropdownSingleDish').value;
-    } else {
-        selectedFood = document.getElementById('foodDropdown').value;
-    }
-
-    // Debug log ตรวจสอบค่าที่ถูกเลือกจาก dropdown
-    console.log('Selected food:', selectedFood);
+    const selectedFood = document.querySelector('.dropdown-input').value;
 
     if (!selectedFood || selectedFood === '') {
         Swal.fire('Error', 'Please select an item from the dropdown.', 'error');
@@ -38,7 +104,6 @@ function recordSelection() {
     liff.getProfile()
         .then(profile => {
             const uid = profile.userId;
-            console.log('User profile obtained:', profile); // Debug log
             checkUserColumnJ(uid, empNo, factory, selectedFood);
         })
         .catch(err => {
@@ -52,7 +117,6 @@ function checkUserColumnJ(uid, empNo, factory, selectedFood) {
         .then(response => response.json())
         .then(data => {
             Swal.close();
-            console.log('Check user column J response:', data); // Debug log
             if (data.status === 'TRUE') {
                 saveSelection(empNo, factory, selectedFood, uid);
             } else if (data.status === 'FALSE') {
@@ -85,7 +149,6 @@ function saveSelection(empNo, factory, selectedFood, uid) {
             return response.json();
         })
         .then(data => {
-            console.log('Save selection response:', data); // Debug log
             Swal.close();
             if (data.success) {
                 Swal.fire('Success', 'บันทึกข้อมูลเรียบร้อยแล้ว', 'success').then(() => {
