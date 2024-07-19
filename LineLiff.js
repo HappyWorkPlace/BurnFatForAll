@@ -30,7 +30,9 @@ function displayUserInfo(userName) {
     document.getElementById('userInfo').innerHTML = `<p>สวัสดีค่ะคุณ ${userName}</p>`;
     document.getElementById('loadingMessage').style.display = 'none';
 }
-
+function hideLoading() {
+    document.getElementById('loadingMessage').style.display = 'none';
+}
 window.onload = function() {
     console.log("Window loaded, initializing LIFF");
     if (typeof liff !== 'undefined') {
@@ -53,6 +55,7 @@ function initializeLiff(myLiffId) {
                 const uid = profile.userId;
                 displayUserInfo(profile.displayName);
                 getUserData(uid);
+                hideLoading();
             }).catch(err => {
                 console.error('Failed to get user profile:', err);
                 Swal.fire('Error', 'Failed to get user profile.', 'error');
