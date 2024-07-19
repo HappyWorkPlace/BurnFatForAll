@@ -7,6 +7,7 @@ function displayInputSection(userData) {
 
     // Load food list
     loadFoodList();
+    hideLoading();
 }
 
 function loadFoodList() {
