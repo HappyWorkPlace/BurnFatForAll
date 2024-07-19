@@ -16,19 +16,19 @@
         <h1 class="header-text-black">กินดี Healthy Life</h1>
     </div>
     <div id="userContent">
-   <!-- Input Section -->
-    <div id="inputSection" style="display:none;">
-        <h2>กรุณาระบุอาหารที่รับประทาน</h2>
-        <p><strong>EmpNo:</strong> <span id="empNo"></span></p>
-        <p><strong>Name:</strong> <span id="name"></span></p>
-        <p><strong>Division:</strong> <span id="division"></span></p>
-        <p><strong>Factory:</strong> <span id="factory"></span></p>
-        <div class="dropdown-container">
-            <input type="text" class="dropdown-input" placeholder="Search...">
-            <div class="dropdown-list" id="foodDropdownList"></div>
-            <button class="save-button" disabled onclick="recordSelection()">Save</button>
+        <!-- Input Section -->
+        <div id="inputSection" style="display:none;">
+            <h2>กรุณาระบุอาหารที่รับประทาน</h2>
+            <p><strong>EmpNo:</strong> <span id="empNo"></span></p>
+            <p><strong>Name:</strong> <span id="name"></span></p>
+            <p><strong>Division:</strong> <span id="division"></span></p>
+            <p><strong>Factory:</strong> <span id="factory"></span></p>
+            <div class="dropdown-container">
+                <input type="text" class="dropdown-input" placeholder="Search...">
+                <div class="dropdown-list" id="foodDropdownList"></div>
+                <button class="save-button" disabled onclick="recordSelection()">Save</button>
+            </div>
         </div>
-    </div>
 
         <!-- Register Section -->
         <div id="registerSection" style="display:none;">
@@ -50,56 +50,8 @@
             </div>
             <button id="checkButton" onclick="checkUserInfo()">ตรวจสอบข้อมูล</button>
         </div>
-
-        <!-- Dish Options Section -->
-        <div id="dishOptionsSection" style="display:none;">
-            <h2>ระบุประเภทกับข้าวที่รับประทาน</h2>
-            <div class="icon-container">
-                <div>
-                    <div class="icon">
-                        <img id="boiledImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/ต้ม.JPG" alt="ต้ม" onclick="selectDishType('ต้ม', 'boiledImg')">
-                        <button class="food-button" onclick="selectDishType('ต้ม', 'boiledImg')">ต้ม</button>
-                    </div>
-                    <div class="icon">
-                        <img id="friedImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/ผัด.png" alt="ผัด" onclick="selectDishType('ผัด', 'friedImg')">
-                        <button class="food-button" onclick="selectDishType('ผัด', 'friedImg')">ผัด</button>
-                    </div>
-                </div>
-                <div>
-                    <div class="icon">
-                        <img id="curryImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/แกง.JPG" alt="แกง" onclick="selectDishType('แกง', 'curryImg')">
-                        <button class="food-button" onclick="selectDishType('แกง', 'curryImg')">แกง</button>
-                    </div>
-                    <div class="icon">
-                        <img id="grilledImg" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/ปิ้งย่าง.JPG" alt="นึ่ง/ปิ้ง/ย่าง" onclick="selectDishType('นึ่ง/ปิ้ง/ย่าง', 'grilledImg')">
-                        <button class="food-button" onclick="selectDishType('นึ่ง/ปิ้ง/ย่าง', 'grilledImg')">นึ่ง/ปิ้ง/ย่าง</button>
-                    </div>
-                </div>
-            </div>
-            <div id="dropdownContainer" style="display:none;">
-                <select id="foodDropdown"></select>
-            </div>
-            <div id="buttonContainer">
-                <button onclick="recordSelection()">บันทึก</button>
-                <button onclick="backToMain()">ย้อนกลับ</button>
-            </div>
-        </div>
-
-        <!-- Single Dish Options Section -->
-        <div id="singleDishOptionsSection" style="display:none;">
-            <h2>ระบุอาหารจานเดียวที่รับประทาน</h2>
-            <div id="dropdownContainerSingleDish">
-                <select id="foodDropdownSingleDish"></select>
-            </div>
-            <div id="buttonContainer">
-                <button onclick="recordSelection()">บันทึก</button>
-                <button onclick="backToMain()">ย้อนกลับ</button>
-            </div>
-        </div>
     </div>
-
     <script src="LineLiff.js"></script>
-<!--     <script src="fetchfood.js"></script> -->
     <script src="record.js"></script>
     <script src="register.js"></script>
 </body>
