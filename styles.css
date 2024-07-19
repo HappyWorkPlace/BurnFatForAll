@@ -6,7 +6,6 @@ body {
     padding: 20px;
     color: #333;
 }
-
 /* Header Styling */
 .header {
     display: flex;
@@ -21,8 +20,6 @@ body {
     max-width: 600px;
     flex-wrap: nowrap; /* Change from wrap to nowrap to keep items in a single line */
 }
-
-
 .header-icon {
     height: 120px;
     width: 120px;
@@ -46,7 +43,6 @@ body {
     margin: 20px auto;
     align-items: center;
 }
-
 h2 {
     color: #007BFF;
     padding-bottom: 10px;
@@ -114,20 +110,19 @@ button.gray:hover {
     text-align: center;
 }
 
-        .dropdown-container {
-            position: relative;
-            display: inline-block;
-        }
+.dropdown-container {
+ position: relative;
+ display: inline-block;
+}
 
-        .dropdown-input {
-            box-sizing: border-box;
-            margin: 10px;
-            padding: 10px;
-            width: 200px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+.dropdown-input {
+    box-sizing: border-box;
+    margin: 10px;
+    padding: 3px;
+    width: 200px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
         }
-
         .dropdown-list {
             display: none;
             position: absolute;
@@ -153,7 +148,7 @@ button.gray:hover {
         }
 
         .highlight {
-            background-color: yellow;
+            background-color: #FF968A;
         }
 
         .save-button {
