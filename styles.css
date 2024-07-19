@@ -210,9 +210,14 @@ button.gray:hover {
 
 }
 
+.date-input-container {
+        display: flex;
+        align-items: center;
+}
+
 .date-separator {
-     margin: 0.2px;
-    font-size: 1.2em;
+        margin: 0.2px;
+        font-size: 1.2em;
 }
 
 /* Button Container Styling */
