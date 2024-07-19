@@ -53,11 +53,13 @@ h2 {
     margin-bottom: 20px;
     text-align: center;
 }
-label {
-    color: #007BFF;
-    padding-bottom: 5px;
-    margin-bottom: 10px;
-    text-align: Left;
+h3  {
+  color: #007BFF;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+  margin: 10px;
+  text-align: left;
 }
 
 p, input[type=text], button {
@@ -119,6 +121,7 @@ button.gray:hover {
 
         .dropdown-input {
             box-sizing: border-box;
+            margin: 10px;
             padding: 10px;
             width: 200px;
             border: 1px solid #ccc;
