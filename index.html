@@ -3,9 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>กินดีHealthyLife</title>
+    <title>NMB HappyWorkPlace</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <style>
+            .date-separator {
+            margin: 0.2px;
+            font-size: 1.2em;
+        }
+    </style>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
 </head>
@@ -40,10 +46,10 @@
             <div id="emp-date">
                 <input type="text" id="date1" name="date1" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date2')">
                 <input type="text" id="date2" name="date2" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date3')">
-                <span>/</span>
+                <span class="date-separator">/</span>
                 <input type="text" id="date3" name="date3" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date4')">
                 <input type="text" id="date4" name="date4" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date5')">
-                <span>/</span>
+                <span class="date-separator">/</span>
                 <input type="text" id="date5" name="date5" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date6')">
                 <input type="text" id="date6" name="date6" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date7')">
                 <input type="text" id="date7" name="date7" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date8')">
