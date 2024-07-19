@@ -10,7 +10,7 @@ function displayInputSection(userData) {
 }
 
 function loadFoodList() {
-    fetch('https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getFoodList')
+    fetch('https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getFoodList&sheetName=MENU&column=A')
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -34,6 +34,13 @@ function populateDropdown(foodList) {
     const input = document.querySelector('.dropdown-input');
     const items = dropdownList.getElementsByTagName('div');
     const saveButton = document.querySelector('.save-button');
+
+    function highlight(text, query) {
+        const startIndex = text.toUpperCase().indexOf(query.toUpperCase());
+        if (startIndex === -1) return text;
+        const endIndex = startIndex + query.length;
+        return text.slice(0, startIndex) + '<span class="highlight">' + text.slice(startIndex, endIndex) + '</span>' + text.slice(endIndex);
+    }
 
     input.addEventListener('input', function() {
         let filter = this.value.toUpperCase();
@@ -73,13 +80,6 @@ function populateDropdown(foodList) {
             dropdownList.style.display = 'none';
         }
     });
-}
-
-function highlight(text, query) {
-    const startIndex = text.toUpperCase().indexOf(query.toUpperCase());
-    if (startIndex === -1) return text;
-    const endIndex = startIndex + query.length;
-    return text.slice(0, startIndex) + '<span class="highlight">' + text.slice(startIndex, endIndex) + '</span>' + text.slice(endIndex);
 }
 
 function recordSelection() {
