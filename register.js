@@ -30,6 +30,7 @@ function getEmpDateInput() {
 
 function displayRegisterSection() {
     document.getElementById('registerSection').style.display = 'block';
+    hideLoading();
 }
 
 function checkUserInfo() {
