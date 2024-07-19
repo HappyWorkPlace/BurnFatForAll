@@ -59,7 +59,7 @@ h3  {
 }
 
 p, input[type=text], button {
-    margin: 10px 0;
+    margin: 10px;
     padding: 4px;
 }
 
@@ -88,6 +88,7 @@ button {
     cursor: pointer;
     border-radius: 5px;
     transition: background-color 0.3s;
+    margin-left: 10px;
 }
 
 button:hover {
@@ -118,6 +119,7 @@ button.gray:hover {
 .dropdown-input {
     box-sizing: border-box;
     margin: 10px;
+    margin-left: 10px;
     padding: 3px;
     width: 200px;
     border: 1px solid #ccc;
