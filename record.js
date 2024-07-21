@@ -152,7 +152,11 @@ function saveSelection(empNo, factory, selectedFood, uid) {
         .then(data => {
             Swal.close();
             if (data.success) {
-                Swal.fire('Success', 'บันทึกข้อมูลเรียบร้อยแล้ว', 'success').then(() => {
+                Swal.fire({
+                    title: 'สำเร็จ',
+                    html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_1.png" alt="success" style="width:100px;height:100px;"><p>บันทึกข้อมูลแล้ว</p>'
+                    })
+                    .then(() => {
                     showBlankPage();
                 });
             } else {
