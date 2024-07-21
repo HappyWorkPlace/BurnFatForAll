@@ -26,23 +26,11 @@
             padding: 20px 20px 40px 20px; /* Add padding for top, left, and right, and increase bottom padding */
         }
 
-         .background-stickers img {
-              position: absolute;
-              opacity: 1;
-          }
-
-/*         .background-stickers {
+        .background-stickers img {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 0.5;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-        } */
-        
+            opacity: 1;
+        }
+
         .container {
             background-color: #FFFFFF; /* White background */
             padding: 40px;
@@ -53,11 +41,11 @@
             text-align: left;
             position: relative;
             z-index: 1;
-            margin-top:5px;
-            margin-bottom:200px; /* Add margin for mobile */
+            margin-top: 5px;
+            margin-bottom: 200px; /* Add margin for mobile */
             overflow: visible; /* Ensure overflow is visible */
         }
-        
+
         .sticker-3 {
             position: absolute;
             top: -20px; /* Adjust this value to move the sticker up */
@@ -66,9 +54,6 @@
             transform: rotate(-5deg);
             z-index: 2; /* Ensure the sticker is on top of the container */
         }
-
-
-
 
         .header {
             display: flex;
@@ -201,82 +186,82 @@
             background-color: #ccc;
             cursor: not-allowed;
         }
-/* ส่วน register  */
-       h2 {
-text-align: left;
-color: #6B6966;
-margin-bottom: 20px;
-}
 
-label {
-display: block;
-margin-bottom: 10px;
-font-weight: bold;
-color: #6B6966;
-}
+        .register-container h2 {
+            text-align: left;
+            color: #6B6966;
+            margin-bottom: 20px;
+        }
 
-input[type="text"] {
-width: calc(100% - 30px);
-padding: 15px 20px;
-border: 1px solid #ddd;
-border-radius: 30px;
-background-color: #f7f7f7;
-font-size: 1em;
-margin-bottom: 15px;
-}
+        .register-container label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #6B6966;
+        }
 
-.date-input-container {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-bottom: 15px;
-}
+        .register-container input[type="text"] {
+            width: calc(100% - 30px);
+            padding: 15px 20px;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            background-color: #f7f7f7;
+            font-size: 1em;
+            margin-bottom: 15px;
+        }
 
-.date-input-container input[type="text"] {
-width: 35px;
-padding: 10px;
-border: 1px solid #ddd;
-border-radius: 10px;
-background-color: #f7f7f7;
-font-size: 1em;
-text-align: center;
-}
+        .register-container .date-input-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
 
-.date-separator {
-font-size: 1.5em;
-font-weight: bold;
-color: #6B6966;
-}
+        .register-container .date-input-container input[type="text"] {
+            width: 35px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #f7f7f7;
+            font-size: 1em;
+            text-align: center;
+        }
 
-.save-button {
-margin-top: 20px;
-padding: 15px 20px;
-background-color: #7EA8AC; /* Brighter button color */
-color: #FFFFFF;
-border: none;
-border-radius: 30px;
-font-size: 1em;
-cursor: pointer;
-transition: background-color 0.3s;
-width: 100%;
-}
+        .register-container .date-separator {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #6B6966;
+        }
 
-.save-button:hover {
-background-color: #689A9D;
-}
+        .register-container .save-button {
+            margin-top: 20px;
+            padding: 15px 20px;
+            background-color: #7EA8AC; /* Brighter button color */
+            color: #FFFFFF;
+            border: none;
+            border-radius: 30px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
 
-.sticker {
-position: absolute;
-top: -20px;
-right: -20px;
-width: 80px;
-z-index: 2;
-}
-/* -------- จบ ------- */
+        .register-container .save-button:hover {
+            background-color: #689A9D;
+        }
+
+        .register-container .sticker {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 80px;
+            z-index: 2;
+        }
+
         @media (max-width: 600px) {
             .container {
                 padding: 20px;
-                margin-bottom:200px;
+                margin-bottom: 200px;
             }
 
             .header-icon {
@@ -363,7 +348,7 @@ z-index: 2;
         </div>
         <!-- Register Section -->
         <div id="registerSection" style="display:none;">
-            <div class="container">
+            <div class="container register-container">
                 <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_3.png" alt="Sticker" class="sticker">
                 <div class="header">
                     <img class="header-icon" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/LogoProject.JPG" alt="Logo">
