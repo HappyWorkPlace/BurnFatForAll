@@ -4,13 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NMB HappyWorkPlace</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
-<!--     <link rel="stylesheet" href="styles.css"> -->
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-  @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&display=swap');
 
         body {
             background: linear-gradient(135deg, #FFEBF0, #FFF4E1); /* Gradient background */
@@ -44,23 +41,24 @@
         }
 
         .sticker-3 {
-            top: 80%;
-            left: 80%;
-            width: 100px;
+            top: 10%;
+            right: 10%;
+            width: 80px;
             transform: rotate(-5deg);
             z-index: 2;
         }
 
         .container {
             background-color: #FFFFFF; /* White background */
-            padding: 40px;
+            padding: 20px;
             border-radius: 15px;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
             width: 90%;
-            max-width: 300px;
+            max-width: 350px;
             text-align: center;
             position: relative;
             z-index: 1;
+            display: none; /* Hidden by default */
         }
 
         .header {
@@ -71,7 +69,7 @@
         }
 
         .header-icon {
-            width: 100px;
+            width: 80px;
             height: auto;
             margin-right: 20px;
         }
@@ -84,134 +82,156 @@
 
         .header-text .title {
             color: #6B6966; /* Text color */
-            font-size: 1.3em;
+            font-size: 1.2em;
             font-weight: bold;
             margin: 0;
         }
 
         .header-text .subtitle {
             color: #6B6966; /* Text color */
-            font-size: 0.7em;
+            font-size: 0.8em;
             margin: 5px 0 0 0;
         }
 
-.input-group {
-    margin-bottom: 15px;
-    position: relative;
-    border-radius: 30px;
-    overflow: hidden;
-    background-color: #f7f7f7; /* Background for inputs */
-    display: flex;
-    align-items: center;
-}
+        .input-group {
+            margin-bottom: 15px;
+            position: relative;
+            border-radius: 30px;
+            overflow: hidden;
+            background-color: #f7f7f7; /* Background for inputs */
+            display: flex;
+            align-items: left;
+        }
 
-.input-group p {
-    width: 100%;
-    padding: 15px 20px 15px 40px;
-    border: none;
-    border-radius: 30px;
-    background-color: transparent; /* Transparent background */
-    font-size: 1em;
-    margin: 0; /* Adjust margin to remove any default margin */
-}
-
-.input-group i {
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #7EA8AC; /* Accent color */
-}
-
-
-        .input-group input {
+        .input-group p {
             width: 100%;
             padding: 15px 20px 15px 40px;
             border: none;
             border-radius: 30px;
             background-color: transparent; /* Transparent background */
             font-size: 1em;
+            margin: 0; /* Adjust margin to remove any default margin */
+            align-items: left;
         }
 
-        .input-group.editable {
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7EA8AC; /* Accent color */
+        }
+
+        .dropdown-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 15px;
             border: 2px solid #7EA8AC; /* Add border to editable input */
-            box-shadow: 0 4px 8px rgba(126, 168, 172, 0.2); /* Add shadow */
-        }
-
-        .input-group.editable input {
+            border-radius: 30px;
             background-color: #E0F7FA; /* Light background for editable input */
+            box-shadow: 0 4px 8px rgba(126, 168, 172, 0.2); /* Add shadow */
+            padding: 15px 20px;
         }
 
-   .dropdown-container {
-    width: 85%;
-    position: relative;
-    display: inline-block;
-    margin-bottom: 15px;
-    border: 2px solid #7EA8AC; /* Add border to editable input */
-    border-radius: 30px;
-    background-color: #E0F7FA; /* Light background for editable input */
-    box-shadow: 0 4px 8px rgba(126, 168, 172, 0.2); /* Add shadow */
-    padding: 15px 20px;
-}
+        .dropdown-container input {
+            border: none;
+            outline: none;
+            width: calc(100% - 40px);
+            background: transparent;
+            padding-left: 25px;
+            font-size: 1em;
+        }
 
-.dropdown-container input {
-    border: none;
-    outline: none;
-    width: calc(100%);
-    background: transparent;
-    padding-left: 15px;
-    font-size: 1em;
-    
-}
+        .dropdown-container i {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            color: #7EA8AC;
+        }
 
-.dropdown-container i {
-    position: absolute;
-    top: 50%;
-    left: 15px;
-    transform: translateY(-50%);
-    color: #7EA8AC;
-}
+        .dropdown-list {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 100%;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
 
-.dropdown-list {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 100%;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    max-height: 150px;
-    overflow-y: auto;
-}
+        .dropdown-list div {
+            color: black;
+            padding: 8px 16px;
+            text-decoration: none;
+            display: block;
+        }
 
-.dropdown-list div {
-    color: black;
-    padding: 8px 16px;
-    text-decoration: none;
-    display: block;
-}
+        .dropdown-list div:hover {
+            background-color: #f1f1f1;
+        }
 
-.dropdown-list div:hover {
-    background-color: #f1f1f1;
-}
+        .save-button {
+            margin-top: 20px;
+            padding: 15px 20px;
+            background-color: #7EA8AC;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1em;
+            cursor: not-allowed;
+            width: 100%;
+        }
 
-.save-button {
-    margin-top: 20px;
-    padding: 15px 20px;
-    background-color: #7EA8AC;
-    color: white;
-    border: none;
-    border-radius: 30px;
-    font-size: 1em;
-    cursor: not-allowed;
-    width: 100%;
-}
+        .save-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
 
-.save-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header-icon {
+                width: 60px;
+                margin-right: 10px;
+            }
+
+            .header-text .title {
+                font-size: 1em;
+            }
+
+            .header-text .subtitle {
+                font-size: 0.7em;
+            }
+
+            .input-group p {
+                padding: 10px 15px 10px 35px;
+            }
+
+            .dropdown-container {
+                padding: 10px 15px;
+            }
+
+            .dropdown-container input {
+                padding-left: 20px;
+            }
+
+            .save-button {
+                padding: 10px 15px;
+                font-size: 0.9em;
+            }
+
+            .sticker-3 {
+                width: 60px;
+                top: 5%;
+                right: 5%;
+            }
+        }
     </style>
 </head>
 <body>
