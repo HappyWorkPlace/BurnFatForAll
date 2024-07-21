@@ -84,7 +84,10 @@ function checkUserInfo() {
                     }
                 });
             } else {
-                Swal.fire('Not Found', 'ไม่พบข้อมูล หรือรหัสพนักงานและวันเดือนปีเข้างานไม่ตรงกัน', 'error');
+                Swal.fire({
+                    title: 'ไม่พบข้อมูล',
+                    html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_error.png" alt="success" style="width:100px;height:100px;"><p>ตรวจสอบข้อมูลอีกครั้ง</p>'
+                    })
             }
         })
         .catch(error => {
@@ -115,7 +118,11 @@ function registerUser(empNo, empDate, uid) {
     .then(data => {
         Swal.close();
         if (data.success) {
-            Swal.fire('Registered!', 'ลงทะเบียนสำเร็จแล้ว', 'success').then(() => {
+            Swal.fire({
+                    title: 'ยินดีต้อนรับ',
+                    html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_4.png" alt="success" style="width:100px;height:100px;"><p>ลงทะเบียนแล้ว</p>'
+                    })
+                .then(() => {
                     showBlankPage();
                 });
         } else {
