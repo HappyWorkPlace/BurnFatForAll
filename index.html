@@ -200,6 +200,13 @@
             color: #6B6966;
         }
 
+        .register-container .date-input-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
         .register-container input[type="text"] {
             width: calc(100% - 30px);
             padding: 15px 20px;
@@ -208,15 +215,9 @@
             background-color: #f7f7f7;
             font-size: 1em;
             margin-bottom: 15px;
+            box-sizing: border-box; 
         }
-
-        .register-container .date-input-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
+        
         .register-container .date-input-container input[type="text"] {
             width: 35px;
             padding: 10px;
@@ -225,7 +226,9 @@
             background-color: #f7f7f7;
             font-size: 1em;
             text-align: center;
+            box-sizing: border-box;
         }
+
 
         .register-container .date-separator {
             font-size: 1.5em;
