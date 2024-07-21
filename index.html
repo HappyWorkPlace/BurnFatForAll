@@ -95,15 +95,34 @@
             margin: 5px 0 0 0;
         }
 
-        .input-group {
-            margin-bottom: 15px;
-            position: relative;
-            border-radius: 30px;
-            overflow: hidden;
-            background-color: #f7f7f7; /* Background for inputs */
-            display: flex;
-            align-items: center;
-        }
+.input-group {
+    margin-bottom: 15px;
+    position: relative;
+    border-radius: 30px;
+    overflow: hidden;
+    background-color: #f7f7f7; /* Background for inputs */
+    display: flex;
+    align-items: center;
+}
+
+.input-group p {
+    width: 100%;
+    padding: 15px 20px 15px 40px;
+    border: none;
+    border-radius: 30px;
+    background-color: transparent; /* Transparent background */
+    font-size: 1em;
+    margin: 0; /* Adjust margin to remove any default margin */
+}
+
+.input-group i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #7EA8AC; /* Accent color */
+}
+
 
         .input-group input {
             width: 100%;
@@ -112,12 +131,6 @@
             border-radius: 30px;
             background-color: transparent; /* Transparent background */
             font-size: 1em;
-        }
-
-        .input-group i {
-            position: absolute;
-            left: 15px;
-            color: #7EA8AC; /* Accent color */
         }
 
         .input-group.editable {
@@ -238,7 +251,7 @@
 
         <div class="dropdown-container">
             <i class="fas fa-utensils"></i>
-            <p type="text" class="dropdown-input" placeholder="ระบุเมนูอาหารที่รับประทาน..." id="foodInput" oninput="filterDropdown()">
+            <input type="text" class="dropdown-input" placeholder="ระบุเมนูอาหารที่รับประทาน..." id="foodInput" oninput="filterDropdown()">
             <div class="dropdown-list" id="foodDropdownList"></div>
         </div>
         <button class="save-button" id="saveButton" disabled onclick="recordSelection()">บันทึก</button>
