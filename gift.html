@@ -178,6 +178,20 @@
               <span id="gift75-redeemed" style="display: none; font-weight: bold; color: gray;">รับแล้ว</span>
             <span id="gift75-outofstock" style="display: none; font-weight: bold; color: gray;">ของหมด</span>
         </div>
+
+        <div class="gift-card">
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/90.png" alt="Iphone">
+        <div class="gift-info">
+            <div class="gift-name">Iphone</div>
+            <div class="gift-details">
+                <p>คะแนน:90</p>
+                <p>จำนวนคงเหลือ <span id="gift90-balance">0</span></p>
+            </div>
+        </div>
+            <button class="gift-button disabled" id="gift90" onclick="redeemGift(90)">กดรับ</button>
+              <span id="gift90-redeemed" style="display: none; font-weight: bold; color: gray;">รับแล้ว</span>
+            <span id="gift90-outofstock" style="display: none; font-weight: bold; color: gray;">ของหมด</span>
+        </div>
     </div>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
@@ -305,6 +319,8 @@ function getColumnIndexByLevel(level) {
             return 9; // Column J
         case 75:
             return 10; // Column K
+        case 90:
+            return 11; // Column L
         default:
             return null;
     }
