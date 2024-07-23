@@ -170,5 +170,5 @@ function saveSelection(empNo, factory, selectedFood, uid) {
 }
 
 function showBlankPage() {
-    document.body.innerHTML = '<p style="font-size: 20px; text-align: center; margin-top: 20%;">บันทึกข้อมูลในระบบเรียบร้อยแล้ว</p>';
+    document.body.innerHTML = '<p style="font-size: 20px; text-align: center; margin-top: 50%;">บันทึกข้อมูลในระบบเรียบร้อยแล้ว</p>';
 }
