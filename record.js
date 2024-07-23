@@ -173,6 +173,36 @@ function saveSelection(empNo, factory, selectedFood, uid) {
             Swal.fire('Error', `Network error: ${error.message}`, 'error');
         });
 }
+function filterDropdown() {
+    const input = document.getElementById('foodInput');
+    const filter = input.value.toUpperCase();
+    const dropdownList = document.getElementById('foodDropdownList');
+    const items = dropdownList.getElementsByTagName('div');
+    let matchFound = false;
+
+    function highlight(text, query) {
+        const startIndex = text.toUpperCase().indexOf(query.toUpperCase());
+        if (startIndex === -1) return text;
+        const endIndex = startIndex + query.length;
+        return text.slice(0, startIndex) + '<span class="highlight">' + text.slice(startIndex, endIndex) + '</span>' + text.slice(endIndex);
+    }
+
+    for (let i = 0; i < items.length; i++) {
+        let txtValue = items[i].textContent || items[i].innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            items[i].style.display = "";
+            items[i].innerHTML = highlight(txtValue, input.value);
+            if (txtValue.toUpperCase() === filter) {
+                matchFound = true;
+            }
+        } else {
+            items[i].style.display = "none";
+        }
+    }
+
+    dropdownList.style.display = filter ? 'block' : 'none';
+    document.getElementById('saveButton').disabled = !matchFound;
+}
 
 function showBlankPage() {
     document.body.innerHTML = '<p style="font-size: 20px; text-align: center; margin-top: 50%;">บันทึกข้อมูลในระบบเรียบร้อยแล้ว</p>';
