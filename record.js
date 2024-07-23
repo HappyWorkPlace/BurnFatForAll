@@ -120,18 +120,22 @@ function checkUserColumnJ(uid, empNo, factory, selectedFood) {
             Swal.close();
             if (data.status === 'TRUE') {
                 saveSelection(empNo, factory, selectedFood, uid);
-  } else if (data.status === 'FALSE') {
-    Swal.fire({
-        title: 'แย่จัง..',
-        html: `วันนี้คุณบันทึกข้อมูลไปแล้วเมื่อ ${new Date(data.lastTimestamp).toLocaleString()} พรุ่งนี้ค่อยมาใหม่นะ <br><img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_error.png" alt="icon" style="width:100px;height:100px;">`
-    });
-} else {
-    Swal.fire('Error', 'Failed to check user status.', 'error');
-}).catch(error => {
+            } else if (data.status === 'FALSE') {
+                Swal.fire({
+                    title: 'แย่จัง..',
+                    html: `วันนี้คุณบันทึกข้อมูลไปแล้วเมื่อ ${new Date(data.lastTimestamp).toLocaleString()} พรุ่งนี้ค่อยมาใหม่นะ <br><img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_error.png" alt="icon" style="width:100px;height:100px;">`,
+                    icon: 'info'
+                });
+            } else {
+                Swal.fire('Error', 'Failed to check user status.', 'error');
+            }
+        })
+        .catch(error => {
             console.error('Error checking user column J:', error);
             Swal.fire('Error', 'Failed to check user status. Please try again later.', 'error');
         });
 }
+
 
 function saveSelection(empNo, factory, selectedFood, uid) {
     Swal.fire({
