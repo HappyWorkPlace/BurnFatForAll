@@ -123,14 +123,12 @@ function checkUserColumnJ(uid, empNo, factory, selectedFood) {
   } else if (data.status === 'FALSE') {
     Swal.fire({
         title: 'แย่จัง..',
-        html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_error.png" alt="info" style="width:100px;height:100px;"><br>วันนี้คุณบันทึกข้อมูลไปแล้วเมื่อ ' + new Date(data.lastTimestamp).toLocaleString() + '. พรุ่งนี้ค่อยมาใหม่นะ'
+        html: `วันนี้คุณบันทึกข้อมูลไปแล้วเมื่อ ${new Date(data.lastTimestamp).toLocaleString()} พรุ่งนี้ค่อยมาใหม่นะ <br><img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_error.png" alt="icon" style="width:50px;height:50px;">`,
+        icon: 'info'
     });
-
-            } else {
-                Swal.fire('Error', 'Failed to check user status.', 'error');
-            }
-        })
-        .catch(error => {
+} else {
+    Swal.fire('Error', 'Failed to check user status.', 'error');
+}).catch(error => {
             console.error('Error checking user column J:', error);
             Swal.fire('Error', 'Failed to check user status. Please try again later.', 'error');
         });
