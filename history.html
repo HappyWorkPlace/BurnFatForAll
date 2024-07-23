@@ -48,7 +48,7 @@
             text-align: center;
         }
         .table th {
-            background-color: #a8dadc;
+            background-color: #457b9d;
             color: white;
         }
         .table-striped tbody tr:nth-of-type(odd) {
@@ -68,7 +68,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1><i class="fas fa-history"></i>ประวัติการบันทึกข้อมูล</h1>
+            <h1><i class="fas fa-history"></i> ประวัติการบันทึกข้อมูล</h1>
         </div>
         <div class="info">
             <p><strong>EmpNo:</strong> <span id="empNo"></span></p>
@@ -111,6 +111,12 @@ document.addEventListener("DOMContentLoaded", function() {
     const divisionElement = document.getElementById('division');
     const factoryElement = document.getElementById('factory');
 
+    function formatDateTime(dateTimeString) {
+        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        const date = new Date(dateTimeString);
+        return date.toLocaleDateString('th-TH', options);
+    }
+
     async function fetchData(userId) {
         loadingElement.style.display = 'block';
         try {
@@ -130,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${record.Menu}</td>
-                        <td>${record.TimeStamp}</td>
+                        <td>${formatDateTime(record.TimeStamp)}</td>
                     `;
                     tableBody.appendChild(row);
                 });
