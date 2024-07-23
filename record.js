@@ -121,7 +121,11 @@ function checkUserColumnJ(uid, empNo, factory, selectedFood) {
             if (data.status === 'TRUE') {
                 saveSelection(empNo, factory, selectedFood, uid);
             } else if (data.status === 'FALSE') {
-                Swal.fire('แย่จัง..', `วันนี้คุณบันทึกข้อมูลไปแล้วเมื่อ ${new Date(data.lastTimestamp).toLocaleString()}. พรุ่งนี้ค่อยมาใหม่นะ`, 'info');
+                // Swal.fire('แย่จัง..', `วันนี้คุณบันทึกข้อมูลไปแล้วเมื่อ ${new Date(data.lastTimestamp).toLocaleString()}. พรุ่งนี้ค่อยมาใหม่นะ`, 'info');
+                Swal.fire({
+                    title: 'แย่จัง..',
+                    html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_error.png" alt="info" style="width:100px;height:100px;">`วันนี้คุณบันทึกข้อมูลไปแล้วเมื่อ ${new Date(data.lastTimestamp).toLocaleString()}. พรุ่งนี้ค่อยมาใหม่นะ`
+                    });
             } else {
                 Swal.fire('Error', 'Failed to check user status.', 'error');
             }
