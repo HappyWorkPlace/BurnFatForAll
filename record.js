@@ -137,6 +137,7 @@ function checkUserColumnJ(uid, empNo, factory, selectedFood) {
 }
 
 
+
 function saveSelection(empNo, factory, selectedFood, uid) {
     Swal.fire({
         title: 'กำลังบันทึกข้อมูล',
