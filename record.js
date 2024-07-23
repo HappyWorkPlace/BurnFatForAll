@@ -125,7 +125,7 @@ function checkUserColumnJ(uid, empNo, factory, selectedFood) {
         title: 'แย่จัง..',
         html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_error.png" alt="info" style="width:100px;height:100px;"><br>วันนี้คุณบันทึกข้อมูลไปแล้วเมื่อ ' + new Date(data.lastTimestamp).toLocaleString() + '. พรุ่งนี้ค่อยมาใหม่นะ'
     });
-}
+
             } else {
                 Swal.fire('Error', 'Failed to check user status.', 'error');
             }
