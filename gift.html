@@ -121,7 +121,7 @@
                 <p>จำนวนคงเหลือ <span id="gift15-balance">0</span></p>
             </div>
         </div>
-            <button class="gift-button disabled" id="gift15" onclick="redeemGift(15)">กดรับ</button>
+            <button class="gift-button disabled" id="gift15" onclick="redeemGift(15)" disabled>กดรับ</button>
             <span id="gift15-redeemed" style="display: none; font-weight: bold; color: gray;">รับแล้ว</span>
             <span id="gift15-outofstock" style="display: none; font-weight: bold; color: gray;">ของหมด</span>
         </div>
@@ -134,7 +134,7 @@
                 <p>จำนวนคงเหลือ <span id="gift30-balance">0</span></p>
             </div>
         </div>
-            <button class="gift-button disabled" id="gift30" onclick="redeemGift(30)">กดรับ</button>
+            <button class="gift-button disabled" id="gift30" onclick="redeemGift(30)" disabled>กดรับ</button>
             <span id="gift30-redeemed" style="display: none; font-weight: bold; color: gray;">รับแล้ว</span>
             <span id="gift30-outofstock" style="display: none; font-weight: bold; color: gray;">ของหมด</span>
         </div>
@@ -147,7 +147,7 @@
                 <p>จำนวนคงเหลือ <span id="gift45-balance">0</span></p>
             </div>
         </div>
-            <button class="gift-button disabled" id="gift45" onclick="redeemGift(45)">กดรับ</button>
+            <button class="gift-button disabled" id="gift45" onclick="redeemGift(45)" disabled>กดรับ</button>
             <span id="gift45-redeemed" style="display: none; font-weight: bold; color: gray;">รับแล้ว</span>
             <span id="gift45-outofstock" style="display: none; font-weight: bold; color: gray;">ของหมด</span>
         </div>
@@ -160,7 +160,7 @@
                 <p>จำนวนคงเหลือ <span id="gift60-balance">0</span></p>
             </div>
         </div>
-            <button class="gift-button disabled" id="gift60" onclick="redeemGift(60)">กดรับ</button>
+            <button class="gift-button disabled" id="gift60" onclick="redeemGift(60)"disabled>กดรับ</button>
               <span id="gift60-redeemed" style="display: none; font-weight: bold; color: gray;">รับแล้ว</span>
             <span id="gift60-outofstock" style="display: none; font-weight: bold; color: gray;">ของหมด</span>
         </div>
@@ -174,7 +174,7 @@
                 <p>จำนวนคงเหลือ <span id="gift75-balance">0</span></p>
             </div>
         </div>
-            <button class="gift-button disabled" id="gift75" onclick="redeemGift(75)">กดรับ</button>
+            <button class="gift-button disabled" id="gift75" onclick="redeemGift(75)"disabled>กดรับ</button>
               <span id="gift75-redeemed" style="display: none; font-weight: bold; color: gray;">รับแล้ว</span>
             <span id="gift75-outofstock" style="display: none; font-weight: bold; color: gray;">ของหมด</span>
         </div>
@@ -188,7 +188,7 @@
                 <p>จำนวนคงเหลือ <span id="gift90-balance">0</span></p>
             </div>
         </div>
-            <button class="gift-button disabled" id="gift90" onclick="redeemGift(90)">กดรับ</button>
+            <button class="gift-button disabled" id="gift90" onclick="redeemGift(90)"disabled>กดรับ</button>
               <span id="gift90-redeemed" style="display: none; font-weight: bold; color: gray;">รับแล้ว</span>
             <span id="gift90-outofstock" style="display: none; font-weight: bold; color: gray;">ของหมด</span>
         </div>
@@ -219,7 +219,6 @@ function initializeLiff(myLiffId) {
         document.getElementById('gift-container').innerText = 'ไม่สามารถดึงข้อมูลของขวัญได้';
     });
 }
-
 function disableAllGiftButtons() {
     const buttons = document.querySelectorAll('.gift-button');
     buttons.forEach(button => {
@@ -243,6 +242,7 @@ function fetchDataAndUpdateUI(uid) {
             document.getElementById('gift-container').innerText = 'กรุณาลงทะเบียนก่อน';
         });
 }
+
 
 function fetchUserData(uid) {
     return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserData&uid=${uid}`)
