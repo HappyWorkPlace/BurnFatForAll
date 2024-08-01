@@ -24,7 +24,7 @@
             position: relative;
             overflow: auto;
             padding: 20px 20px 200px 20px; 
-            min-height: calc(100vh + 100px);
+/*             min-height: calc(100vh + 100px); */
         }
 
 
@@ -381,7 +381,7 @@
                     <input type="text" id="date5" name="date5" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date6')">
                     <input type="text" id="date6" name="date6" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date7')">
                     <input type="text" id="date7" name="date7" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date8')">
-                    <input type="text" id="date8" name="date8" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*">
+                    <input type="text" id="date8" name="date8" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'checkButton')">>
                 </div>
                 <button id="checkButton" class="save-button" onclick="checkUserInfo()">ตรวจสอบข้อมูล</button>
             </div>
