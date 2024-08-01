@@ -220,7 +220,18 @@ function initializeLiff(myLiffId) {
     });
 }
 
+function disableAllGiftButtons() {
+    const buttons = document.querySelectorAll('.gift-button');
+    buttons.forEach(button => {
+        button.disabled = true;
+        button.classList.add('disabled');
+        button.classList.remove('enabled');
+    });
+}
+
 function fetchDataAndUpdateUI(uid) {
+    disableAllGiftButtons(); // Disable all buttons initially
+
     Promise.all([fetchUserData(uid), fetchGiftList()])
         .then(([userData, gifts]) => {
             const points = userData[5]; // Assuming points is at index 5
