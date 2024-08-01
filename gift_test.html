@@ -219,8 +219,18 @@ function initializeLiff(myLiffId) {
         document.getElementById('gift-container').innerText = 'ไม่สามารถดึงข้อมูลของขวัญได้';
     });
 }
+function disableAllGiftButtons() {
+    const buttons = document.querySelectorAll('.gift-button');
+    buttons.forEach(button => {
+        button.disabled = true;
+        button.classList.add('disabled');
+        button.classList.remove('enabled');
+    });
+}
 
 function fetchDataAndUpdateUI(uid) {
+    disableAllGiftButtons(); // Disable all buttons initially
+
     Promise.all([fetchUserData(uid), fetchGiftList()])
         .then(([userData, gifts]) => {
             const points = userData[5]; // Assuming points is at index 5
@@ -232,6 +242,7 @@ function fetchDataAndUpdateUI(uid) {
             document.getElementById('gift-container').innerText = 'กรุณาลงทะเบียนก่อน';
         });
 }
+
 
 function fetchUserData(uid) {
     return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserData&uid=${uid}`)
