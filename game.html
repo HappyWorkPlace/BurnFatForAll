@@ -166,7 +166,7 @@ body {
     <div id="gameArea">
         <!-- การ์ดจะถูกเพิ่มโดย JavaScript -->
     </div>
-    <div id="message">Moves Left: 15</div>
+    <div id="message">Moves Left: 12</div>
 
 <script>
     const imageLinks = [
@@ -304,7 +304,7 @@ body {
             createComboEffect(comboCount); // สร้างเอฟเฟกต์คอมโบ
             flippedCards = [];
             if (matchedPairs === 12) {
-                document.getElementById('message').textContent = 'Congratulations! You matched all pairs!';
+                document.getElementById('message').textContent = 'ยินดีด้วย คุณจับคู่ภาพได้ถูกทั้งหมดเลย!!';
                 clearInterval(pointingInterval);  // หยุดการสุ่มชี้เมื่อเกมจบ
             }
         } else {
@@ -328,7 +328,7 @@ body {
 
         setTimeout(() => {
             heart.remove();
-        }, 1000); // ลบเอฟเฟกต์หลังจาก 1.5 วินาที
+        }, 1500); // ลบเอฟเฟกต์หลังจาก 1.5 วินาที
     }
 
     function createComboEffect(comboCount) {
@@ -340,7 +340,7 @@ body {
 
             setTimeout(() => {
                 comboMessage.remove();
-            }, 1500); // ลบข้อความคอมโบหลังจาก 2.0 วินาที
+            }, 2000); // ลบข้อความคอมโบหลังจาก 2.0 วินาที
         }
     }
 
