@@ -201,7 +201,7 @@ body {
     images.push(specialImage);
 
     let flippedCards = [];
-    let movesLeft = 15;
+    let movesLeft = 12;
     let matchedPairs = 0;
     let score = 0;
     let comboCount = 0; // ตัวแปรสำหรับเก็บจำนวนครั้งที่จับคู่ถูกต้องติดต่อกัน
@@ -243,8 +243,8 @@ body {
             gameArea.appendChild(cardElement);
         });
 
-        // เริ่มการสุ่มชี้การ์ดทุก 5 วินาที
-        pointingInterval = setInterval(suggestCardToFlip, 5000);
+        // เริ่มการสุ่มชี้การ์ดทุก 3 วินาที
+        pointingInterval = setInterval(suggestCardToFlip, 3000);
     }
 
     function suggestCardToFlip() {
@@ -328,7 +328,7 @@ body {
 
         setTimeout(() => {
             heart.remove();
-        }, 1000); // ลบเอฟเฟกต์หลังจาก 1 วินาที
+        }, 1000); // ลบเอฟเฟกต์หลังจาก 1.5 วินาที
     }
 
     function createComboEffect(comboCount) {
@@ -340,7 +340,7 @@ body {
 
             setTimeout(() => {
                 comboMessage.remove();
-            }, 1500); // ลบข้อความคอมโบหลังจาก 1.5 วินาที
+            }, 1500); // ลบข้อความคอมโบหลังจาก 2.0 วินาที
         }
     }
 
