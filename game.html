@@ -210,16 +210,10 @@ body {
         'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card3.png',
         'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card4.png',
         'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card5.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card6.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card1.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card2.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card3.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card4.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card5.png',
         'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card6.png'
     ];
 
-    const specialImage = 'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop6.png'; // ลิงก์ไปยังภาพที่ 25
+    const specialImage = 'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/special_card.png'; // ลิงก์ไปยังภาพที่ 25
 
     const stickerLinks = [
         'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop1.png',
@@ -227,14 +221,16 @@ body {
         'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop3.png',
         'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop4.png',
         'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop5.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop6.png'
     ];
 
     let images = [];
     
-    // สร้างคู่ภาพ (12 คู่ รวมเป็น 24 ภาพ)
+    // สร้างคู่ภาพ (4 คู่สำหรับแต่ละภาพ รวมเป็น 24 ภาพ)
     imageLinks.forEach(link => {
-        images.push(link);
-        images.push(link);
+        for (let i = 0; i < 4; i++) {
+            images.push(link);
+        }
     });
 
     // เพิ่มภาพฟรีเป็นภาพที่ 25
@@ -394,6 +390,7 @@ body {
 
     createGameBoard();
 </script>
+
 
 
 </body>
