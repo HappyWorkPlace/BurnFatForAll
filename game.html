@@ -164,6 +164,7 @@ body {
     <div id="message">Moves Left: 15</div>
 
     <script>
+<script>
     const imageLinks = [
         'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card1.png',
         'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card2.png',
@@ -284,7 +285,9 @@ body {
             comboCount++; // เพิ่มตัวคูณคอมโบเมื่อจับคู่ได้ถูกต้อง
             const scoreToAdd = comboCount; // คะแนนที่เพิ่มขึ้น = ตัวคูณคอมโบ
             score += scoreToAdd;
+            movesLeft += 1;
             document.getElementById('score').textContent = `Score: ${score}`;
+            document.getElementById('message').textContent = `Moves Left: ${movesLeft}`;
             createHeartEffect(card1); // สร้างเอฟเฟกต์หัวใจบนการ์ดใบแรก
             createHeartEffect(card2); // สร้างเอฟเฟกต์หัวใจบนการ์ดใบที่สอง
             createComboEffect(comboCount); // สร้างเอฟเฟกต์คอมโบ
