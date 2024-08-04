@@ -36,9 +36,10 @@
             text-align: center;
             transform-style: preserve-3d;
             transition: transform 0.6s;
+            transform: rotateY(180deg); /* ทำให้การ์ดคว่ำหน้าเป็นค่าเริ่มต้น */
         }
         .card.flipped .card-inner {
-            transform: rotateY(180deg);
+            transform: rotateY(0deg); /* หมุนการ์ดกลับมาแสดงด้านหน้า */
         }
         .card-front, .card-back {
             position: absolute;
