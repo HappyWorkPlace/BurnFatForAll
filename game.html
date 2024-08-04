@@ -86,38 +86,40 @@ body {
 }
 
 .combo {
-    font-size: 10vw;
+    font-size: 8vw;
     color: #ff4500;
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    animation: comboEffect 2s ease-in-out forwards;
+    transform: translate(-50%, -50%) scale(0);
+    animation: comboPop 1.5s ease forwards;
     z-index: 1000;
     opacity: 0;
-    text-shadow: 0 0 10px rgba(255, 69, 0, 0.7), 0 0 20px rgba(255, 69, 0, 0.5);
+    font-weight: bold;
+    text-shadow: 0px 0px 10px rgba(255, 69, 0, 0.5), 0px 0px 20px rgba(255, 69, 0, 0.3);
 }
 
-@keyframes comboEffect {
+@keyframes comboPop {
     0% {
-        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        transform: translate(-50%, -50%) scale(0);
         opacity: 0;
     }
-    25% {
-        transform: translate(-50%, -50%) scale(1.2) rotate(5deg);
+    30% {
+        transform: translate(-50%, -50%) scale(1.2);
         opacity: 1;
     }
     50% {
-        transform: translate(-50%, -50%) scale(1.5) rotate(-5deg);
+        transform: translate(-50%, -50%) scale(1);
     }
-    75% {
-        transform: translate(-50%, -50%) scale(1.2) rotate(5deg);
+    70% {
+        transform: translate(-50%, -50%) scale(1.1);
     }
     100% {
-        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        transform: translate(-50%, -50%) scale(1);
         opacity: 0;
     }
 }
+
 
 .lightning {
     position: absolute;
@@ -207,8 +209,17 @@ body {
         'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card2.png',
         'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card3.png',
         'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card4.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card5.png'
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card5.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card6.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card1.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card2.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card3.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card4.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card5.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card6.png'
     ];
+
+    const specialImage = 'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop6.png'; // ลิงก์ไปยังภาพที่ 25
 
     const stickerLinks = [
         'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop1.png',
@@ -216,15 +227,18 @@ body {
         'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop3.png',
         'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop4.png',
         'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop5.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop6.png'
     ];
 
     let images = [];
+    
+    // สร้างคู่ภาพ (12 คู่ รวมเป็น 24 ภาพ)
     imageLinks.forEach(link => {
-        for (let i = 0; i < 5; i++) {
-            images.push(link);
-        }
+        images.push(link);
+        images.push(link);
     });
+
+    // เพิ่มภาพฟรีเป็นภาพที่ 25
+    images.push(specialImage);
 
     let flippedCards = [];
     let movesLeft = 15;
@@ -322,7 +336,7 @@ body {
             comboCount++; // เพิ่มตัวคูณคอมโบเมื่อจับคู่ได้ถูกต้อง
             const scoreToAdd = comboCount; // คะแนนที่เพิ่มขึ้น = ตัวคูณคอมโบ
             score += scoreToAdd;
-            movesLeft += 1;
+            movesLeft += 1; // เพิ่มจำนวน move แค่ 1 ทุกครั้งที่ทำคอมโบสำเร็จ
             document.getElementById('score').textContent = `Score: ${score}`;
             document.getElementById('message').textContent = `Moves Left: ${movesLeft}`;
             createHeartEffect(card1); // สร้างเอฟเฟกต์หัวใจบนการ์ดใบแรก
@@ -366,7 +380,7 @@ body {
 
             setTimeout(() => {
                 comboMessage.remove();
-            }, 1000); // ลบเอฟเฟกต์คอมโบหลังจาก 1 วินาที
+            }, 1500); // ลบข้อความคอมโบหลังจาก 1.5 วินาที
         }
     }
 
@@ -380,6 +394,7 @@ body {
 
     createGameBoard();
 </script>
+
 
 </body>
 </html>
