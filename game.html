@@ -62,6 +62,11 @@
             font-size: 4vw;
             margin-top: 20px;
         }
+        #score {
+            font-size: 5vw;
+            margin-top: 20px;
+            color: #ff0055;
+        }
 
         .pointing-character {
             position: absolute;
@@ -79,11 +84,35 @@
                 transform: translateX(-10px);
             }
         }
+
+        .heart {
+            position: absolute;
+            font-size: 3vw;
+            color: #ff69b4;
+            animation: popUp 1s ease-in-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes popUp {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
 
     <h1 style="font-size: 6vw;">Memory Matching Game</h1>
+    <div id="score">Score: 0</div>
     <div id="gameArea">
         <!-- การ์ดจะถูกเพิ่มโดย JavaScript -->
     </div>
@@ -117,6 +146,7 @@
         let flippedCards = [];
         let movesLeft = 15;
         let matchedPairs = 0;
+        let score = 0;
         let pointingInterval;
 
         function shuffle(array) {
@@ -205,6 +235,10 @@
             const [card1, card2] = flippedCards;
             if (card1.dataset.image === card2.dataset.image) {
                 matchedPairs++;
+                score++;
+                document.getElementById('score').textContent = `Score: ${score}`;
+                createHeartEffect(card1); // สร้างเอฟเฟกต์หัวใจบนการ์ดใบแรก
+                createHeartEffect(card2); // สร้างเอฟเฟกต์หัวใจบนการ์ดใบที่สอง
                 flippedCards = [];
                 if (matchedPairs === 12) {
                     document.getElementById('message').textContent = 'Congratulations! You matched all pairs!';
@@ -217,6 +251,20 @@
                     flippedCards = [];
                 }, 1000);
             }
+        }
+
+        function createHeartEffect(card) {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.textContent = '❤️';
+            heart.style.left = '50%';
+            heart.style.top = '50%';
+            heart.style.transform = 'translate(-50%, -50%)';
+            card.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 1000); // ลบเอฟเฟกต์หลังจาก 1 วินาที
         }
 
         function disableCards() {
