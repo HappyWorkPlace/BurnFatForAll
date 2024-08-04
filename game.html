@@ -86,31 +86,68 @@ body {
 }
 
 .combo {
-    font-size: 8vw;
+    font-size: 10vw;
     color: #ff4500;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    animation: comboEffect 1s ease-in-out forwards;
+    animation: comboEffect 2s ease-in-out forwards;
     z-index: 1000;
     opacity: 0;
+    text-shadow: 0 0 10px rgba(255, 69, 0, 0.7), 0 0 20px rgba(255, 69, 0, 0.5);
 }
 
 @keyframes comboEffect {
     0% {
-        transform: translate(-50%, -50%) scale(1);
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
         opacity: 0;
     }
-    50% {
-        transform: translate(-50%, -50%) scale(1.5);
+    25% {
+        transform: translate(-50%, -50%) scale(1.2) rotate(5deg);
         opacity: 1;
     }
+    50% {
+        transform: translate(-50%, -50%) scale(1.5) rotate(-5deg);
+    }
+    75% {
+        transform: translate(-50%, -50%) scale(1.2) rotate(5deg);
+    }
     100% {
-        transform: translate(-50%, -50%) scale(1);
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
         opacity: 0;
     }
 }
+
+.lightning {
+    position: absolute;
+    width: 100px;
+    height: 200px;
+    background: url('https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/lightning.png') no-repeat center center;
+    background-size: contain;
+    animation: lightningEffect 1s ease-in-out infinite;
+    z-index: 999;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    opacity: 0;
+}
+
+@keyframes lightningEffect {
+    0% {
+        opacity: 0;
+        transform: translateY(-100%) translateX(-50%) scale(0.5);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(20%) translateX(-50%) scale(1.5);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(100%) translateX(-50%) scale(0.5);
+    }
+}
+
 
 .pointing-character {
     position: absolute;
