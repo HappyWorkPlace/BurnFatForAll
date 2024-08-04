@@ -14,20 +14,26 @@
         }
         #gameArea {
             display: grid;
-            grid-template-columns: repeat(5, 18vw);
-            grid-template-rows: repeat(5, 18vw);
+            grid-template-columns: repeat(5, 16vw);
+            grid-template-rows: repeat(5, 16vw);
             gap: 2vw;
             justify-content: center;
             margin: 20px auto;
             max-width: 100vw;
         }
         .card {
-            width: 18vw;
-            height: 18vw;
+            width: 16vw;
+            height: 16vw;
             background-color: lightgray;
             position: relative;
             cursor: pointer;
-            perspective: 1000px;
+            perspective: 1200px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 10px;
+        }
+        .card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
         }
         .card-inner {
             position: relative;
@@ -70,8 +76,8 @@
 
         .pointing-character {
             position: absolute;
-            width: 10vw;
-            height: 10vw;
+            width: 8vw;
+            height: 8vw;
             background-size: cover;
             animation: point 2s ease-in-out infinite;
         }
@@ -87,7 +93,7 @@
 
         .heart {
             position: absolute;
-            font-size: 3vw;
+            font-size: 2vw;
             color: #ff69b4;
             animation: popUp 1s ease-in-out forwards;
             opacity: 0;
@@ -111,7 +117,7 @@
 </head>
 <body>
 
-    <h1 style="font-size: 6vw;">Memory Matching Game</h1>
+    <h1 style="font-size: 5vw;">Memory Matching Game</h1>
     <div id="score">Score: 0</div>
     <div id="gameArea">
         <!-- การ์ดจะถูกเพิ่มโดย JavaScript -->
@@ -206,8 +212,8 @@
 
             const pointingCharacter = document.createElement('div');
             pointingCharacter.className = 'pointing-character';
-            pointingCharacter.style.left = 'calc(50% - 5vw)';
-            pointingCharacter.style.top = '-10vw';
+            pointingCharacter.style.left = 'calc(50% - 4vw)';
+            pointingCharacter.style.top = '-8vw';
             pointingCharacter.style.backgroundImage = `url('${selectedSticker}')`;
             selectedCard.appendChild(pointingCharacter);
         }
@@ -280,3 +286,4 @@
 
 </body>
 </html>
+
