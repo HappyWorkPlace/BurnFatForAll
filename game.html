@@ -5,114 +5,127 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Memory Matching Game</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
-            background-color: #f0f0f0;
-        }
-        #gameArea {
-            display: grid;
-            grid-template-columns: repeat(5, 16vw);
-            grid-template-rows: repeat(5, 16vw);
-            gap: 2vw;
-            justify-content: center;
-            margin: 20px auto;
-            max-width: 100vw;
-        }
-        .card {
-            width: 16vw;
-            height: 16vw;
-            background-color: lightgray;
-            position: relative;
-            cursor: pointer;
-            perspective: 1200px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border-radius: 10px;
-        }
-        .card:hover {
-            transform: translateY(-10px) scale(1.05);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-        }
-        .card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            transform-style: preserve-3d;
-            transition: transform 0.6s;
-            transform: rotateY(180deg); /* ทำให้การ์ดคว่ำหน้าเป็นค่าเริ่มต้น */
-        }
-        .card.flipped .card-inner {
-            transform: rotateY(0deg); /* หมุนการ์ดกลับมาแสดงด้านหน้า */
-        }
-        .card-front, .card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 10px;
-        }
-        .card-back {
-            background-image: url('https://your-image-back.jpg'); /* ลิงก์ไปยังภาพด้านหลัง */
-            background-size: cover;
-        }
-        .card-front img {
-            width: 100%;
-            height: 100%;
-            display: block;
-            border-radius: 10px;
-        }
-        #message {
-            font-size: 4vw;
-            margin-top: 20px;
-        }
-        #score {
-            font-size: 5vw;
-            margin-top: 20px;
-            color: #ff0055;
-        }
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+    background-color: #f0f8ff; /* สีพื้นหลังของหน้าจอ */
+}
 
-        .pointing-character {
-            position: absolute;
-            width: 8vw;
-            height: 8vw;
-            background-size: cover;
-            animation: point 2s ease-in-out infinite;
-        }
+#gameArea {
+    display: grid;
+    grid-template-columns: repeat(5, 16vw);
+    grid-template-rows: repeat(5, 16vw);
+    gap: 2vw;
+    justify-content: center;
+    margin: 20px auto;
+    max-width: 100vw;
+}
 
-        @keyframes point {
-            0%, 100% {
-                transform: translateX(0);
-            }
-            50% {
-                transform: translateX(-10px);
-            }
-        }
+.card {
+    width: 16vw;
+    height: 16vw;
+    background-color: #ffffff; /* พื้นหลังของการ์ดที่ลอยขึ้น */
+    position: relative;
+    cursor: pointer;
+    perspective: 1200px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* เพิ่มเงาเล็กน้อยเพื่อความลึก */
+}
 
-        .heart {
-            position: absolute;
-            font-size: 2vw;
-            color: #ff69b4;
-            animation: popUp 1s ease-in-out forwards;
-            opacity: 0;
-        }
+.card:hover {
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
 
-        @keyframes popUp {
-            0% {
-                transform: scale(0.5);
-                opacity: 0;
-            }
-            50% {
-                transform: scale(1.2);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 0;
-            }
-        }
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+    transform: rotateY(180deg); /* ทำให้การ์ดคว่ำหน้าเป็นค่าเริ่มต้น */
+}
+
+.card.flipped .card-inner {
+    transform: rotateY(0deg); /* หมุนการ์ดกลับมาแสดงด้านหน้า */
+}
+
+.card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 10px;
+}
+
+.card-back {
+    background-color: #ffcc00; /* สีพื้นหลังของการ์ดด้านคว่ำ */
+    background-size: cover;
+}
+
+.card-front img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: 10px;
+}
+
+#message {
+    font-size: 4vw;
+    margin-top: 20px;
+    color: #333; /* สีข้อความ */
+}
+
+#score {
+    font-size: 5vw;
+    margin-top: 20px;
+    color: #ff0055; /* สีคะแนน */
+}
+
+.pointing-character {
+    position: absolute;
+    width: 8vw;
+    height: 8vw;
+    background-size: cover;
+    animation: point 2s ease-in-out infinite;
+}
+
+@keyframes point {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(-10px);
+    }
+}
+
+.heart {
+    position: absolute;
+    font-size: 2vw;
+    color: #ff69b4; /* สีหัวใจ */
+    animation: popUp 1s ease-in-out forwards;
+    opacity: 0;
+}
+
+@keyframes popUp {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0;
+    }
+}
+
     </style>
 </head>
 <body>
