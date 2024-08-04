@@ -5,355 +5,355 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Memory Matching Game</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
-            background-color: #C3E5AE; /* สีพื้นหลังของหน้าจอ */
-        }
+<style>
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+    background-color: #F6E2BC; /* สีพื้นหลังของหน้าจอ */
+}
 
-        h1 {
-            color: #F4BBBB; /* สีหัวข้อ */
-            margin-bottom: 20px;
-        }
+#gameArea {
+    display: grid;
+    grid-template-columns: repeat(5, 16vw);
+    grid-template-rows: repeat(5, 16vw);
+    gap: 2vw;
+    justify-content: center;
+    margin: 20px auto;
+    max-width: 100vw;
+}
 
-        #score {
-            font-size: 5vw;
-            margin-top: 10px;
-            color: #FF0055; /* สีคะแนน */
-        }
+.card {
+    width: 16vw;
+    height: 16vw;
+    background-color: #ffffff;
+    position: relative;
+    cursor: pointer;
+    perspective: 1000px; /* เพิ่ม 3D perspective */
+    transition: transform 0.6s ease; /* เพิ่มการเปลี่ยนแปลงแบบสมูธ */
+    border-radius: 10px;
+}
 
-        #gameArea {
-            display: grid;
-            grid-template-columns: repeat(5, 16vw);
-            grid-template-rows: repeat(5, 16vw);
-            gap: 2vw;
-            justify-content: center;
-            margin: 20px auto;
-            max-width: 100vw;
-        }
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transform-style: preserve-3d;
+    transition: transform 0.6s ease; /* เพิ่มการหมุนแบบสมูธ */
+    transform: rotateY(180deg); /* ทำให้การ์ดเริ่มต้นคว่ำหน้า */
+}
 
-        .card {
-            width: 16vw;
-            height: 16vw;
-            background-color: #F1E1A6; /* สีพื้นหลังของการ์ด */
-            position: relative;
-            cursor: pointer;
-            perspective: 1000px; /* เพิ่ม 3D perspective */
-            border-radius: 10px;
-        }
+.card.flipped .card-inner {
+    transform: rotateY(0deg); /* หมุนการ์ดกลับเพื่อแสดงภาพ */
+}
 
-        .card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            transform-style: preserve-3d;
-            transition: transform 0.6s ease; /* เพิ่มการหมุนแบบสมูธ */
-        }
+.card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden; /* ซ่อนด้านหลังของการ์ดเมื่อถูกหมุน */
+    border-radius: 10px;
+}
 
-        .card.flipped .card-inner {
-            transform: rotateY(180deg); /* หมุนการ์ด 180 องศา */
-        }
+.card-back {
+    background-color: #3B9097; /* สีพื้นหลังของการ์ดด้านคว่ำ */
+    background-size: cover;
+    transform: rotateY(180deg); /* หมุนด้านหลัง 180 องศา */
+}
 
-        .card-front, .card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden; /* ซ่อนด้านหลังของการ์ดเมื่อถูกหมุน */
-            border-radius: 10px;
-        }
+.card-front img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: 10px;
+}
 
-        .card-back {
-            background-color: #97DBAE; /* สีพื้นหลังของการ์ดด้านคว่ำ */
-            background-size: cover;
-        }
+#message {
+    font-size: 4vw;
+    margin-top: 20px;
+    color: #333; /* สีข้อความ */
+}
 
-        .card-front img {
-            width: 100%;
-            height: 100%;
-            display: block;
-            border-radius: 10px;
-        }
+#score {
+    font-size: 5vw;
+    margin-top: 20px;
+    color: #000000; /* สีคะแนนเป็นสีดำ */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* เพิ่มเงาเพื่อเพิ่มมิติ */
+}
 
-        #message {
-            font-size: 4vw;
-            margin-top: 20px;
-            color: #333; /* สีข้อความ */
-        }
+.pointing-character {
+    position: absolute;
+    width: 8vw;
+    height: 8vw;
+    background-size: cover;
+    animation: point 2s ease-in-out infinite;
+}
 
-        .pointing-character {
-            position: absolute;
-            width: 8vw;
-            height: 8vw;
-            background-size: cover;
-            animation: point 2s ease-in-out infinite;
-        }
+@keyframes point {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
 
-        @keyframes point {
-            0%, 100% {
-                transform: translateX(0);
-            }
-            50% {
-                transform: translateX(-10px);
-            }
-        }
+.heart {
+    position: absolute;
+    font-size: 2vw;
+    color: #ff69b4; /* สีหัวใจ */
+    animation: popUp 1s ease-in-out forwards;
+    opacity: 0;
+}
 
-        .heart {
-            position: absolute;
-            font-size: 2vw;
-            color: #ff69b4; /* สีหัวใจ */
-            animation: popUp 1s ease-in-out forwards;
-            opacity: 0;
-        }
+@keyframes popUp {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0;
+    }
+}
 
-        @keyframes popUp {
-            0% {
-                transform: scale(0.5);
-                opacity: 0;
-            }
-            50% {
-                transform: scale(1.2);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 0;
-            }
-        }
+.combo {
+    font-size: 8vw;
+    color: #ff4500;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    animation: comboPop 1.5s ease forwards;
+    z-index: 1000;
+    opacity: 0;
+    font-weight: bold;
+    text-shadow: 0px 0px 10px rgba(255, 69, 0, 0.5), 0px 0px 20px rgba(255, 69, 0, 0, 0.3);
+}
 
-        .combo {
-            font-size: 8vw;
-            color: #ff4500;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            animation: comboPop 1.5s ease forwards;
-            z-index: 1000;
-            opacity: 0;
-            font-weight: bold;
-            text-shadow: 0px 0px 10px rgba(255, 69, 0, 0.5), 0px 0px 20px rgba(255, 69, 0, 0.3);
-        }
-
-        @keyframes comboPop {
-            0% {
-                transform: translate(-50%, -50%) scale(0);
-                opacity: 0;
-            }
-            30% {
-                transform: translate(-50%, -50%) scale(1.2);
-                opacity: 1;
-            }
-            50% {
-                transform: translate(-50%, -50%) scale(1);
-            }
-            70% {
-                transform: translate(-50%, -50%) scale(1.1);
-            }
-            100% {
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 0;
-            }
-        }
-    </style>
+@keyframes comboPop {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+    30% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 1;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    70% {
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0;
+    }
+}
+</style>
 </head>
 <body>
 
-    <h1>Memory Matching Game</h1>
+    <h1 style="font-size: 5vw;">เกมจับคู่ ภาพหมีสุขภาพดี</h1>
     <div id="score">Score: 0</div>
     <div id="gameArea">
         <!-- การ์ดจะถูกเพิ่มโดย JavaScript -->
     </div>
     <div id="message">Moves Left: 15</div>
 
-    <script>
-        const imageLinks = [
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card1.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card2.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card3.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card4.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card5.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card6.png'
-        ];
+<script>
+    const imageLinks = [
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card1.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card2.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card3.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card4.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card5.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card6.png'
+    ];
 
-        const specialImage = 'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop6.png'; // ลิงก์ไปยังภาพที่ 25
+    const specialImage = 'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop6.png'; // ลิงก์ไปยังภาพที่ 25
 
-        const stickerLinks = [
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop1.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop2.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop3.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop4.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop5.png'  
-        ];
+    const stickerLinks = [
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop1.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop2.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop3.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop4.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop5.png'  
+    ];
 
-        let images = [];
-        
-        // สร้างคู่ภาพ (4 คู่สำหรับแต่ละภาพ รวมเป็น 24 ภาพ)
-        imageLinks.forEach(link => {
-            for (let i = 0; i < 4; i++) {
-                images.push(link);
-            }
+    let images = [];
+    
+    // สร้างคู่ภาพ (4 คู่สำหรับแต่ละภาพ รวมเป็น 24 ภาพ)
+    imageLinks.forEach(link => {
+        for (let i = 0; i < 4; i++) {
+            images.push(link);
+        }
+    });
+
+    // เพิ่มภาพฟรีเป็นภาพที่ 25
+    images.push(specialImage);
+
+    let flippedCards = [];
+    let movesLeft = 15;
+    let matchedPairs = 0;
+    let score = 0;
+    let comboCount = 0; // ตัวแปรสำหรับเก็บจำนวนครั้งที่จับคู่ถูกต้องติดต่อกัน
+    let pointingInterval;
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    function createGameBoard() {
+        const gameArea = document.getElementById('gameArea');
+        shuffle(images);  // สุ่มตำแหน่งภาพ
+        images.forEach((image, index) => {
+            const cardElement = document.createElement('div');
+            cardElement.className = 'card';
+            cardElement.dataset.id = index;
+            cardElement.dataset.image = image;
+
+            const cardInner = document.createElement('div');
+            cardInner.className = 'card-inner';
+
+            const cardFront = document.createElement('div');
+            cardFront.className = 'card-front';
+            const imgElement = document.createElement('img');
+            imgElement.src = image;
+            cardFront.appendChild(imgElement);
+
+            const cardBack = document.createElement('div');
+            cardBack.className = 'card-back';
+
+            cardInner.appendChild(cardFront);
+            cardInner.appendChild(cardBack);
+            cardElement.appendChild(cardInner);
+
+            cardElement.addEventListener('click', flipCard);
+            gameArea.appendChild(cardElement);
         });
 
-        // เพิ่มภาพฟรีเป็นภาพที่ 25
-        images.push(specialImage);
+        // เริ่มการสุ่มชี้การ์ดทุก 5 วินาที
+        pointingInterval = setInterval(suggestCardToFlip, 5000);
+    }
 
-        let flippedCards = [];
-        let movesLeft = 15;
-        let matchedPairs = 0;
-        let score = 0;
-        let comboCount = 0; // ตัวแปรสำหรับเก็บจำนวนครั้งที่จับคู่ถูกต้องติดต่อกัน
-        let pointingInterval;
+    function suggestCardToFlip() {
+        const cards = document.querySelectorAll('.card');
+        const randomCardIndex = Math.floor(Math.random() * cards.length);
+        const selectedCard = cards[randomCardIndex];
 
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
+        // ลบการ์ตูนที่ชี้เก่าถ้ามี
+        const existingCharacter = document.querySelector('.pointing-character');
+        if (existingCharacter) {
+            existingCharacter.remove();
         }
 
-        function createGameBoard() {
-            const gameArea = document.getElementById('gameArea');
-            shuffle(images);  // สุ่มตำแหน่งภาพ
-            images.forEach((image, index) => {
-                const cardElement = document.createElement('div');
-                cardElement.className = 'card';
-                cardElement.dataset.id = index;
-                cardElement.dataset.image = image;
+        // สุ่มเลือกสติกเกอร์การ์ตูน
+        const randomStickerIndex = Math.floor(Math.random() * stickerLinks.length);
+        const selectedSticker = stickerLinks[randomStickerIndex];
 
-                const cardInner = document.createElement('div');
-                cardInner.className = 'card-inner';
+        const pointingCharacter = document.createElement('div');
+        pointingCharacter.className = 'pointing-character';
+        pointingCharacter.style.left = 'calc(50% - 4vw)';
+        pointingCharacter.style.top = '-8vw';
+        pointingCharacter.style.backgroundImage = `url('${selectedSticker}')`;
+        selectedCard.appendChild(pointingCharacter);
+    }
 
-                const cardFront = document.createElement('div');
-                cardFront.className = 'card-front';
-                const imgElement = document.createElement('img');
-                imgElement.src = image;
-                cardFront.appendChild(imgElement);
-
-                const cardBack = document.createElement('div');
-                cardBack.className = 'card-back';
-
-                cardInner.appendChild(cardFront);
-                cardInner.appendChild(cardBack);
-                cardElement.appendChild(cardInner);
-
-                cardElement.addEventListener('click', flipCard);
-                gameArea.appendChild(cardElement);
-            });
-
-            // เริ่มการสุ่มชี้การ์ดทุก 5 วินาที
-            pointingInterval = setInterval(suggestCardToFlip, 5000);
-        }
-
-        function suggestCardToFlip() {
-            const cards = document.querySelectorAll('.card');
-            const randomCardIndex = Math.floor(Math.random() * cards.length);
-            const selectedCard = cards[randomCardIndex];
-
-            // ลบการ์ตูนที่ชี้เก่าถ้ามี
-            const existingCharacter = document.querySelector('.pointing-character');
-            if (existingCharacter) {
-                existingCharacter.remove();
-            }
-
-            // สุ่มเลือกสติกเกอร์การ์ตูน
-            const randomStickerIndex = Math.floor(Math.random() * stickerLinks.length);
-            const selectedSticker = stickerLinks[randomStickerIndex];
-
-            const pointingCharacter = document.createElement('div');
-            pointingCharacter.className = 'pointing-character';
-            pointingCharacter.style.left = 'calc(50% - 4vw)';
-            pointingCharacter.style.top = '-8vw';
-            pointingCharacter.style.backgroundImage = `url('${selectedSticker}')`;
-            selectedCard.appendChild(pointingCharacter);
-        }
-
-        function flipCard() {
-            if (flippedCards.length < 2 && !this.classList.contains('flipped')) {
-                this.classList.add('flipped');
-                flippedCards.push(this);
-        
-                if (flippedCards.length === 2) {
-                    movesLeft--;
-                    document.getElementById('message').textContent = `เปิดป้ายได้อีก: ${movesLeft}`;
-                    checkMatch();
-                }
-        
-                if (movesLeft === 0 && matchedPairs < 12) {
-                    document.getElementById('message').textContent = 'จบเกม! ตาเดินหมด!';
-                    clearInterval(pointingInterval);  // หยุดการสุ่มชี้เมื่อเกมจบ
-                    disableCards();
-                }
-            }
-        }
-
-        function checkMatch() {
-            const [card1, card2] = flippedCards;
-            if (card1.dataset.image === card2.dataset.image) {
-                matchedPairs++;
-                comboCount++; // เพิ่มตัวคูณคอมโบเมื่อจับคู่ได้ถูกต้อง
-                const scoreToAdd = comboCount; // คะแนนที่เพิ่มขึ้น = ตัวคูณคอมโบ
-                score += scoreToAdd;
-                movesLeft += 1; // เพิ่มจำนวน move แค่ 1 ทุกครั้งที่ทำคอมโบสำเร็จ
-                document.getElementById('score').textContent = `Score: ${score}`;
+    function flipCard() {
+        if (flippedCards.length < 2 && !this.classList.contains('flipped')) {
+            this.classList.add('flipped');
+            flippedCards.push(this);
+    
+            if (flippedCards.length === 2) {
+                movesLeft--;
                 document.getElementById('message').textContent = `Moves Left: ${movesLeft}`;
-                createHeartEffect(card1); // สร้างเอฟเฟกต์หัวใจบนการ์ดใบแรก
-                createHeartEffect(card2); // สร้างเอฟเฟกต์หัวใจบนการ์ดใบที่สอง
-                createComboEffect(comboCount); // สร้างเอฟเฟกต์คอมโบ
-                flippedCards = [];
-                if (matchedPairs === 12) {
-                    document.getElementById('message').textContent = 'Congratulations! You matched all pairs!';
-                    clearInterval(pointingInterval);  // หยุดการสุ่มชี้เมื่อเกมจบ
-                }
-            } else {
-                comboCount = 0; // รีเซ็ตคอมโบหากจับคู่ไม่ถูกต้อง
-                setTimeout(() => {
-                    card1.classList.remove('flipped');
-                    card2.classList.remove('flipped');
-                    flippedCards = [];
-                }, 1000);
+                checkMatch();
+            }
+    
+            if (movesLeft === 0 && matchedPairs < 12) {
+                document.getElementById('message').textContent = 'Game Over! You are out of moves!';
+                clearInterval(pointingInterval);  // หยุดการสุ่มชี้เมื่อเกมจบ
+                disableCards();
             }
         }
+    }
 
-        function createHeartEffect(card) {
-            const heart = document.createElement('div');
-            heart.className = 'heart';
-            heart.textContent = '❤️';
-            heart.style.left = '50%';
-            heart.style.top = '50%';
-            heart.style.transform = 'translate(-50%, -50%)';
-            card.appendChild(heart);
+    function checkMatch() {
+        const [card1, card2] = flippedCards;
+        if (card1.dataset.image === card2.dataset.image) {
+            matchedPairs++;
+            comboCount++; // เพิ่มตัวคูณคอมโบเมื่อจับคู่ได้ถูกต้อง
+            const scoreToAdd = comboCount; // คะแนนที่เพิ่มขึ้น = ตัวคูณคอมโบ
+            score += scoreToAdd;
+            movesLeft += 1; // เพิ่มจำนวน move แค่ 1 ทุกครั้งที่ทำคอมโบสำเร็จ
+            document.getElementById('score').textContent = `Score: ${score}`;
+            document.getElementById('message').textContent = `Moves Left: ${movesLeft}`;
+            createHeartEffect(card1); // สร้างเอฟเฟกต์หัวใจบนการ์ดใบแรก
+            createHeartEffect(card2); // สร้างเอฟเฟกต์หัวใจบนการ์ดใบที่สอง
+            createComboEffect(comboCount); // สร้างเอฟเฟกต์คอมโบ
+            flippedCards = [];
+            if (matchedPairs === 12) {
+                document.getElementById('message').textContent = 'Congratulations! You matched all pairs!';
+                clearInterval(pointingInterval);  // หยุดการสุ่มชี้เมื่อเกมจบ
+            }
+        } else {
+            comboCount = 0; // รีเซ็ตคอมโบหากจับคู่ไม่ถูกต้อง
+            setTimeout(() => {
+                card1.classList.remove('flipped');
+                card2.classList.remove('flipped');
+                flippedCards = [];
+            }, 1000);
+        }
+    }
+
+    function createHeartEffect(card) {
+        const heart = document.createElement('div');
+        heart.className = 'heart';
+        heart.textContent = '❤️';
+        heart.style.left = '50%';
+        heart.style.top = '50%';
+        heart.style.transform = 'translate(-50%, -50%)';
+        card.appendChild(heart);
+
+        setTimeout(() => {
+            heart.remove();
+        }, 1000); // ลบเอฟเฟกต์หลังจาก 1 วินาที
+    }
+
+    function createComboEffect(comboCount) {
+        if (comboCount > 1) {
+            const comboMessage = document.createElement('div');
+            comboMessage.className = 'combo';
+            comboMessage.textContent = `Combo x${comboCount}!`;
+            document.body.appendChild(comboMessage);
 
             setTimeout(() => {
-                heart.remove();
-            }, 1000); // ลบเอฟเฟกต์หลังจาก 1 วินาที
+                comboMessage.remove();
+            }, 1500); // ลบข้อความคอมโบหลังจาก 1.5 วินาที
         }
+    }
 
-        function createComboEffect(comboCount) {
-            if (comboCount > 1) {
-                const comboMessage = document.createElement('div');
-                comboMessage.className = 'combo';
-                comboMessage.textContent = `Combo x${comboCount}!`;
-                document.body.appendChild(comboMessage);
+    function disableCards() {
+        const allCards = document.querySelectorAll('.card');
+        allCards.forEach(card => {
+            card.removeEventListener('click', flipCard);
+            card.style.cursor = 'default';
+        });
+    }
 
-                setTimeout(() => {
-                    comboMessage.remove();
-                }, 1500); // ลบข้อความคอมโบหลังจาก 1.5 วินาที
-            }
-        }
+    createGameBoard();
+</script>
 
-        function disableCards() {
-            const allCards = document.querySelectorAll('.card');
-            allCards.forEach(card => {
-                card.removeEventListener('click', flipCard);
-                card.style.cursor = 'default';
-            });
-        }
-
-        createGameBoard();
-    </script>
 </body>
 </html>
