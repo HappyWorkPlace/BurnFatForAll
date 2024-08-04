@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Memory Matching Game</title>
-    <style>
+
+<style>
 body {
     font-family: Arial, sans-serif;
     text-align: center;
@@ -26,18 +27,12 @@ body {
 .card {
     width: 16vw;
     height: 16vw;
-    background-color: #ffffff; /* พื้นหลังของการ์ดที่ลอยขึ้น */
+    background-color: #ffffff;
     position: relative;
     cursor: pointer;
-    perspective: 1200px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    perspective: 1000px; /* เพิ่ม 3D perspective */
+    transition: transform 0.6s ease; /* เพิ่มการเปลี่ยนแปลงแบบสมูธ */
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* เพิ่มเงาเล็กน้อยเพื่อความลึก */
-}
-
-.card:hover {
-    transform: translateY(-10px) scale(1.05);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
 }
 
 .card-inner {
@@ -46,24 +41,25 @@ body {
     height: 100%;
     text-align: center;
     transform-style: preserve-3d;
-    transition: transform 0.6s;
-    transform: rotateY(180deg); /* ทำให้การ์ดคว่ำหน้าเป็นค่าเริ่มต้น */
+    transition: transform 0.6s ease; /* เพิ่มการหมุนแบบสมูธ */
 }
 
 .card.flipped .card-inner {
-    transform: rotateY(0deg); /* หมุนการ์ดกลับมาแสดงด้านหน้า */
+    transform: rotateY(180deg); /* หมุนการ์ด 180 องศา */
 }
 
 .card-front, .card-back {
     position: absolute;
     width: 100%;
     height: 100%;
-    backface-visibility: hidden;
+    backface-visibility: hidden; /* ซ่อนด้านหลังของการ์ดเมื่อถูกหมุน */
     border-radius: 10px;
 }
 
 .card-back {
+    background-color: #ffcc00; /* สีพื้นหลังของการ์ดด้านคว่ำ */
     background-size: cover;
+    transform: rotateY(180deg); /* หมุนด้านหลัง 180 องศา */
 }
 
 .card-front img {
@@ -84,72 +80,6 @@ body {
     margin-top: 20px;
     color: #ff0055; /* สีคะแนน */
 }
-
-.combo {
-    font-size: 8vw;
-    color: #ff4500;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0);
-    animation: comboPop 1.5s ease forwards;
-    z-index: 1000;
-    opacity: 0;
-    font-weight: bold;
-    text-shadow: 0px 0px 10px rgba(255, 69, 0, 0.5), 0px 0px 20px rgba(255, 69, 0, 0.3);
-}
-
-@keyframes comboPop {
-    0% {
-        transform: translate(-50%, -50%) scale(0);
-        opacity: 0;
-    }
-    30% {
-        transform: translate(-50%, -50%) scale(1.2);
-        opacity: 1;
-    }
-    50% {
-        transform: translate(-50%, -50%) scale(1);
-    }
-    70% {
-        transform: translate(-50%, -50%) scale(1.1);
-    }
-    100% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 0;
-    }
-}
-
-
-.lightning {
-    position: absolute;
-    width: 100px;
-    height: 200px;
-    background: url('https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/lightning.png') no-repeat center center;
-    background-size: contain;
-    animation: lightningEffect 1s ease-in-out infinite;
-    z-index: 999;
-    left: 50%;
-    top: 0;
-    transform: translateX(-50%);
-    opacity: 0;
-}
-
-@keyframes lightningEffect {
-    0% {
-        opacity: 0;
-        transform: translateY(-100%) translateX(-50%) scale(0.5);
-    }
-    50% {
-        opacity: 1;
-        transform: translateY(20%) translateX(-50%) scale(1.5);
-    }
-    100% {
-        opacity: 0;
-        transform: translateY(100%) translateX(-50%) scale(0.5);
-    }
-}
-
 
 .pointing-character {
     position: absolute;
@@ -191,7 +121,41 @@ body {
     }
 }
 
-    </style>
+.combo {
+    font-size: 8vw;
+    color: #ff4500;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    animation: comboPop 1.5s ease forwards;
+    z-index: 1000;
+    opacity: 0;
+    font-weight: bold;
+    text-shadow: 0px 0px 10px rgba(255, 69, 0, 0.5), 0px 0px 20px rgba(255, 69, 0, 0.3);
+}
+
+@keyframes comboPop {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+    30% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 1;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    70% {
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0;
+    }
+}
+</style>
 </head>
 <body>
 
@@ -309,20 +273,21 @@ body {
         if (flippedCards.length < 2 && !this.classList.contains('flipped')) {
             this.classList.add('flipped');
             flippedCards.push(this);
-
+    
             if (flippedCards.length === 2) {
                 movesLeft--;
-                document.getElementById('message').textContent = `Moves Left: ${movesLeft}`;
+                document.getElementById('message').textContent = `เปิดป้ายได้อีก: ${movesLeft}`;
                 checkMatch();
             }
-
+    
             if (movesLeft === 0 && matchedPairs < 12) {
-                document.getElementById('message').textContent = 'Game Over! You are out of moves!';
+                document.getElementById('message').textContent = 'จบเกม! ตาเดินหมด!';
                 clearInterval(pointingInterval);  // หยุดการสุ่มชี้เมื่อเกมจบ
                 disableCards();
             }
         }
     }
+
 
     function checkMatch() {
         const [card1, card2] = flippedCards;
