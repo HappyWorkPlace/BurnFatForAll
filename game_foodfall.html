@@ -87,18 +87,17 @@
             background-size: contain;
             background-repeat: no-repeat;
             z-index: 10;
+            will-change: transform, top; /* ช่วยปรับปรุงการทำงานของแอนิเมชัน */
             pointer-events: auto;
-            will-change: transform, top; /* บอกเบราว์เซอร์ล่วงหน้าว่าจะมีการเปลี่ยนแปลง */
-
         }
 
-body, html, .food {
-    -webkit-tap-highlight-color: transparent;
-}
-.food:active, .food:focus {
-    outline: none;
-}
-
+        body, html {
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            -moz-user-select: none;
+        }
     </style>
 </head>
 <body>
@@ -107,6 +106,7 @@ body, html, .food {
     <div id="score">Score: 0</div>
     <div id="timer">Time: 60s</div>
     <div class="combo">Combo: x1</div>
+
     <script>
         const healthyFoodImages = [
             'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy1.png',
@@ -160,7 +160,7 @@ body, html, .food {
                 }
             }, 1000);
 
-            const spawnInterval = setInterval(spawnFood, 500); // สร้างอาหารทุกๆ 1 วินาที
+            const spawnInterval = setInterval(spawnFood, 1000); // สร้างอาหารทุกๆ 1 วินาที
 
             // ตั้งเวลาสำหรับภาพพิเศษ ให้ปรากฏทุกๆ 15 วินาที (สามารถปรับเวลาได้ตามต้องการ)
             specialFoodInterval = setInterval(spawnSpecialFood, 15000);
@@ -176,28 +176,7 @@ body, html, .food {
             food.style.top = '-50vh';
 
             food.addEventListener('click', () => {
-                if (isHealthy) {
-                    const pointsToAdd = Math.floor(Math.random() * 3) + 1; // คะแนนสุ่มระหว่าง 1 ถึง 3
-                    score += pointsToAdd * comboMultiplier * specialMultiplier;
-                    comboCount++;
-                    if (comboCount % 5 === 0) {
-                        comboMultiplier++;
-                    }
-                    document.getElementById('score').textContent = `Score: ${score}`;
-                    document.querySelector('.combo').textContent = `Combo: x${comboMultiplier * specialMultiplier}`;
-                    displayPopup(food, `+${pointsToAdd * comboMultiplier * specialMultiplier}`, 'green');
-                    food.remove();
-                } else {
-                    const pointsToSubtract = comboMultiplier * specialMultiplier;
-                    score -= pointsToSubtract;
-                    comboCount = 0;
-                    comboMultiplier = 1;
-                    specialMultiplier = 1;
-                    document.getElementById('score').textContent = `Score: ${score}`;
-                    document.querySelector('.combo').textContent = `Combo: x1`;
-                    displayPopup(food, `-${pointsToSubtract}`, 'red');
-                    food.remove();
-                }
+                handleClick(food, isHealthy);
             });
 
             gameArea.appendChild(food);
@@ -237,6 +216,30 @@ body, html, .food {
             setTimeout(() => {
                 specialFood.remove();
             }, fallDuration * 1000); // ลบวัตถุเมื่อออกจากหน้าจอ
+        }
+
+        function handleClick(foodElement, isHealthy) {
+            const pointsToAdd = Math.floor(Math.random() * 3) + 1; // คะแนนสุ่มระหว่าง 1 ถึง 3
+            if (isHealthy) {
+                score += pointsToAdd * comboMultiplier * specialMultiplier;
+                comboCount++;
+                if (comboCount % 5 === 0) {
+                    comboMultiplier++;
+                }
+                document.getElementById('score').textContent = `Score: ${score}`;
+                document.querySelector('.combo').textContent = `Combo: x${comboMultiplier * specialMultiplier}`;
+                displayPopup(foodElement, `+${pointsToAdd * comboMultiplier * specialMultiplier}`, 'green');
+            } else {
+                const pointsToSubtract = comboMultiplier * specialMultiplier;
+                score -= pointsToSubtract;
+                comboCount = 0;
+                comboMultiplier = 1;
+                specialMultiplier = 1;
+                document.getElementById('score').textContent = `Score: ${score}`;
+                document.querySelector('.combo').textContent = `Combo: x1`;
+                displayPopup(foodElement, `-${pointsToSubtract}`, 'red');
+            }
+            foodElement.remove();
         }
 
         function displayPopup(element, text, color) {
