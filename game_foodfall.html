@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
-
     <title>Healthy Food Catcher</title>
 
     <!-- SweetAlert2 CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        body {
+        body, html {
             margin: 0;
             padding: 0;
             overflow: hidden;
@@ -21,6 +20,13 @@
             align-items: center;
             height: 100vh;
             position: relative;
+            touch-action: manipulation; /* ป้องกันการซูม */
+            -ms-touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            -moz-user-select: none;
         }
 
         #gameArea {
@@ -83,9 +89,9 @@
 
         .food {
             position: absolute;
-            width: 100px;
-            height: 100px;
-            padding: 15px; /* เพิ่มพื้นที่คลิก */
+            width: 20vw; /* ปรับขนาดให้เล็กลง */
+            height: 20vw; /* ปรับขนาดให้เล็กลง */
+            padding: 0; /* ลบ padding หรือปรับให้น้อยลง */
             background-size: contain;
             background-repeat: no-repeat;
             z-index: 10;
@@ -95,19 +101,6 @@
         .food:active, .food:focus {
             outline: none;
         }
-
-        body, html {
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-            -webkit-user-select: none;
-            -ms-user-select: none;
-            -moz-user-select: none;
-        }
-        html, body {
-    touch-action: manipulation; /* ป้องกันการซูม */
-    -ms-touch-action: manipulation;
-}
-
     </style>
 </head>
 <body>
@@ -172,28 +165,28 @@
 
             const spawnInterval = setInterval(spawnFood, 700); // สร้างอาหารทุกๆ 1 วินาที
 
-            // ตั้งเวลาสำหรับภาพพิเศษ ให้ปรากฏทุกๆ 15 วินาที (สามารถปรับเวลาได้ตามต้องการ)
-            specialFoodInterval = setInterval(spawnSpecialFood, 7000);
+            // ตั้งเวลาสำหรับภาพพิเศษ ให้ปรากฏทุกๆ 11 วินาที (สามารถปรับเวลาได้ตามต้องการ)
+            specialFoodInterval = setInterval(spawnSpecialFood, 11000);
         }
 
         function spawnFood() {
             const isHealthy = Math.random() > 0.3; // 70% โอกาสในการสร้างอาหารสุขภาพ
             const food = document.createElement('div');
             food.classList.add('food');
-            food.style.left = Math.random() * 80 + 5 + 'vw'; // ปรับขอบเขตการคำนวณตำแหน่ง
+            food.style.left = Math.random() * 70 + 'vw'; // ปรับขอบเขตการคำนวณตำแหน่ง
             food.style.animationDuration = Math.random() * 2 + 4 + 's'; // กำหนดความเร็วการตก
             food.style.backgroundImage = `url('${isHealthy ? healthyFoodImages[Math.floor(Math.random() * healthyFoodImages.length)] : unhealthyFoodImages[Math.floor(Math.random() * unhealthyFoodImages.length)]}')`;
             food.style.top = '-50vh';
-        
+
             food.addEventListener('click', () => {
                 handleClick(food, isHealthy);
             });
-        
+
             gameArea.appendChild(food);
-        
+
             const fallDuration = Math.random() * 3 + 2;
             food.style.animation = `fall ${fallDuration}s linear forwards`;
-        
+
             setTimeout(() => {
                 food.remove();
             }, fallDuration * 1000); // ลบวัตถุเมื่อออกจากหน้าจอ
@@ -202,7 +195,7 @@
         function spawnSpecialFood() {
             const specialFood = document.createElement('div');
             specialFood.classList.add('food');
-            specialFood.style.left = Math.random() * 90 + 'vw';
+            specialFood.style.left = Math.random() * 80 + 'vw'; // ปรับขอบเขตการคำนวณตำแหน่ง
             specialFood.style.animationDuration = Math.random() * 2 + 3 + 's'; // กำหนดความเร็วการตก
             specialFood.style.backgroundImage = `url('${specialFoodImage}')`;
             specialFood.style.top = '-50vh';
