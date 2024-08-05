@@ -157,6 +157,7 @@
             food.style.animationDuration = Math.random() * 2 + 3 + 's'; // กำหนดความเร็วการตก
             food.style.backgroundImage = `url('${isHealthy ? healthyFoodImages[Math.floor(Math.random() * healthyFoodImages.length)] : unhealthyFoodImages[Math.floor(Math.random() * unhealthyFoodImages.length)]}')`;
             food.style.top = '-10vw';
+            food.z-index: 10;
 
             food.addEventListener('click', () => {
                 if (isHealthy) {
@@ -188,6 +189,7 @@
             food.style.backgroundSize = 'contain';
             food.style.backgroundRepeat = 'no-repeat';
             food.style.position = 'absolute';
+            food.z-index: 10;
 
             gameArea.appendChild(food);
 
@@ -206,6 +208,7 @@
             specialFood.style.animationDuration = Math.random() * 2 + 3 + 's'; // กำหนดความเร็วการตก
             specialFood.style.backgroundImage = `url('${specialFoodImage}')`;
             specialFood.style.top = '-10vw';
+            specialFood.z-index: 10;
 
             specialFood.addEventListener('click', () => {
                 specialMultiplier *= 2; // เพิ่มคูณพิเศษเป็น 2 เท่า
@@ -223,6 +226,7 @@
             specialFood.style.backgroundSize = 'contain';
             specialFood.style.backgroundRepeat = 'no-repeat';
             specialFood.style.position = 'absolute';
+            specialFood.z-index: 10;
 
             gameArea.appendChild(specialFood);
 
