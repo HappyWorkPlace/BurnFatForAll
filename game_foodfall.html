@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthy Food Catcher</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+        }
+
+        #gameArea {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #F6E2BC;
+        }
+
+        .food {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        #score, #timer {
+            position: absolute;
+            top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        #score {
+            left: 20px;
+        }
+
+        #timer {
+            right: 20px;
+        }
+
+        .combo {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff4500;
+        }
+
+        .popup {
+            position: absolute;
+            font-size: 20px;
+            font-weight: bold;
+            animation: popUp 1s ease-in-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fall {
+            0% { top: -50px; }
+            100% { top: 100vh; }
+        }
+
+        @keyframes popUp {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="gameArea"></div>
+    <div id="score">Score: 0</div>
+    <div id="timer">Time: 60s</div>
+    <div class="combo">Combo: x1</div>
+
+    <script>
+        const healthyFoodImages = [
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy1.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy2.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy3.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy4.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy5.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy6.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy7.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy8.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy9.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy10.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy11.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy12.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy13.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy14.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy15.png'
+            
+        ];
+
+        const unhealthyFoodImages = [
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy1.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy2.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy3.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy4.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy5.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy6.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy7.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy8.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy9.png'
+        ];
+
+        const specialFoodImage = 'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card1.png';
+
+        let score = 0;
+        let comboCount = 0;
+        let comboMultiplier = 1;
+        let specialMultiplier = 1;
+        let gameTime = 60; // เวลาจำกัด 1 นาที (60 วินาที)
+        const gameArea = document.getElementById('gameArea');
+
+        function startGame() {
+            const gameTimer = setInterval(() => {
+                gameTime--;
+                document.getElementById('timer').textContent = `Time: ${gameTime}s`;
+                if (gameTime <= 0) {
+                    clearInterval(gameTimer);
+                    clearInterval(spawnInterval);
+                    alert(`Game Over! Final Score: ${score}`);
+                }
+            }, 1000);
+
+            const spawnInterval = setInterval(spawnFood, 1000); // สร้างอาหารทุกๆ 1 วินาที
+        }
+
+        function spawnFood() {
+            const randomValue = Math.random();
+            let isHealthy = false;
+            let isSpecial = false;
+
+            if (randomValue > 0.8) {
+                isSpecial = true; // ความน่าจะเป็นในการสร้างภาพพิเศษ 20%
+            } else if (randomValue > 0.4) {
+                isHealthy = true; // ความน่าจะเป็นในการสร้างอาหารสุขภาพ 40%
+            }
+
+            const food = document.createElement('div');
+            food.classList.add('food');
+            food.style.left = Math.random() * 90 + 'vw';
+            food.style.animationDuration = Math.random() * 2 + 3 + 's'; // กำหนดความเร็วการตก
+            food.style.backgroundImage = `url('${isSpecial ? specialFoodImage : isHealthy ? healthyFoodImages[Math.floor(Math.random() * healthyFoodImages.length)] : unhealthyFoodImages[Math.floor(Math.random() * unhealthyFoodImages.length)]}')`;
+            food.style.top = '-50px';
+
+            food.addEventListener('click', () => {
+                if (isSpecial) {
+                    specialMultiplier *= 2; // เพิ่มคูณพิเศษเป็น 2 เท่า
+                    document.querySelector('.combo').textContent = `Combo: x${comboMultiplier * specialMultiplier}`;
+                    displayPopup(food, `Combo x${specialMultiplier}`, 'blue');
+                    setTimeout(() => {
+                        specialMultiplier = 1; // กลับมาคูณปกติหลังจาก 5 วินาที
+                        document.querySelector('.combo').textContent = `Combo: x${comboMultiplier}`;
+                    }, 5000);
+                    food.remove();
+                } else if (isHealthy) {
+                    const pointsToAdd = Math.floor(Math.random() * 3) + 1; // คะแนนสุ่มระหว่าง 1 ถึง 3
+                    score += pointsToAdd * comboMultiplier * specialMultiplier;
+                    comboCount++;
+                    if (comboCount % 10 === 0) {
+                        comboMultiplier++;
+                    }
+                    document.getElementById('score').textContent = `Score: ${score}`;
+                    document.querySelector('.combo').textContent = `Combo: x${comboMultiplier * specialMultiplier}`;
+                    displayPopup(food, `+${pointsToAdd * comboMultiplier * specialMultiplier}`, 'green');
+                    food.remove();
+                } else {
+                    const pointsToSubtract = comboMultiplier * specialMultiplier;
+                    score -= pointsToSubtract;
+                    comboCount = 0;
+                    comboMultiplier = 1;
+                    specialMultiplier = 1;
+                    document.getElementById('score').textContent = `Score: ${score}`;
+                    document.querySelector('.combo').textContent = `Combo: x1`;
+                    displayPopup(food, `-${pointsToSubtract}`, 'red');
+                    food.remove();
+                }
+            });
+
+            food.style.width = '50px';
+            food.style.height = '50px';
+            food.style.backgroundSize = 'contain';
+            food.style.backgroundRepeat = 'no-repeat';
+            food.style.position = 'absolute';
+
+            gameArea.appendChild(food);
+
+            const fallDuration = Math.random() * 3 + 2;
+            food.style.animation = `fall ${fallDuration}s linear forwards`;
+
+            setTimeout(() => {
+                food.remove();
+            }, fallDuration * 1000); // ลบวัตถุเมื่อออกจากหน้าจอ
+        }
+
+        function displayPopup(element, text, color) {
+            const popup = document.createElement('div');
+            popup.className = 'popup';
+            popup.style.color = color;
+            popup.textContent = text;
+            popup.style.left = element.style.left;
+            popup.style.top = element.offsetTop + 'px';
+            gameArea.appendChild(popup);
+
+            setTimeout(() => {
+                popup.remove();
+            }, 1000); // ลบ pop-up หลังจาก 1 วินาที
+        }
+
+        startGame();
+    </script>
+
+</body>
+</html>
