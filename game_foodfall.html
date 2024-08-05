@@ -156,33 +156,51 @@
             'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy9.png'
         ];
 
-        const specialFoodImage = 'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card1.png';
+    const specialFoodImage = 'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card1.png';
+        document.addEventListener('dblclick', function(e) {
+            e.preventDefault();  // ป้องกันการซูมเมื่อแตะสองครั้ง
+        }, { passive: false });
+        
+        document.addEventListener('gesturestart', function(e) {
+            e.preventDefault();  // ป้องกันการซูมแบบ pinch-to-zoom
+        }, { passive: false });
 
-        let score = 0;
-        let comboCount = 0;
-        let comboMultiplier = 1;
-        let specialMultiplier = 1;
-        let gameTime = 60; // เวลาจำกัด 1 นาที (60 วินาที)
-        let specialFoodInterval; // ตัวแปรสำหรับตั้งเวลาภาพพิเศษ
-        const gameArea = document.getElementById('gameArea');
+    function preloadImages(imageArray) {
+        imageArray.forEach(src => {
+            const img = new Image();
+            img.src = src;
+        });
+    }
 
-        function startGame() {
-            const gameTimer = setInterval(() => {
-                gameTime--;
-                document.getElementById('timer').textContent = `Time: ${gameTime}s`;
-                if (gameTime <= 0) {
-                    clearInterval(gameTimer);
-                    clearInterval(spawnInterval);
-                    clearInterval(specialFoodInterval); // หยุดการสร้างภาพพิเศษเมื่อเกมจบ
-                    showFinalScore(score);
-                }
-            }, 1000);
+    // โหลดภาพล่วงหน้าเมื่อเริ่มเกม
+    preloadImages([...healthyFoodImages, ...unhealthyFoodImages, specialFoodImage]);
 
-            const spawnInterval = setInterval(spawnFood, 600); // สร้างอาหารทุกๆ 1 วินาที
+    let score = 0;
+    let comboCount = 0;
+    let comboMultiplier = 1;
+    let specialMultiplier = 1;
+    let gameTime = 60; // เวลาจำกัด 1 นาที (60 วินาที)
+    let specialFoodInterval; // ตัวแปรสำหรับตั้งเวลาภาพพิเศษ
+    const gameArea = document.getElementById('gameArea');
 
-            // ตั้งเวลาสำหรับภาพพิเศษ ให้ปรากฏทุกๆ 11 วินาที (สามารถปรับเวลาได้ตามต้องการ)
-            specialFoodInterval = setInterval(spawnSpecialFood, 9000);
-        }
+    // เริ่มเกม
+    function startGame() {
+        const gameTimer = setInterval(() => {
+            gameTime--;
+            document.getElementById('timer').textContent = `Time: ${gameTime}s`;
+            if (gameTime <= 0) {
+                clearInterval(gameTimer);
+                clearInterval(spawnInterval);
+                clearInterval(specialFoodInterval); // หยุดการสร้างภาพพิเศษเมื่อเกมจบ
+                showFinalScore(score);
+            }
+        }, 1000);
+
+        const spawnInterval = setInterval(spawnFood, 600); // สร้างอาหารทุกๆ 0.6 วินาที
+
+        // ตั้งเวลาสำหรับภาพพิเศษ ให้ปรากฏทุกๆ 9 วินาที
+        specialFoodInterval = setInterval(spawnSpecialFood, 9000);
+    }
 
         function spawnFood() {
             const isHealthy = Math.random() > 0.3; // 70% โอกาสในการสร้างอาหารสุขภาพ
