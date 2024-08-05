@@ -9,6 +9,16 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
+        
+        function showComboEffect(comboMultiplier) {
+            const comboText = document.getElementById('comboText');
+            comboText.textContent = `Combo X${comboMultiplier}`;
+            comboText.style.opacity = 1;
+
+            setTimeout(() => {
+                comboText.style.opacity = 0;
+            }, 2000); // แสดงข้อความคอมโบเป็นเวลา 0.2 วินาที
+        }
         body, html {
             margin: 0;
             padding: 0;
@@ -89,8 +99,8 @@
 
         .food {
             position: absolute;
-            width: 125px; /* ปรับขนาดให้เล็กลง */
-            height: 125px; /* ปรับขนาดให้เล็กลง */
+            width: 100px; /* ปรับขนาดให้เล็กลง */
+            height: 100px; /* ปรับขนาดให้เล็กลง */
             padding: 15px; /* ลบ padding หรือปรับให้น้อยลง */
             background-size: contain;
             background-repeat: no-repeat;
@@ -170,7 +180,7 @@
         }
 
         function spawnFood() {
-            const isHealthy = Math.random() > 0.3; // 70% โอกาสในการสร้างอาหารสุขภาพ
+            const isHealthy = Math.random() > 0.2; // 80% โอกาสในการสร้างอาหารสุขภาพ
             const food = document.createElement('div');
             food.classList.add('food');
             food.style.left = Math.random() * 70 + 'vw'; // ปรับขอบเขตการคำนวณตำแหน่ง
@@ -195,7 +205,7 @@
         function spawnSpecialFood() {
             const specialFood = document.createElement('div');
             specialFood.classList.add('food');
-            specialFood.style.left = Math.random() * 80 + 'vw'; // ปรับขอบเขตการคำนวณตำแหน่ง
+            specialFood.style.left = Math.random() * 70 + 'vw'; // ปรับขอบเขตการคำนวณตำแหน่ง
             specialFood.style.animationDuration = Math.random() * 2 + 3 + 's'; // กำหนดความเร็วการตก
             specialFood.style.backgroundImage = `url('${specialFoodImage}')`;
             specialFood.style.top = '-50vh';
@@ -271,6 +281,16 @@
                     location.reload(); // รีเฟรชหน้าเพื่อเริ่มเกมใหม่
                 }
             });
+        }
+        
+        function showComboEffect(comboMultiplier) {
+            const comboText = document.getElementById('comboText');
+            comboText.textContent = `Combo X${comboMultiplier}`;
+            comboText.style.opacity = 1;
+
+            setTimeout(() => {
+                comboText.style.opacity = 0;
+            }, 200); // แสดงข้อความคอมโบเป็นเวลา 0.2 วินาที
         }
 
         startGame();
