@@ -31,17 +31,6 @@
             background-color: #F6E2BC;
         }
 
-        .food {
-            position: absolute;
-            width: 50vw;  /* ขนาดของภาพจริง */
-            height: 50vw;
-            padding: 10vw;  /* เพิ่มพื้นที่คลิก */
-            box-sizing: content-box;  /* ทำให้ padding ไม่เพิ่มขนาดของภาพ */
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-
         #score, #timer {
             position: absolute;
             top: 2vh;
@@ -91,13 +80,6 @@
                 opacity: 0;
             }
         }
-        @media (max-width: 600px) {
-        .food {
-        width: 100px;
-        height: 100px;
-        padding: 10vw; 
-    }
-}
 
     </style>
 </head>
@@ -201,8 +183,8 @@
                 }
             });
 
-            food.style.width = '30vw';
-            food.style.height = '30vw';
+            food.style.width = '25vw';
+            food.style.height = '25vw';
             food.style.backgroundSize = 'contain';
             food.style.backgroundRepeat = 'no-repeat';
             food.style.position = 'absolute';
@@ -236,8 +218,8 @@
                 specialFood.remove();
             });
 
-            specialFood.style.width = '40vw';
-            specialFood.style.height = '40vw';
+            specialFood.style.width = '25vw';
+            specialFood.style.height = '25vw';
             specialFood.style.backgroundSize = 'contain';
             specialFood.style.backgroundRepeat = 'no-repeat';
             specialFood.style.position = 'absolute';
