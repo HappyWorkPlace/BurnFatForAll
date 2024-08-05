@@ -32,8 +32,8 @@
 
         .food {
             position: absolute;
-            width: 300px;
-            height: 300px;
+            width: 10vw;
+            height: 10vw;
             cursor: pointer;
             transition: transform 0.1s;
         }
@@ -169,7 +169,7 @@
                     const pointsToAdd = Math.floor(Math.random() * 3) + 1; // คะแนนสุ่มระหว่าง 1 ถึง 3
                     score += pointsToAdd * comboMultiplier * specialMultiplier;
                     comboCount++;
-                    if (comboCount % 10 === 0) {
+                    if (comboCount % 5 === 0) {
                         comboMultiplier++;
                     }
                     document.getElementById('score').textContent = `Score: ${score}`;
