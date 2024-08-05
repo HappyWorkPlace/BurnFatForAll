@@ -9,8 +9,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        
-
         body, html {
             margin: 0;
             padding: 0;
@@ -107,7 +105,7 @@
             position: absolute;
             width: 90px; /* ปรับขนาดให้เล็กลง */
             height: 90px; /* ปรับขนาดให้เล็กลง */
-            padding: 15px; /* ลบ padding หรือปรับให้น้อยลง */
+            padding: 20px; /* ลบ padding หรือปรับให้น้อยลง */
             background-size: contain;
             background-repeat: no-repeat;
             z-index: 10;
@@ -180,10 +178,10 @@
                 }
             }, 1000);
 
-            const spawnInterval = setInterval(spawnFood, 500); // สร้างอาหารทุกๆ 1 วินาที
+            const spawnInterval = setInterval(spawnFood, 400); // สร้างอาหารทุกๆ 1 วินาที
 
             // ตั้งเวลาสำหรับภาพพิเศษ ให้ปรากฏทุกๆ 11 วินาที (สามารถปรับเวลาได้ตามต้องการ)
-            specialFoodInterval = setInterval(spawnSpecialFood, 11000);
+            specialFoodInterval = setInterval(spawnSpecialFood, 9000);
         }
 
         function spawnFood() {
@@ -278,10 +276,10 @@
 
         function showFinalScore(finalScore) {
             Swal.fire({
-                title: 'Game Over!',
-                text: `Your final score is: ${finalScore}`,
+                title: 'จบเกม!',
+                text: `คะแนนของคุณคือ : ${finalScore}`,
                 icon: 'success',
-                confirmButtonText: 'Play Again',
+                confirmButtonText: 'เล่นอีก',
                 allowOutsideClick: false
             }).then((result) => {
                 if (result.isConfirmed) {
