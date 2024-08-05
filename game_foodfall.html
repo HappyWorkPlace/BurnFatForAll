@@ -84,7 +84,7 @@
             position: absolute;
             width: 25vw;
             height: 25vw;
-            padding: 5vw; /* เพิ่มพื้นที่คลิก */
+            padding: 10vw; /* เพิ่มพื้นที่คลิก */
             background-size: contain;
             background-repeat: no-repeat;
             z-index: 10;
@@ -175,7 +175,7 @@
             const food = document.createElement('div');
             food.classList.add('food');
             food.style.left = Math.random() * 90 + 'vw';
-            food.style.animationDuration = Math.random() * 2 + 4 + 's'; // กำหนดความเร็วการตก
+            food.style.animationDuration = Math.random() * 2 + 3 + 's'; // กำหนดความเร็วการตก
             food.style.backgroundImage = `url('${isHealthy ? healthyFoodImages[Math.floor(Math.random() * healthyFoodImages.length)] : unhealthyFoodImages[Math.floor(Math.random() * unhealthyFoodImages.length)]}')`;
             food.style.top = '-50vh';
 
