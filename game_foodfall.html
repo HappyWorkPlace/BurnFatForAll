@@ -196,7 +196,7 @@
             }
         }, 1000);
 
-        const spawnInterval = setInterval(spawnFood, 600); // สร้างอาหารทุกๆ 0.6 วินาที
+        const spawnInterval = setInterval(spawnFood, 450); // สร้างอาหารทุกๆ 0.6 วินาที
 
         // ตั้งเวลาสำหรับภาพพิเศษ ให้ปรากฏทุกๆ 9 วินาที
         specialFoodInterval = setInterval(spawnSpecialFood, 9000);
@@ -313,7 +313,7 @@
 
             setTimeout(() => {
                 comboText.style.opacity = 0;
-            }, 200); // แสดงข้อความคอมโบเป็นเวลา 0.2 วินาที
+            }, 1000); // แสดงข้อความคอมโบเป็นเวลา 1 วินาที
         }
 
         startGame();
