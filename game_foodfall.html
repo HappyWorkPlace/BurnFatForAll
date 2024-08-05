@@ -82,9 +82,9 @@
 
         .food {
             position: absolute;
-            width: 25vw;
-            height: 25vw;
-            padding: 10vw; /* เพิ่มพื้นที่คลิก */
+            width: 100px;
+            height: 100px;
+            padding: 5px; /* เพิ่มพื้นที่คลิก */
             background-size: contain;
             background-repeat: no-repeat;
             z-index: 10;
@@ -164,30 +164,30 @@
                 }
             }, 1000);
 
-            const spawnInterval = setInterval(spawnFood, 1000); // สร้างอาหารทุกๆ 1 วินาที
+            const spawnInterval = setInterval(spawnFood, 700); // สร้างอาหารทุกๆ 1 วินาที
 
             // ตั้งเวลาสำหรับภาพพิเศษ ให้ปรากฏทุกๆ 15 วินาที (สามารถปรับเวลาได้ตามต้องการ)
-            specialFoodInterval = setInterval(spawnSpecialFood, 15000);
+            specialFoodInterval = setInterval(spawnSpecialFood, 7000);
         }
 
         function spawnFood() {
-            const isHealthy = Math.random() > 0.4; // 60% โอกาสในการสร้างอาหารสุขภาพ
+            const isHealthy = Math.random() > 0.3; // 70% โอกาสในการสร้างอาหารสุขภาพ
             const food = document.createElement('div');
             food.classList.add('food');
-            food.style.left = Math.random() * 90 + 'vw';
-            food.style.animationDuration = Math.random() * 2 + 3 + 's'; // กำหนดความเร็วการตก
+            food.style.left = Math.random() * 80 + 5 + 'vw'; // ปรับขอบเขตการคำนวณตำแหน่ง
+            food.style.animationDuration = Math.random() * 2 + 4 + 's'; // กำหนดความเร็วการตก
             food.style.backgroundImage = `url('${isHealthy ? healthyFoodImages[Math.floor(Math.random() * healthyFoodImages.length)] : unhealthyFoodImages[Math.floor(Math.random() * unhealthyFoodImages.length)]}')`;
             food.style.top = '-50vh';
-
+        
             food.addEventListener('click', () => {
                 handleClick(food, isHealthy);
             });
-
+        
             gameArea.appendChild(food);
-
+        
             const fallDuration = Math.random() * 3 + 2;
             food.style.animation = `fall ${fallDuration}s linear forwards`;
-
+        
             setTimeout(() => {
                 food.remove();
             }, fallDuration * 1000); // ลบวัตถุเมื่อออกจากหน้าจอ
