@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-
     <title>Healthy Food Catcher</title>
 
     <!-- SweetAlert2 CDN -->
@@ -81,6 +80,14 @@
             }
         }
 
+        .food {
+            position: absolute;
+            width: 25vw;
+            height: 25vw;
+            background-size: contain;
+            background-repeat: no-repeat;
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
@@ -106,7 +113,6 @@
             'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy13.png',
             'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy14.png',
             'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy15.png'
-            
         ];
 
         const unhealthyFoodImages = [
@@ -123,7 +129,7 @@
 
         const specialFoodImage = 'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card1.png';
 
-       let score = 0;
+        let score = 0;
         let comboCount = 0;
         let comboMultiplier = 1;
         let specialMultiplier = 1;
@@ -156,8 +162,7 @@
             food.style.left = Math.random() * 90 + 'vw';
             food.style.animationDuration = Math.random() * 2 + 3 + 's'; // กำหนดความเร็วการตก
             food.style.backgroundImage = `url('${isHealthy ? healthyFoodImages[Math.floor(Math.random() * healthyFoodImages.length)] : unhealthyFoodImages[Math.floor(Math.random() * unhealthyFoodImages.length)]}')`;
-            food.style.top = '-10vw';
-            food.z-index: 10;
+            food.style.top = '-50vh';
 
             food.addEventListener('click', () => {
                 if (isHealthy) {
@@ -184,13 +189,6 @@
                 }
             });
 
-            food.style.width = '25vw';
-            food.style.height = '25vw';
-            food.style.backgroundSize = 'contain';
-            food.style.backgroundRepeat = 'no-repeat';
-            food.style.position = 'absolute';
-            food.z-index: 10;
-
             gameArea.appendChild(food);
 
             const fallDuration = Math.random() * 3 + 2;
@@ -207,8 +205,7 @@
             specialFood.style.left = Math.random() * 90 + 'vw';
             specialFood.style.animationDuration = Math.random() * 2 + 3 + 's'; // กำหนดความเร็วการตก
             specialFood.style.backgroundImage = `url('${specialFoodImage}')`;
-            specialFood.style.top = '-10vw';
-            specialFood.z-index: 10;
+            specialFood.style.top = '-50vh';
 
             specialFood.addEventListener('click', () => {
                 specialMultiplier *= 2; // เพิ่มคูณพิเศษเป็น 2 เท่า
@@ -220,13 +217,6 @@
                 }, 5000);
                 specialFood.remove();
             });
-
-            specialFood.style.width = '25vw';
-            specialFood.style.height = '25vw';
-            specialFood.style.backgroundSize = 'contain';
-            specialFood.style.backgroundRepeat = 'no-repeat';
-            specialFood.style.position = 'absolute';
-            specialFood.z-index: 10;
 
             gameArea.appendChild(specialFood);
 
