@@ -88,10 +88,15 @@
             background-repeat: no-repeat;
             z-index: 10;
             pointer-events: auto;
+            will-change: transform, top; /* บอกเบราว์เซอร์ล่วงหน้าว่าจะมีการเปลี่ยนแปลง */
+
         }
 
 body, html, .food {
     -webkit-tap-highlight-color: transparent;
+}
+.food:active, .food:focus {
+    outline: none;
 }
 
     </style>
