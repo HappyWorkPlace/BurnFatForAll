@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+
     <title>Healthy Food Catcher</title>
 
     <!-- SweetAlert2 CDN -->
@@ -102,6 +103,11 @@
             -ms-user-select: none;
             -moz-user-select: none;
         }
+        html, body {
+    touch-action: manipulation; /* ป้องกันการซูม */
+    -ms-touch-action: manipulation;
+}
+
     </style>
 </head>
 <body>
