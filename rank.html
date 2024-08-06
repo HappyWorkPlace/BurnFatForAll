@@ -82,25 +82,28 @@
         .pagination {
             display: flex;
             justify-content: center;
+            align-items: center;
             margin-top: 20px;
+            font-size: 14px;
         }
 
         .pagination button {
-            margin: 0 5px;
+            background-color: #3B9097;
+            color: white;
+            border: none;
             padding: 5px 10px;
-            border: 1px solid #ddd;
-            background-color: #fff;
+            margin: 0 5px;
+            border-radius: 4px;
             cursor: pointer;
         }
 
-        .pagination button.active {
-            background-color: #3B9097;
-            color: white;
-            border-color: #3B9097;
+        .pagination button.disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
         }
 
-        .pagination button:hover {
-            background-color: #f1f1f1;
+        .pagination .page-info {
+            margin: 0 10px;
         }
     </style>
 
@@ -137,16 +140,36 @@
 
         paginationContainer.innerHTML = '';
 
-        for (let i = 1; i <= totalPages; i++) {
-            const button = document.createElement('button');
-            button.textContent = i;
-            button.className = i === currentPage ? 'active' : '';
-            button.addEventListener('click', () => {
-                currentPage = i;
+        const prevButton = document.createElement('button');
+        prevButton.textContent = '<';
+        prevButton.className = currentPage === 1 ? 'disabled' : '';
+        prevButton.disabled = currentPage === 1;
+        prevButton.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
                 renderLeaderboard();
-            });
-            paginationContainer.appendChild(button);
-        }
+                setupPagination();
+            }
+        });
+        paginationContainer.appendChild(prevButton);
+
+        const pageInfo = document.createElement('span');
+        pageInfo.className = 'page-info';
+        pageInfo.textContent = `หน้า ${currentPage} / ${totalPages}`;
+        paginationContainer.appendChild(pageInfo);
+
+        const nextButton = document.createElement('button');
+        nextButton.textContent = '>';
+        nextButton.className = currentPage === totalPages ? 'disabled' : '';
+        nextButton.disabled = currentPage === totalPages;
+        nextButton.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderLeaderboard();
+                setupPagination();
+            }
+        });
+        paginationContainer.appendChild(nextButton);
     }
 
     function renderLeaderboard() {
