@@ -192,6 +192,9 @@
         const result = await response.json();
 
         if (result.success) {
+                globalEmpNo = result.empNo;
+                globalName = result.name;
+                globalFactory = result.factory;
             Swal.fire({
                 title: 'พร้อมเล่นหรือยัง?',
                 text: 'การเริ่มเกมนี้จะใช้สิทธิ์การเล่นเกมวันนี้ 1 ครั้ง',
