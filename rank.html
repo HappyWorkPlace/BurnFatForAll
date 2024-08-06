@@ -6,68 +6,92 @@
     <title>Leaderboard</title>
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f4f4f4;
-        }
+ body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+    overflow-x: hidden; /* ป้องกันการเลื่อนซ้ายขวา */
+}
 
-        .leaderboard {
-            width: 90%;
-            max-width: 600px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
+.leaderboard {
+    width: 100%; /* ปรับขนาดให้เต็มความกว้าง */
+    max-width: 600px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin: 10px; /* เพิ่มระยะขอบสำหรับหน้าจอขนาดเล็ก */
+}
 
-        .leaderboard h2 {
-            background-color: #3B9097;
-            color: white;
-            text-align: center;
-            margin: 0;
-            padding: 15px;
-        }
+.leaderboard h2 {
+    background-color: #3B9097;
+    color: white;
+    text-align: center;
+    margin: 0;
+    padding: 15px;
+    font-size: 5vw; /* ปรับขนาดฟอนต์ตามขนาดหน้าจอ */
+}
 
-        .leaderboard-content {
-            padding: 20px;
-        }
+.tabs {
+    display: flex;
+    justify-content: space-around;
+    background-color: #ddd;
+    cursor: pointer;
+}
 
-        .leaderboard-content table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+.tabs div {
+    padding: 10px;
+    width: 50%;
+    text-align: center;
+    background-color: #ddd;
+}
 
-        .leaderboard-content th, .leaderboard-content td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
+.tabs div.active {
+    background-color: #3B9097;
+    color: white;
+}
 
-        .leaderboard-content th {
-            background-color: #f6e2bc;
-        }
+.leaderboard-content {
+    padding: 20px;
+    overflow-x: auto; /* เพิ่มการเลื่อนในแนวนอนถ้าจำเป็น */
+}
 
-        .leaderboard-content td:first-child {
-            text-align: center;
-        }
+.leaderboard-content table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* บังคับให้คอลัมน์มีความกว้างคงที่ */
+}
 
-        .leaderboard-content td.rank {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
+.leaderboard-content th, .leaderboard-content td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    font-size: 4vw; /* ปรับขนาดฟอนต์ให้ยืดหยุ่นตามขนาดหน้าจอ */
+}
 
-        .leaderboard-content td.rank img {
-            width: 20px;
-            height: 20px;
-        }
+.leaderboard-content th {
+    background-color: #f6e2bc;
+    text-align: center; /* ปรับตำแหน่งให้อยู่ตรงกลาง */
+}
+
+.leaderboard-content td.rank {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px; /* เพิ่มช่องว่างระหว่างลำดับกับไอคอน */
+    text-align: center; /* ปรับตำแหน่งให้อยู่ตรงกลาง */
+}
+
+.leaderboard-content td.rank img {
+    width: 4vw; /* ปรับขนาดของไอคอน */
+    height: 4vw;
+}
+
     </style>
 </head>
 <body>
