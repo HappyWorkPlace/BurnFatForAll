@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
     <title>Leaderboard</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -110,10 +111,21 @@
     
     const API_URL = 'https://script.google.com/macros/s/AKfycbzbi7RXlvS1Lm-o15jKjHJQLxGxZtZm9eR19SMq046xe3tU53JxC1eIGCYlwZ3-tBPu/exec';
 
+    let cumulativeScores = [];
+    let singleGameScores = [];
+
     async function fetchRankingData(sheetName) {
         const response = await fetch(`${API_URL}?sheet=${sheetName}`);
         const data = await response.json();
         return data;
+    }
+
+    async function preloadData() {
+        [cumulativeScores, singleGameScores] = await Promise.all([
+            fetchRankingData('Ranking_Cumulative'),
+            fetchRankingData('Ranking_Highest')
+        ]);
+        renderLeaderboard(cumulativeScores);
     }
 
     function renderLeaderboard(data) {
@@ -157,25 +169,20 @@
         });
     }
 
-    cumulativeTab.addEventListener('click', async () => {
+    cumulativeTab.addEventListener('click', () => {
         cumulativeTab.classList.add('active');
         singleGameTab.classList.remove('active');
-        const data = await fetchRankingData('Ranking_Cumulative');
-        renderLeaderboard(data);
+        renderLeaderboard(cumulativeScores);
     });
 
-    singleGameTab.addEventListener('click', async () => {
+    singleGameTab.addEventListener('click', () => {
         singleGameTab.classList.add('active');
         cumulativeTab.classList.remove('active');
-        const data = await fetchRankingData('Ranking_Highest');
-        renderLeaderboard(data);
+        renderLeaderboard(singleGameScores);
     });
 
-    // แสดงเนื้อหาเริ่มต้น
-    (async () => {
-        const data = await fetchRankingData('Ranking_Cumulative');
-        renderLeaderboard(data);
-    })();
+    // โหลดข้อมูลทั้งสองตารางล่วงหน้า
+    preloadData();
 </script>
 
 </body>
