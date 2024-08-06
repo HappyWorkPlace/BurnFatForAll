@@ -119,6 +119,9 @@
         .food:active, .food:focus {
             outline: none;
         }
+        #user-info {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -129,6 +132,12 @@
     <div class="combo">Combo: x1</div>
     <div id="comboText" class="combo-text">Combo X2</div>
 
+    <!-- ข้อมูลผู้ใช้งาน (ซ่อน) -->
+    <div id="user-info">
+        <div id="empNo"></div>
+        <div id="name"></div>
+        <div id="factory"></div>
+    </div>
 <script>
         // ลิสต์ภาพที่ใช้ในเกม
     const healthyFoodImages = [
@@ -171,58 +180,82 @@
 
     let globalEmpNo, globalName, globalFactory;
 
-    async function initializeLiff() {
-        try {
-            await liff.init({ liffId: "2004752543-p61wlaDA" });
-            if (liff.isLoggedIn()) {
-                const profile = await liff.getProfile();
-                const uid = profile.userId;
-                checkUserAndStartGame(uid);
-            } else {
-                liff.login();
-            }
-        } catch (error) {
-            console.error('LIFF initialization failed:', error);
-        }
-    }
-
- async function checkUserAndStartGame(uid) {
-    try {
-        const response = await fetch(`https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=checkUser&uid=${uid}`);
-        const result = await response.json();
-
-        if (result.success) {
-                globalEmpNo = result.empNo;
-                globalName = result.name;
-                globalFactory = result.factory;
-            Swal.fire({
-                title: 'พร้อมเล่นหรือยัง?',
-                text: 'การเริ่มเกมนี้จะใช้สิทธิ์การเล่นเกมวันนี้ 1 ครั้ง',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'เล่นเลย',
-                cancelButtonText: 'ยกเลิก'
-            }).then((confirmed) => {
-                if (confirmed.isConfirmed) {
-                    startGame();
-                    recordPlay(globalEmpNo, globalName, globalFactory);
+  <script>
+        async function initializeLiff() {
+            try {
+                await liff.init({ liffId: "2004752543-p61wlaDA" });
+                if (liff.isLoggedIn()) {
+                    const profile = await liff.getProfile();
+                    const uid = profile.userId;
+                    checkUserAndStartGame(uid);
+                } else {
+                    liff.login();
                 }
-            });
-        } else {
-            Swal.fire('ไม่สามารถเข้าเล่นได้', result.message, 'error');
+            } catch (error) {
+                console.error('LIFF initialization failed:', error);
+            }
         }
-    } catch (error) {
-        Swal.fire('Error', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง', 'error');
-    }
-}
 
-function recordPlay(empNo, name, factory) {
-    fetch(`https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=recordPlay&empNo=${empNo}&name=${name}&factory=${factory}`);
-}
+        async function checkUserAndStartGame(uid) {
+            try {
+                const response = await fetch(`https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=checkUser&uid=${uid}`);
+                const result = await response.json();
 
-function recordScore(point) {
-    fetch(`https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=recordScore&empNo=${globalEmpNo}&name=${globalName}&factory=${globalFactory}&point=${point}`);
-}
+                if (result.success) {
+                    // แสดงข้อมูลผู้ใช้ใน div ที่ซ่อน
+                    document.getElementById('empNo').textContent = result.empNo;
+                    document.getElementById('name').textContent = result.name;
+                    document.getElementById('factory').textContent = result.factory;
+
+                    Swal.fire({
+                        title: 'พร้อมเล่นหรือยัง?',
+                        text: 'การเริ่มเกมนี้จะใช้สิทธิ์การเล่นเกมวันนี้ 1 ครั้ง',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'เล่นเลย',
+                        cancelButtonText: 'ยกเลิก'
+                    }).then((confirmed) => {
+                        if (confirmed.isConfirmed) {
+                            startGame();
+                            recordPlay(result.empNo, result.name, result.factory);
+                        }
+                    });
+                } else {
+                    Swal.fire('ไม่สามารถเข้าเล่นได้', result.message, 'error');
+                }
+            } catch (error) {
+                Swal.fire('Error', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง', 'error');
+            }
+        }
+
+        function recordPlay(empNo, name, factory) {
+            fetch(`https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=recordPlay`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ empNo, name, factory })
+            });
+        }
+
+        function recordScore(point) {
+            const empNo = document.getElementById('empNo').textContent;
+            const name = document.getElementById('name').textContent;
+            const factory = document.getElementById('factory').textContent;
+
+            fetch(`https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=recordScore`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    empNo,
+                    name,
+                    factory,
+                    point: point
+                })
+            });
+        }
 
 
     document.addEventListener('dblclick', function(e) {
