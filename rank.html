@@ -90,53 +90,48 @@
         return data;
     }
 
-    async function renderLeaderboard() {
-        const data = await fetchRankingData();
-        
-        if (data.length === 0) {
-            document.getElementById('leaderboardTable').innerHTML = '<tr><td colspan="5">No data available</td></tr>';
-            return;
-        }
+function renderLeaderboard(data) {
+    data.sort((a, b) => b.point - a.point);
 
-        document.getElementById('leaderboardTable').innerHTML = `
+    leaderboardTable.innerHTML = `
+        <tr>
+            <th>Rank</th>
+            <th>Point</th>
+            <th>Name</th>
+            <th>Factory</th>
+            <th>จำนวนเกม</th>
+        </tr>
+    `;
+
+    let previousScore = null;
+    let currentRank = 0;
+    let displayRank = 0;
+
+    data.forEach((player, index) => {
+        // หากคะแนนของผู้เล่นคนนี้ไม่เท่ากับคะแนนของผู้เล่นก่อนหน้า ให้กำหนด displayRank ใหม่
+        if (player.point !== previousScore) {
+            displayRank = currentRank + 1;
+        }
+        currentRank++; // เพิ่มลำดับที่ใช้นับเพื่อใช้ในรอบถัดไป
+        previousScore = player.point;
+
+        let icon = '';
+        if (displayRank === 1) icon = '🥇';
+        else if (displayRank === 2) icon = '🥈';
+        else if (displayRank === 3) icon = '🥉';
+
+        leaderboardTable.innerHTML += `
             <tr>
-                <th>Rank</th>
-                <th>Point</th>
-                <th>Name</th>
-                <th>Factory</th>
-                <th>จำนวนเกม</th>
+                <td class="rank"><span>${displayRank}</span> ${icon}</td>
+                <td>${player.point}</td>
+                <td>${player.name}</td>
+                <td>${player.factory}</td>
+                <td>${player.games}</td>
             </tr>
         `;
+    });
+}
 
-        data.sort((a, b) => b.point - a.point);
-
-        let previousScore = null;
-        let currentRank = 0;
-        let displayRank = 0;
-
-        data.forEach((player, index) => {
-            if (player.point !== previousScore) {
-                displayRank = currentRank + 1;
-            }
-            currentRank++;
-            previousScore = player.point;
-
-            let icon = '';
-            if (displayRank === 1) icon = '🥇';
-            else if (displayRank === 2) icon = '🥈';
-            else if (displayRank === 3) icon = '🥉';
-
-            document.getElementById('leaderboardTable').innerHTML += `
-                <tr>
-                    <td class="rank"><span>${displayRank}</span> ${icon}</td>
-                    <td>${player.point}</td>
-                    <td>${player.name}</td>
-                    <td>${player.factory}</td>
-                    <td>${player.games}</td>
-                </tr>
-            `;
-        });
-    }
 
     renderLeaderboard();
 </script>
