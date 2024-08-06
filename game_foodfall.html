@@ -211,7 +211,7 @@
             food.style.backgroundImage = `url('${isHealthy ? healthyFoodImages[Math.floor(Math.random() * healthyFoodImages.length)] : unhealthyFoodImages[Math.floor(Math.random() * unhealthyFoodImages.length)]}')`;
             food.style.top = '-50vh';
 
-            food.addEventListener('click', () => {
+            food.addEventListener('touchstart', () => {
                 handleClick(food, isHealthy);
             });
 
