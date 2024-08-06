@@ -135,7 +135,7 @@
             await liff.init({ liffId: "2004752543-p61wlaDA" });
             if (liff.isLoggedIn()) {
                 const profile = await liff.getProfile();
-                const userId = profile.userId;
+                const uid = profile.userId;
                 checkUserAndStartGame(uid);
             } else {
                 liff.login();
