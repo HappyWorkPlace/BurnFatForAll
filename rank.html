@@ -125,7 +125,7 @@
             fetchRankingData('Ranking_Cumulative'),
             fetchRankingData('Ranking_Highest')
         ]);
-        renderLeaderboard(cumulativeScores);
+        renderLeaderboard(cumulativeScores); // Start with cumulative scores
     }
 
     function renderLeaderboard(data) {
@@ -181,7 +181,7 @@
         renderLeaderboard(singleGameScores);
     });
 
-    // โหลดข้อมูลทั้งสองตารางล่วงหน้า
+    // Load data for both tables upfront
     preloadData();
 </script>
 
