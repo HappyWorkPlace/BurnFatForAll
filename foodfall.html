@@ -239,57 +239,28 @@ function recordScore(empNo, name, factory, point) {
     liff.getProfile().then(profile => {
         const uid = profile.userId;
 
-        // แสดง Swal ขณะบันทึกคะแนน
-        Swal.fire({
-            title: 'กำลังบันทึกคะแนน',
-            html: '<p>กรุณารอสักครู่...</p>',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
+        const url = `https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=recordScore&empNo=${encodeURIComponent(empNo)}&name=${encodeURIComponent(name)}&factory=${encodeURIComponent(factory)}&uid=${encodeURIComponent(uid)}&point=${encodeURIComponent(point)}`;
 
-                console.log(`Sending score to server with the following details:
-                EmpNo: ${empNo}
-                Name: ${name}
-                Factory: ${factory}
-                UID: ${uid}
-                Point: ${point}`);
-
-                fetch(`https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=recordScore`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*', // เพิ่ม header นี้เพื่ออนุญาตให้ทุกต้นทางสามารถเข้าถึงได้
-                    },
-                    body: JSON.stringify({
-                        empNo: empNo,
-                        name: name,
-                        factory: factory,
-                        uid: uid, // เพิ่ม UID ลงใน body
-                        point: point
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Success:', data);
-                    Swal.fire({
-                        title: 'สำเร็จ',
-                        text: 'บันทึกคะแนนเรียบร้อยแล้ว!',
-                        icon: 'success',
-                        confirmButtonText: 'ตกลง'
-                    });
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                    Swal.fire({
-                        title: 'ผิดพลาด',
-                        text: 'ไม่สามารถบันทึกคะแนนได้',
-                        icon: 'error',
-                        confirmButtonText: 'ตกลง'
-                    });
-                });
-            }
+        fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            Swal.fire({
+                title: 'สำเร็จ',
+                text: 'บันทึกคะแนนเรียบร้อยแล้ว!',
+                icon: 'success',
+                confirmButtonText: 'ตกลง'
+            });
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            Swal.fire({
+                title: 'ผิดพลาด',
+                text: 'ไม่สามารถบันทึกคะแนนได้',
+                icon: 'error',
+                confirmButtonText: 'ตกลง'
+            });
         });
-
     }).catch((error) => {
         console.error('Error getting profile:', error);
         Swal.fire({
@@ -300,8 +271,6 @@ function recordScore(empNo, name, factory, point) {
         });
     });
 }
-
-
 
     document.addEventListener('dblclick', function(e) {
         e.preventDefault();
