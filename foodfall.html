@@ -119,9 +119,9 @@
         .food:active, .food:focus {
             outline: none;
         }
-                #user-info {
+/*                 #user-info {
             display: none;
-        }
+        } */
     </style>
 </head>
 <body>
@@ -193,11 +193,11 @@
         const result = await response.json();
 
         if (result.success) {
-                // แสดงข้อมูลผู้ใช้ใน div ที่ซ่อน
-                document.getElementById('empNo').textContent = result.empNo;
-                document.getElementById('name').textContent = result.name;
-                document.getElementById('factory').textContent = result.factory;
-            
+            // เก็บข้อมูลผู้ใช้ไว้ใน global variables
+            empNo = result.empNo;
+            name = result.name;
+            factory = result.factory;
+
             Swal.fire({
                 title: 'พร้อมเล่นหรือยัง?',
                 text: 'การเริ่มเกมนี้จะใช้สิทธิ์การเล่นเกมวันนี้ 1 ครั้ง',
@@ -207,8 +207,8 @@
                 cancelButtonText: 'ยกเลิก'
             }).then((confirmed) => {
                 if (confirmed.isConfirmed) {
+                    recordPlay(empNo, name, factory);
                     startGame();
-                    recordPlay(result.empNo, result.name, result.factory);
                 }
             });
         } else {
@@ -219,17 +219,37 @@
     }
 }
 
+
 function recordPlay(empNo, name, factory) {
-    fetch(`https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=recordPlay&empNo=${empNo}&name=${name}&factory=${factory}`);
+    fetch(`https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=recordPlay&empNo=${empNo}&name=${name}&factory=${factory}`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log("Record play success.");
+        } else {
+            console.error("Failed to record play: ", data.message);
+        }
+    })
+    .catch(error => {
+        console.error("Error in recordPlay: ", error);
+    });
 }
 
-function recordScore(point) {
-            const empNo = document.getElementById('empNo').textContent;
-            const name = document.getElementById('name').textContent;
-            const factory = document.getElementById('factory').textContent;
-
-            fetch(`https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=recordScore&empNo=${empNo}&name=${name}&factory=${factory}&point=${point}`);
+function recordScore(empNo, name, factory, point) {
+    fetch(`https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=recordScore&empNo=${empNo}&name=${name}&factory=${factory}&point=${point}`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log("Record score success.");
+        } else {
+            console.error("Failed to record score: ", data.message);
+        }
+    })
+    .catch(error => {
+        console.error("Error in recordScore: ", error);
+    });
 }
+
 
     document.addEventListener('dblclick', function(e) {
         e.preventDefault();
@@ -363,22 +383,21 @@ function recordScore(point) {
         }, 1000);
     }
 
-    function showFinalScore(finalScore) {
-        Swal.fire({
-            title: 'จบเกม!',
-            text: `คะแนนของคุณคือ : ${finalScore}`,
-            icon: 'success',
-            confirmButtonText: 'เล่นอีก',
-            allowOutsideClick: false
-        }).then((result) => {
-            if (result.isConfirmed) {
-                location.reload();
-            }
-        });
-
-        recordScore(finalScore);
-    }
-
+function showFinalScore(finalScore) {
+    Swal.fire({
+        title: 'จบเกม!',
+        text: `คะแนนของคุณคือ : ${finalScore}`,
+        icon: 'success',
+        confirmButtonText: 'เล่นอีก',
+        allowOutsideClick: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // เรียกใช้ฟังก์ชัน recordScore หลังจากเกมจบ
+            recordScore(empNo, name, factory, finalScore); 
+            location.reload();
+        }
+    });
+}
     initializeLiff();
 </script>
 </body>
