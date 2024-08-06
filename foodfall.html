@@ -347,22 +347,23 @@
             }, 1000); // แสดงข้อความคอมโบเป็นเวลา 1 วินาที
         }
 
-    function showFinalScore(finalScore, empNo, name, factory) { // เพิ่มพารามิเตอร์ empNo, name, factory
-        Swal.fire({
-            title: 'จบเกม!',
-            text: คะแนนของคุณคือ : `${finalScore}`,
-            icon: 'success',
-            confirmButtonText: 'เล่นอีก',
-            allowOutsideClick: false
-        }).then((result) => {
-            if (result.isConfirmed) {
-                location.reload();
-            }
-        });
+function showFinalScore(finalScore, empNo, name, factory) { // เพิ่มพารามิเตอร์ empNo, name, factory
+    Swal.fire({
+        title: 'จบเกม!',
+        text: `คะแนนของคุณคือ : ${finalScore}`,  // ใช้ backticks (`` ` ``) อย่างถูกต้อง
+        icon: 'success',
+        confirmButtonText: 'เล่นอีก',
+        allowOutsideClick: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            location.reload();
+        }
+    });
 
-        // บันทึกคะแนนหลังจบเกม
-        recordScore(empNo, name, factory, finalScore);
-    }
+    // บันทึกคะแนนหลังจบเกม
+    recordScore(empNo, name, factory, finalScore);
+}
+
 }
 
     // ลิสต์ภาพที่ใช้ในเกม
