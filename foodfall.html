@@ -130,6 +130,46 @@
     <div id="comboText" class="combo-text">Combo X2</div>
 
 <script>
+        // ลิสต์ภาพที่ใช้ในเกม
+    const healthyFoodImages = [
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy1.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy2.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy3.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy4.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy5.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy6.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy7.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy8.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy9.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy10.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy11.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy12.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy13.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy14.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy15.png'
+    ];
+
+    const unhealthyFoodImages = [
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy1.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy2.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy3.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy5.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy6.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy7.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy8.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy9.png'
+    ];
+
+    const specialFoodImage = 'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card1.png';
+    function preloadImages(imageArray) {
+        imageArray.forEach(src => {
+            const img = new Image();
+            img.src = src;
+        });
+    }
+    // โหลดภาพล่วงหน้าเมื่อเริ่มเกม
+    preloadImages([...healthyFoodImages, ...unhealthyFoodImages, specialFoodImage]);
+    
     let globalEmpNo, globalName, globalFactory; // ตัวแปร global สำหรับเก็บข้อมูลผู้เล่น
     async function initializeLiff() {
         try {
@@ -211,15 +251,8 @@
             e.preventDefault();  // ป้องกันการซูมแบบ pinch-to-zoom
         }, { passive: false });
 
-    function preloadImages(imageArray) {
-        imageArray.forEach(src => {
-            const img = new Image();
-            img.src = src;
-        });
-    }
 
-    // โหลดภาพล่วงหน้าเมื่อเริ่มเกม
-    preloadImages([...healthyFoodImages, ...unhealthyFoodImages, specialFoodImage]);
+
 
     let score = 0;
     let comboCount = 0;
@@ -363,37 +396,6 @@ function showFinalScore(finalScore, empNo, name, factory) { // เพิ่ม�
     // บันทึกคะแนนหลังจบเกม
     recordScore(empNo, name, factory, finalScore);
 }
-    // ลิสต์ภาพที่ใช้ในเกม
-    const healthyFoodImages = [
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy1.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy2.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy3.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy4.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy5.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy6.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy7.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy8.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy9.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy10.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy11.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy12.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy13.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy14.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy15.png'
-    ];
-
-    const unhealthyFoodImages = [
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy1.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy2.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy3.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy5.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy6.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy7.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy8.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy9.png'
-    ];
-
-    const specialFoodImage = 'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card1.png';
 
     // เริ่มต้น LIFF และเกม
     initializeLiff();
