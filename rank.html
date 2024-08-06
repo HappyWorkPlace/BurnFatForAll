@@ -18,7 +18,7 @@
     }
 
     .leaderboard {
-        width: 90%;
+        width: 100%;
         max-width: 600px;
         background-color: #fff;
         border-radius: 8px;
@@ -35,13 +35,13 @@
     }
 
     .leaderboard-content {
-        padding: 20px;
+        padding: 0; /* Removed padding to avoid spacing issues */
     }
 
     .leaderboard-content table {
         width: 100%;
         border-collapse: collapse;
-        table-layout: fixed; /* Ensure all columns have equal width */
+        table-layout: auto; /* Allow table to adjust column widths based on content */
     }
 
     .leaderboard-content th, .leaderboard-content td {
@@ -52,28 +52,22 @@
 
     .leaderboard-content th {
         background-color: #f6e2bc;
+        text-align: center; /* Center headers to match cell alignment */
     }
 
     .leaderboard-content td:first-child {
         text-align: center;
+        width: 10%; /* Control width of rank column */
     }
 
     .leaderboard-content td.rank {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 5px;
-        text-align: center; /* Center the content within the rank column */
+        text-align: center;
+        width: 10%; /* Make sure the rank column is not too wide */
     }
 
-    .leaderboard-content td.rank img {
-        width: 20px;
-        height: 20px;
-    }
-
-    .leaderboard-content td {
-        min-width: 80px; /* Set a minimum width for each column */
-        word-wrap: break-word; /* Ensure text wraps properly in narrow columns */
+    .leaderboard-content td.point, .leaderboard-content td.name, .leaderboard-content td.factory, .leaderboard-content td.games {
+        text-align: center;
+        width: 20%; /* Adjust width of other columns to fit content */
     }
 
     .leaderboard-content tr:nth-child(even) {
