@@ -202,118 +202,150 @@
         });
     }
 
-function startGame(empNo, name, factory) {
+   const specialFoodImage = 'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card1.png';
+        document.addEventListener('dblclick', function(e) {
+            e.preventDefault();  // ป้องกันการซูมเมื่อแตะสองครั้ง
+        }, { passive: false });
+        
+        document.addEventListener('gesturestart', function(e) {
+            e.preventDefault();  // ป้องกันการซูมแบบ pinch-to-zoom
+        }, { passive: false });
+
+    function preloadImages(imageArray) {
+        imageArray.forEach(src => {
+            const img = new Image();
+            img.src = src;
+        });
+    }
+
+    // โหลดภาพล่วงหน้าเมื่อเริ่มเกม
+    preloadImages([...healthyFoodImages, ...unhealthyFoodImages, specialFoodImage]);
+
     let score = 0;
     let comboCount = 0;
     let comboMultiplier = 1;
     let specialMultiplier = 1;
     let gameTime = 60; // เวลาจำกัด 1 นาที (60 วินาที)
+    let specialFoodInterval; // ตัวแปรสำหรับตั้งเวลาภาพพิเศษ
     const gameArea = document.getElementById('gameArea');
 
-    const gameTimer = setInterval(() => {
-        gameTime--;
-        document.getElementById('timer').textContent = `Time: ${gameTime}s`;
-        if (gameTime <= 0) {
-            clearInterval(gameTimer);
-            clearInterval(spawnInterval);
-            clearInterval(specialFoodInterval);
-            showFinalScore(score, empNo, name, factory); // ส่งค่าตัวแปรไปด้วย
-        }
-    }, 1000);
-
-    const spawnInterval = setInterval(spawnFood, 450);
-
-    const specialFoodInterval = setInterval(spawnSpecialFood, 9000);
-
-    function spawnFood() {
-        const isHealthy = Math.random() > 0.3; 
-        const food = document.createElement('div');
-        food.classList.add('food');
-        food.style.left = Math.random() * 70 + 'vw';
-        food.style.animationDuration = Math.random() * 2 + 5 + 's'; 
-        food.style.backgroundImage = url('${isHealthy ? healthyFoodImages[Math.floor(Math.random() * healthyFoodImages.length)] : unhealthyFoodImages[Math.floor(Math.random() * unhealthyFoodImages.length)]}');
-        food.style.top = '-50vh';
-
-        food.addEventListener('touchstart', () => {
-            handleClick(food, isHealthy);
-        });
-
-        gameArea.appendChild(food);
-
-        const fallDuration = Math.random() * 3 + 2;
-        food.style.animation = fall ${fallDuration}s linear forwards;
-
-        setTimeout(() => {
-            food.remove();
-        }, fallDuration * 1000);
-    }
-
-    function spawnSpecialFood() {
-        const specialFood = document.createElement('div');
-        specialFood.classList.add('food');
-        specialFood.style.left = Math.random() * 70 + 'vw';
-        specialFood.style.animationDuration = Math.random() * 2 + 3 + 's';
-        specialFood.style.backgroundImage = url('${specialFoodImage}');
-        specialFood.style.top = '-50vh';
-
-        specialFood.addEventListener('touchstart', () => {
-            specialMultiplier *= 2;
-            document.querySelector('.combo').textContent = Combo: x${comboMultiplier * specialMultiplier};
-            displayPopup(specialFood, Combo x${specialMultiplier}, 'blue');
-            setTimeout(() => {
-                specialMultiplier = 1;
-                document.querySelector('.combo').textContent = Combo: x${comboMultiplier};
-            }, 5000);
-            specialFood.remove();
-        });
-
-        gameArea.appendChild(specialFood);
-
-        const fallDuration = Math.random() * 3 + 2;
-        specialFood.style.animation = fall ${fallDuration}s linear forwards;
-
-        setTimeout(() => {
-            specialFood.remove();
-        }, fallDuration * 1000);
-    }
-
-    function handleClick(foodElement, isHealthy) {
-        const pointsToAdd = Math.floor(Math.random() * 3) + 1;
-        if (isHealthy) {
-            score += pointsToAdd * comboMultiplier * specialMultiplier;
-            comboCount++;
-            if (comboCount % 5 === 0) {
-                comboMultiplier++;
+    // เริ่มเกม
+    function startGame() {
+        const gameTimer = setInterval(() => {
+            gameTime--;
+            document.getElementById('timer').textContent = `Time: ${gameTime}s`;
+            if (gameTime <= 0) {
+                clearInterval(gameTimer);
+                clearInterval(spawnInterval);
+                clearInterval(specialFoodInterval); // หยุดการสร้างภาพพิเศษเมื่อเกมจบ
+                showFinalScore(score);
             }
-            document.getElementById('score').textContent = Score: ${score};
-            document.querySelector('.combo').textContent = Combo: x${comboMultiplier * specialMultiplier};
-            displayPopup(foodElement, +${pointsToAdd * comboMultiplier * specialMultiplier}, 'green');
-        } else {
-            const pointsToSubtract = comboMultiplier * specialMultiplier;
-            score -= pointsToSubtract;
-            comboCount = 0;
-            comboMultiplier = 1;
-            specialMultiplier = 1;
-            document.getElementById('score').textContent = Score: ${score};
-            document.querySelector('.combo').textContent = Combo: x1;
-            displayPopup(foodElement, -${pointsToSubtract}, 'red');
-        }
-        foodElement.remove();
-    }
-
-    function displayPopup(element, text, color) {
-        const popup = document.createElement('div');
-        popup.className = 'popup';
-        popup.style.color = color;
-        popup.textContent = text;
-        popup.style.left = element.style.left;
-        popup.style.top = element.offsetTop + 'px';
-        gameArea.appendChild(popup);
-
-        setTimeout(() => {
-            popup.remove();
         }, 1000);
+
+        const spawnInterval = setInterval(spawnFood, 450); // สร้างอาหารทุกๆ 0.6 วินาที
+
+        // ตั้งเวลาสำหรับภาพพิเศษ ให้ปรากฏทุกๆ 9 วินาที
+        specialFoodInterval = setInterval(spawnSpecialFood, 9000);
     }
+
+        function spawnFood() {
+            const isHealthy = Math.random() > 0.3; // 70% โอกาสในการสร้างอาหารสุขภาพ
+            const food = document.createElement('div');
+            food.classList.add('food');
+            food.style.left = Math.random() * 70 + 'vw'; // ปรับขอบเขตการคำนวณตำแหน่ง
+            food.style.animationDuration = Math.random() * 2 + 5 + 's'; // กำหนดความเร็วการตก
+            food.style.backgroundImage = `url('${isHealthy ? healthyFoodImages[Math.floor(Math.random() * healthyFoodImages.length)] : unhealthyFoodImages[Math.floor(Math.random() * unhealthyFoodImages.length)]}')`;
+            food.style.top = '-50vh';
+
+            food.addEventListener('touchstart', () => {
+                handleClick(food, isHealthy);
+            });
+
+            gameArea.appendChild(food);
+
+            const fallDuration = Math.random() * 3 + 2;
+            food.style.animation = `fall ${fallDuration}s linear forwards`;
+
+            setTimeout(() => {
+                food.remove();
+            }, fallDuration * 1000); // ลบวัตถุเมื่อออกจากหน้าจอ
+        }
+
+        function spawnSpecialFood() {
+            const specialFood = document.createElement('div');
+            specialFood.classList.add('food');
+            specialFood.style.left = Math.random() * 70 + 'vw'; // ปรับขอบเขตการคำนวณตำแหน่ง
+            specialFood.style.animationDuration = Math.random() * 2 + 3 + 's'; // กำหนดความเร็วการตก
+            specialFood.style.backgroundImage = `url('${specialFoodImage}')`;
+            specialFood.style.top = '-50vh';
+
+            specialFood.addEventListener('touchstart', () => {
+                specialMultiplier *= 2; // เพิ่มคูณพิเศษเป็น 2 เท่า
+                document.querySelector('.combo').textContent = `Combo: x${comboMultiplier * specialMultiplier}`;
+                displayPopup(specialFood, `Combo x${specialMultiplier}`, 'blue');
+                setTimeout(() => {
+                    specialMultiplier = 1; // กลับมาคูณปกติหลังจาก 5 วินาที
+                    document.querySelector('.combo').textContent = `Combo: x${comboMultiplier}`;
+                }, 5000);
+                specialFood.remove();
+            });
+
+            gameArea.appendChild(specialFood);
+
+            const fallDuration = Math.random() * 3 + 2;
+            specialFood.style.animation = `fall ${fallDuration}s linear forwards`;
+
+            setTimeout(() => {
+                specialFood.remove();
+            }, fallDuration * 1000); // ลบวัตถุเมื่อออกจากหน้าจอ
+        }
+
+        function handleClick(foodElement, isHealthy) {
+            const pointsToAdd =  Math.floor(Math.random() * 3) +1;// คะแนนสุ่มระหว่าง 1 ถึง 3
+            if (isHealthy) {
+                score += pointsToAdd * comboMultiplier * specialMultiplier;
+                comboCount++;
+                if (comboCount % 5 === 0) {
+                    comboMultiplier++;
+                }
+                document.getElementById('score').textContent = `Score: ${score}`;
+                document.querySelector('.combo').textContent = `Combo: x${comboMultiplier * specialMultiplier}`;
+                displayPopup(foodElement, `+${pointsToAdd * comboMultiplier * specialMultiplier}`, 'green');
+            } else {
+                const pointsToSubtract = comboMultiplier * specialMultiplier;
+                score -= pointsToSubtract;
+                comboCount = 0;
+                comboMultiplier = 1;
+                specialMultiplier = 1;
+                document.getElementById('score').textContent = `Score: ${score}`;
+                document.querySelector('.combo').textContent = `Combo: x1`;
+                displayPopup(foodElement, `-${pointsToSubtract}`, 'red');
+            }
+            foodElement.remove();
+        }
+
+        function displayPopup(element, text, color) {
+            const popup = document.createElement('div');
+            popup.className = 'popup';
+            popup.style.color = color;
+            popup.textContent = text;
+            popup.style.left = element.style.left;
+            popup.style.top = element.offsetTop + 'px';
+            gameArea.appendChild(popup);
+
+            setTimeout(() => {
+                popup.remove();
+            }, 1000); // ลบ pop-up หลังจาก 1 วินาที
+        }
+            function showComboEffect(comboMultiplier) {
+            const comboText = document.getElementById('comboText');
+            comboText.textContent = `Combo X${comboMultiplier}`;
+            comboText.style.opacity = 1;
+
+            setTimeout(() => {
+                comboText.style.opacity = 0;
+            }, 1000); // แสดงข้อความคอมโบเป็นเวลา 1 วินาที
+        }
 
     function showFinalScore(finalScore, empNo, name, factory) { // เพิ่มพารามิเตอร์ empNo, name, factory
         Swal.fire({
