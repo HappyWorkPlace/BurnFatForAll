@@ -5,79 +5,104 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
     <title>Leaderboard</title>
 
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        background-color: #f4f4f4;
-    }
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
 
-    .leaderboard {
-        width: 100%;
-        max-width: 600px;
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-    }
+        .leaderboard {
+            width: 100%;
+            max-width: 600px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
 
-    .leaderboard h2 {
-        background-color: #3B9097;
-        color: white;
-        text-align: center;
-        margin: 0;
-        padding: 15px;
-    }
+        .leaderboard h2 {
+            background-color: #3B9097;
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 15px;
+        }
 
-    .leaderboard-content {
-        padding: 0; /* Removed padding to avoid spacing issues */
-    }
+        .leaderboard-content {
+            padding: 0;
+        }
 
-    .leaderboard-content table {
-        width: 100%;
-        border-collapse: collapse;
-        table-layout: auto; /* Allow table to adjust column widths based on content */
-    }
+        .leaderboard-content table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: auto;
+        }
 
-    .leaderboard-content th, .leaderboard-content td {
-        padding: 10px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-    }
+        .leaderboard-content th, .leaderboard-content td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
 
-    .leaderboard-content th {
-        background-color: #f6e2bc;
-        text-align: center; /* Center headers to match cell alignment */
-    }
+        .leaderboard-content th {
+            background-color: #f6e2bc;
+            text-align: center;
+        }
 
-    .leaderboard-content td:first-child {
-        text-align: center;
-        width: 10%; /* Control width of rank column */
-    }
+        .leaderboard-content td:first-child {
+            text-align: center;
+            width: 10%;
+        }
 
-    .leaderboard-content td.rank {
-        text-align: center;
-        width: 10%; /* Make sure the rank column is not too wide */
-    }
+        .leaderboard-content td.rank {
+            text-align: center;
+            width: 10%;
+        }
 
-    .leaderboard-content td.point, .leaderboard-content td.name, .leaderboard-content td.factory, .leaderboard-content td.games {
-        text-align: center;
-        width: 20%; /* Adjust width of other columns to fit content */
-    }
+        .leaderboard-content td.point, .leaderboard-content td.name, .leaderboard-content td.factory, .leaderboard-content td.games {
+            text-align: center;
+            width: 20%;
+        }
 
-    .leaderboard-content tr:nth-child(even) {
-        background-color: #f9f9f9; /* Alternate row background color */
-    }
+        .leaderboard-content tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
 
-    .leaderboard-content tr:hover {
-        background-color: #f1f1f1; /* Add hover effect for rows */
-    }
-</style>
+        .leaderboard-content tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Pagination style */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            cursor: pointer;
+        }
+
+        .pagination button.active {
+            background-color: #3B9097;
+            color: white;
+            border-color: #3B9097;
+        }
+
+        .pagination button:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
 
 </head>
 <body>
@@ -89,26 +114,44 @@
             <!-- Content will be injected here by JavaScript -->
         </table>
     </div>
+    <div class="pagination" id="pagination"></div>
 </div>
 
 <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbzbi7RXlvS1Lm-o15jKjHJQLxGxZtZm9eR19SMq046xe3tU53JxC1eIGCYlwZ3-tBPu/exec';
+    const rowsPerPage = 10;
+    let currentPage = 1;
+    let data = [];
 
     async function fetchRankingData() {
         const response = await fetch(API_URL);
-        const data = await response.json();
-        return data;
+        const rankingData = await response.json();
+        data = rankingData;
+        renderLeaderboard();
+        setupPagination();
     }
 
-    async function renderLeaderboard() {
-        const data = await fetchRankingData();
-        
-        if (data.length === 0) {
-            document.getElementById('leaderboardTable').innerHTML = '<tr><td colspan="5">No data available</td></tr>';
-            return;
-        }
+    function setupPagination() {
+        const totalPages = Math.ceil(data.length / rowsPerPage);
+        const paginationContainer = document.getElementById('pagination');
 
-        document.getElementById('leaderboardTable').innerHTML = `
+        paginationContainer.innerHTML = '';
+
+        for (let i = 1; i <= totalPages; i++) {
+            const button = document.createElement('button');
+            button.textContent = i;
+            button.className = i === currentPage ? 'active' : '';
+            button.addEventListener('click', () => {
+                currentPage = i;
+                renderLeaderboard();
+            });
+            paginationContainer.appendChild(button);
+        }
+    }
+
+    function renderLeaderboard() {
+        const table = document.getElementById('leaderboardTable');
+        table.innerHTML = `
             <tr>
                 <th>Rank</th>
                 <th>Point</th>
@@ -118,17 +161,18 @@
             </tr>
         `;
 
-        data.sort((a, b) => b.point - a.point);
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+
+        const sortedData = data.sort((a, b) => b.point - a.point);
 
         let previousScore = null;
-        let currentRank = 0;
         let displayRank = 0;
 
-        data.forEach((player, index) => {
+        sortedData.slice(start, end).forEach((player, index) => {
             if (player.point !== previousScore) {
-                displayRank = currentRank + 1;
+                displayRank = start + index + 1;
             }
-            currentRank++;
             previousScore = player.point;
 
             let icon = '';
@@ -136,19 +180,19 @@
             else if (displayRank === 2) icon = '🥈';
             else if (displayRank === 3) icon = '🥉';
 
-            document.getElementById('leaderboardTable').innerHTML += `
+            table.innerHTML += `
                 <tr>
                     <td class="rank"><span>${displayRank}</span> ${icon}</td>
                     <td>${player.point}</td>
                     <td>${player.name}</td>
                     <td>${player.factory}</td>
-                    <td>${player.games}</td>
+                    <td class="games">${player.games}</td>
                 </tr>
             `;
         });
     }
 
-    renderLeaderboard();
+    fetchRankingData();
 </script>
 
 </body>
