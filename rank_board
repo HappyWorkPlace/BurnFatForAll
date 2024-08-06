@@ -108,7 +108,7 @@
     const singleGameTab = document.getElementById('singleGameTab');
     const leaderboardTable = document.getElementById('leaderboardTable');
     
-    const API_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzbi7RXlvS1Lm-o15jKjHJQLxGxZtZm9eR19SMq046xe3tU53JxC1eIGCYlwZ3-tBPu/exec';
 
     async function fetchRankingData(sheetName) {
         const response = await fetch(`${API_URL}?sheet=${sheetName}`);
