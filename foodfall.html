@@ -212,7 +212,7 @@ function startGame(empNo, name, factory) {
 
     const gameTimer = setInterval(() => {
         gameTime--;
-        document.getElementById('timer').textContent = Time: ${gameTime}s;
+        document.getElementById('timer').textContent = `Time: ${gameTime}s`;
         if (gameTime <= 0) {
             clearInterval(gameTimer);
             clearInterval(spawnInterval);
