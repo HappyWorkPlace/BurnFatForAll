@@ -258,6 +258,7 @@ function recordScore(empNo, name, factory, point) {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*', // เพิ่ม header นี้เพื่ออนุญาตให้ทุกต้นทางสามารถเข้าถึงได้
                     },
                     body: JSON.stringify({
                         empNo: empNo,
@@ -299,6 +300,7 @@ function recordScore(empNo, name, factory, point) {
         });
     });
 }
+
 
 
     document.addEventListener('dblclick', function(e) {
