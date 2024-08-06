@@ -131,12 +131,19 @@
 
 <script>
     async function initializeLiff() {
-        await liff.init({ liffId: '2004752543-p61wlaDA' }); 
-        const uid = liff.getProfile().userId;
-
-        checkUserAndStartGame(uid);
+        try {
+            await liff.init({ liffId: "2004752543-p61wlaDA" });
+            if (liff.isLoggedIn()) {
+                const profile = await liff.getProfile();
+                const userId = profile.userId;
+                checkUserAndStartGame(uid);
+            } else {
+                liff.login();
+            }
+        } catch (error) {
+            console.error('LIFF initialization failed:', error);
+        }
     }
-
     async function checkUserAndStartGame(uid) {
         try {
             const response = await fetch(`https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=checkUser&uid=${uid}`);
