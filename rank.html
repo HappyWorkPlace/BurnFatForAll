@@ -34,25 +34,6 @@
             padding: 15px;
         }
 
-        .tabs {
-            display: flex;
-            justify-content: space-around;
-            background-color: #ddd;
-            cursor: pointer;
-        }
-
-        .tabs div {
-            padding: 10px;
-            width: 50%;
-            text-align: center;
-            background-color: #ddd;
-        }
-
-        .tabs div.active {
-            background-color: #3B9097;
-            color: white;
-        }
-
         .leaderboard-content {
             padding: 20px;
         }
@@ -80,11 +61,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 5px; /* เพิ่มช่องว่างระหว่างลำดับกับไอคอน */
+            gap: 5px;
         }
 
         .leaderboard-content td.rank img {
-            width: 20px; /* ปรับขนาดของไอคอน */
+            width: 20px;
             height: 20px;
         }
     </style>
@@ -93,45 +74,31 @@
 
 <div class="leaderboard">
     <h2>Leaderboard</h2>
-    <div class="tabs">
-        <div id="cumulativeTab" class="active">Cumulative High Scores</div>
-        <div id="singleGameTab">Highest Scores Per Game</div>
-    </div>
     <div class="leaderboard-content">
         <table id="leaderboardTable">
-            <!-- เนื้อหาจะถูกเพิ่มโดย JavaScript -->
+            <!-- Content will be injected here by JavaScript -->
         </table>
     </div>
 </div>
 
 <script>
-    const cumulativeTab = document.getElementById('cumulativeTab');
-    const singleGameTab = document.getElementById('singleGameTab');
-    const leaderboardTable = document.getElementById('leaderboardTable');
-    
     const API_URL = 'https://script.google.com/macros/s/AKfycbzbi7RXlvS1Lm-o15jKjHJQLxGxZtZm9eR19SMq046xe3tU53JxC1eIGCYlwZ3-tBPu/exec';
 
-    let cumulativeScores = [];
-    let singleGameScores = [];
-
-    async function fetchRankingData(sheetName) {
-        const response = await fetch(`${API_URL}?sheet=${sheetName}`);
+    async function fetchRankingData() {
+        const response = await fetch(API_URL);
         const data = await response.json();
         return data;
     }
 
-    async function preloadData() {
-        [cumulativeScores, singleGameScores] = await Promise.all([
-            fetchRankingData('Ranking_Cumulative'),
-            fetchRankingData('Ranking_Highest')
-        ]);
-        renderLeaderboard(cumulativeScores); // Start with cumulative scores
-    }
+    async function renderLeaderboard() {
+        const data = await fetchRankingData();
+        
+        if (data.length === 0) {
+            document.getElementById('leaderboardTable').innerHTML = '<tr><td colspan="5">No data available</td></tr>';
+            return;
+        }
 
-    function renderLeaderboard(data) {
-        data.sort((a, b) => b.point - a.point);
-
-        leaderboardTable.innerHTML = `
+        document.getElementById('leaderboardTable').innerHTML = `
             <tr>
                 <th>Rank</th>
                 <th>Point</th>
@@ -140,6 +107,8 @@
                 <th>จำนวนเกม</th>
             </tr>
         `;
+
+        data.sort((a, b) => b.point - a.point);
 
         let previousScore = null;
         let currentRank = 0;
@@ -157,7 +126,7 @@
             else if (displayRank === 2) icon = '🥈';
             else if (displayRank === 3) icon = '🥉';
 
-            leaderboardTable.innerHTML += `
+            document.getElementById('leaderboardTable').innerHTML += `
                 <tr>
                     <td class="rank"><span>${displayRank}</span> ${icon}</td>
                     <td>${player.point}</td>
@@ -169,20 +138,7 @@
         });
     }
 
-    cumulativeTab.addEventListener('click', () => {
-        cumulativeTab.classList.add('active');
-        singleGameTab.classList.remove('active');
-        renderLeaderboard(cumulativeScores);
-    });
-
-    singleGameTab.addEventListener('click', () => {
-        singleGameTab.classList.add('active');
-        cumulativeTab.classList.remove('active');
-        renderLeaderboard(singleGameScores);
-    });
-
-    // Load data for both tables upfront
-    preloadData();
+    renderLeaderboard();
 </script>
 
 </body>
