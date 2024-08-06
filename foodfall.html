@@ -128,201 +128,83 @@
     <div id="timer">Time: 60s</div>
     <div class="combo">Combo: x1</div>
     <div id="comboText" class="combo-text">Combo X2</div>
-   <script>
-        const webAppUrl = 'https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec'; // แทนที่ด้วย URL ของ Web App ที่คุณสร้างใน Google Apps Script
 
-        // LIFF initialization and getting user profile
-        function initializeLiff() {
-            liff.init({
-                liffId: '2004752543-p61wlaDA' // แทนที่ด้วย LIFF ID ของคุณ
-            }).then(() => {
-                if (liff.isLoggedIn()) {
-                    liff.getProfile().then(profile => {
-                        const uid = profile.userId;
-                        checkUserAndStartGame(uid); // ส่ง UID ไปตรวจสอบและเริ่มเกม
-                    }).catch(err => {
-                        console.error('Error getting profile:', err);
-                    });
-                } else {
-                    liff.login(); // Login ถ้าผู้ใช้ยังไม่ได้ login
-                }
-            }).catch(err => {
-                console.error('Error initializing LIFF:', err);
-            });
+<script>
+    async function initializeLiff() {
+        await liff.init({ liffId: '2004752543-p61wlaDA' }); 
+        const uid = liff.getProfile().userId;
+
+        checkUserAndStartGame(uid);
+    }
+
+    async function checkUserAndStartGame(uid) {
+        try {
+            const response = await fetch(`https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=checkUser&uid=${uid}`);
+            const result = await response.json();
+
+            if (result.success) {
+                Swal.fire({
+                    title: 'พร้อมเล่นหรือยัง?',
+                    text: 'การเริ่มเกมนี้จะใช้สิทธิ์การเล่นเกมวันนี้ 1 ครั้ง',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'เล่นเลย',
+                    cancelButtonText: 'ยกเลิก'
+                }).then((confirmed) => {
+                    if (confirmed.isConfirmed) {
+                        startGame();
+                        recordPlay(result.empNo, result.name, result.factory);
+                    }
+                });
+            } else {
+                Swal.fire('ไม่สามารถเข้าเล่นได้', result.message, 'error');
+            }
+        } catch (error) {
+            Swal.fire('Error', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง', 'error');
         }
+    }
 
-        const healthyFoodImages = [
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy1.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy2.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy3.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy4.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy5.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy6.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy7.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy8.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy9.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy10.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy11.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy12.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy13.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy14.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy15.png'
-        ];
+    function recordPlay(empNo, name, factory) {
+        fetch(`https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=recordPlay&empNo=${empNo}&name=${name}&factory=${factory}`, {
+            method: 'POST'
+        });
+    }
 
-        const unhealthyFoodImages = [
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy1.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy2.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy3.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy5.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy6.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy7.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy8.png',
-            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy9.png'
-        ];
+    function recordScore(empNo, name, factory, point) {
+        fetch(`https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=recordScore&empNo=${empNo}&name=${name}&factory=${factory}&point=${point}`, {
+            method: 'POST'
+        });
+    }
 
-        const specialFoodImage = 'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card1.png';
-
-        // ป้องกันการซูมเมื่อแตะสองครั้ง
-        document.addEventListener('dblclick', function(e) {
-            e.preventDefault();
-        }, { passive: false });
-
-        // ป้องกันการซูมแบบ pinch-to-zoom
-        document.addEventListener('gesturestart', function(e) {
-            e.preventDefault();
-        }, { passive: false });
-
-        function preloadImages(imageArray) {
-            imageArray.forEach(src => {
-                const img = new Image();
-                img.src = src;
-            });
-        }
-
-        // โหลดภาพล่วงหน้าเมื่อเริ่มเกม
-        preloadImages([...healthyFoodImages, ...unhealthyFoodImages, specialFoodImage]);
-
+    function startGame() {
         let score = 0;
         let comboCount = 0;
         let comboMultiplier = 1;
         let specialMultiplier = 1;
-        let gameTime = 60;
-        let specialFoodInterval;
+        let gameTime = 60; // เวลาจำกัด 1 นาที (60 วินาที)
         const gameArea = document.getElementById('gameArea');
 
-        function checkUserAndStartGame(uid) {
-            const payload = {
-                action: 'checkUser',
-                uid: uid
-            };
+        const gameTimer = setInterval(() => {
+            gameTime--;
+            document.getElementById('timer').textContent = `Time: ${gameTime}s`;
+            if (gameTime <= 0) {
+                clearInterval(gameTimer);
+                clearInterval(spawnInterval);
+                clearInterval(specialFoodInterval);
+                showFinalScore(score);
+            }
+        }, 1000);
 
-            fetch(webAppUrl, {
-                method: 'POST',
-                body: JSON.stringify(payload),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.success) {
-                    Swal.fire({
-                        title: 'เริ่มเกม',
-                        text: 'คุณจะใช้สิทธิ์ในการเล่นเกมวันนี้ 1 ครั้ง',
-                        icon: 'info',
-                        showCancelButton: true,
-                        confirmButtonText: 'เล่นเลย!',
-                        cancelButtonText: 'ยกเลิก'
-                    }).then((swalResult) => {
-                        if (swalResult.isConfirmed) {
-                            recordPlay(result.empNo, result.name, result.factory);
-                            startGame();
-                        }
-                    });
-                } else {
-                    Swal.fire('Error', result.message, 'error');
-                }
-            })
-            .catch(error => console.error('Error:', error));
-        }
+        const spawnInterval = setInterval(spawnFood, 450);
 
-        function recordPlay(empNo, name, factory) {
-            const payload = {
-                action: 'recordPlay',
-                empNo: empNo,
-                name: name,
-                factory: factory
-            };
-
-            fetch(webAppUrl, {
-                method: 'POST',
-                body: JSON.stringify(payload),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.success) {
-                    console.log('Play recorded successfully');
-                } else {
-                    console.error('Error recording play:', result.message);
-                }
-            })
-            .catch(error => console.error('Error:', error));
-        }
-
-        function recordScore(empNo, name, factory, point) {
-            const payload = {
-                action: 'recordScore',
-                empNo: empNo,
-                name: name,
-                factory: factory,
-                point: point
-            };
-
-            fetch(webAppUrl, {
-                method: 'POST',
-                body: JSON.stringify(payload),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.success) {
-                    console.log('Score recorded successfully');
-                } else {
-                    console.error('Error recording score:', result.message);
-                }
-            })
-            .catch(error => console.error('Error:', error));
-        }
-
-        // เริ่มเกม
-        function startGame() {
-            const gameTimer = setInterval(() => {
-                gameTime--;
-                document.getElementById('timer').textContent = `Time: ${gameTime}s`;
-                if (gameTime <= 0) {
-                    clearInterval(gameTimer);
-                    clearInterval(spawnInterval);
-                    clearInterval(specialFoodInterval);
-                    showFinalScore(score);
-                }
-            }, 1000);
-
-            const spawnInterval = setInterval(spawnFood, 450);
-
-            specialFoodInterval = setInterval(spawnSpecialFood, 9000);
-        }
+        const specialFoodInterval = setInterval(spawnSpecialFood, 9000);
 
         function spawnFood() {
-            const isHealthy = Math.random() > 0.35;
+            const isHealthy = Math.random() > 0.3; 
             const food = document.createElement('div');
             food.classList.add('food');
             food.style.left = Math.random() * 70 + 'vw';
-            food.style.animationDuration = Math.random() * 2 + 5 + 's';
+            food.style.animationDuration = Math.random() * 2 + 5 + 's'; 
             food.style.backgroundImage = `url('${isHealthy ? healthyFoodImages[Math.floor(Math.random() * healthyFoodImages.length)] : unhealthyFoodImages[Math.floor(Math.random() * unhealthyFoodImages.length)]}')`;
             food.style.top = '-50vh';
 
@@ -420,12 +302,46 @@
                 }
             });
 
-            // Record the score
-            // Use the correct empNo, name, and factory values
-            recordScore('EmpNo', 'Name', 'Factory', finalScore);
+            // บันทึกคะแนนหลังจบเกม
+            recordScore(empNo, name, factory, finalScore);
         }
+    }
 
-        initializeLiff(); // Initialize LIFF on page load
-    </script>
+    // ลิสต์ภาพที่ใช้ในเกม
+    const healthyFoodImages = [
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy1.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy2.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy3.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy4.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy5.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy6.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy7.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy8.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy9.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy10.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy11.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy12.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy13.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy14.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy15.png'
+    ];
+
+    const unhealthyFoodImages = [
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy1.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy2.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy3.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy5.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy6.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy7.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy8.png',
+        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy9.png'
+    ];
+
+    const specialFoodImage = 'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card1.png';
+
+    // เริ่มต้น LIFF และเกม
+    initializeLiff();
+</script>
+
 </body>
 </html>
