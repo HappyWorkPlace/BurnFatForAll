@@ -6,68 +6,75 @@
     <title>Leaderboard</title>
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f4f4f4;
-        }
+ body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+}
 
-        .leaderboard {
-            width: 90%;
-            max-width: 600px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
+.leaderboard {
+    width: 90%;
+    max-width: 600px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
 
-        .leaderboard h2 {
-            background-color: #3B9097;
-            color: white;
-            text-align: center;
-            margin: 0;
-            padding: 15px;
-        }
+.leaderboard h2 {
+    background-color: #3B9097;
+    color: white;
+    text-align: center;
+    margin: 0;
+    padding: 15px;
+}
 
-        .leaderboard-content {
-            padding: 20px;
-        }
+.leaderboard-content {
+    padding: 20px;
+}
 
-        .leaderboard-content table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+.leaderboard-content table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* ปรับเพื่อให้คอลัมน์มีความกว้างที่เท่ากัน */
+}
 
-        .leaderboard-content th, .leaderboard-content td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
+.leaderboard-content th, .leaderboard-content td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
 
-        .leaderboard-content th {
-            background-color: #f6e2bc;
-        }
+.leaderboard-content th {
+    background-color: #f6e2bc;
+}
 
-        .leaderboard-content td:first-child {
-            text-align: center;
-        }
+.leaderboard-content td:first-child {
+    text-align: center;
+}
 
-        .leaderboard-content td.rank {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
+.leaderboard-content td.rank {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    text-align: center; /* จัดกลางสำหรับเนื้อหาในคอลัมน์ rank */
+}
 
-        .leaderboard-content td.rank img {
-            width: 20px;
-            height: 20px;
-        }
+.leaderboard-content td.rank img {
+    width: 20px;
+    height: 20px;
+}
+
+.leaderboard-content td {
+    min-width: 80px; /* กำหนดความกว้างขั้นต่ำให้คอลัมน์ */
+}
+
     </style>
 </head>
 <body>
