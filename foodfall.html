@@ -186,61 +186,41 @@
         }
     }
 
-    async function checkUserAndStartGame(uid) {
-        try {
-            const response = await fetch(`https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=checkUser&uid=${uid}`);
-            const result = await response.json();
+ async function checkUserAndStartGame(uid) {
+    try {
+        const response = await fetch(`https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=checkUser&uid=${uid}`);
+        const result = await response.json();
 
-            if (result.success) {
-                globalEmpNo = result.empNo;
-                globalName = result.name;
-                globalFactory = result.factory;
-
-                Swal.fire({
-                    title: 'พร้อมเล่นหรือยัง?',
-                    text: 'การเริ่มเกมนี้จะใช้สิทธิ์การเล่นเกมวันนี้ 1 ครั้ง',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'เล่นเลย',
-                    cancelButtonText: 'ยกเลิก'
-                }).then((confirmed) => {
-                    if (confirmed.isConfirmed) {
-                        startGame();
-                        recordPlay(globalEmpNo, globalName, globalFactory);
-                    }
-                });
-            } else {
-                Swal.fire('ไม่สามารถเข้าเล่นได้', result.message, 'error');
-            }
-        } catch (error) {
-            Swal.fire('Error', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง', 'error');
+        if (result.success) {
+            Swal.fire({
+                title: 'พร้อมเล่นหรือยัง?',
+                text: 'การเริ่มเกมนี้จะใช้สิทธิ์การเล่นเกมวันนี้ 1 ครั้ง',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'เล่นเลย',
+                cancelButtonText: 'ยกเลิก'
+            }).then((confirmed) => {
+                if (confirmed.isConfirmed) {
+                    startGame();
+                    recordPlay(globalEmpNo, globalName, globalFactory);
+                }
+            });
+        } else {
+            Swal.fire('ไม่สามารถเข้าเล่นได้', result.message, 'error');
         }
+    } catch (error) {
+        Swal.fire('Error', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง', 'error');
     }
+}
 
-    function recordPlay(empNo, name, factory) {
-        fetch(`https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=recordPlay`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ empNo, name, factory })
-        });
-    }
+function recordPlay(empNo, name, factory) {
+    fetch(`https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=recordPlay&empNo=${empNo}&name=${name}&factory=${factory}`);
+}
 
-    function recordScore(point) {
-        fetch(`https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=recordScore`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                empNo: globalEmpNo,
-                name: globalName,
-                factory: globalFactory,
-                point: point
-            })
-        });
-    }
+function recordScore(point) {
+    fetch(`https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=recordScore&empNo=${globalEmpNo}&name=${globalName}&factory=${globalFactory}&point=${point}`);
+}
+
 
     document.addEventListener('dblclick', function(e) {
         e.preventDefault();
