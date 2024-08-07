@@ -19,7 +19,7 @@
 
         .leaderboard {
             width: 90%; /* ลดความกว้างของ leaderboard เพื่อไม่ให้เต็มหน้าจอ */
-            max-width: 600px; /* กำหนดความกว้างสูงสุด */
+            max-width:600px; /* กำหนดความกว้างสูงสุด */
             height: 95vh; /* ความสูงตามขนาดหน้าจอ */
             background-color: #fff;
             border-radius: 8px;
@@ -55,7 +55,7 @@
         }
 
         .leaderboard-content th {
-            background-color: #f6e2bc;
+            background-color: #3B9097;
             text-align: center;
         }
 
@@ -207,7 +207,14 @@
 
     function renderLeaderboard() {
         const table = document.getElementById('leaderboardTable');
-
+        table.innerHTML = `
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        `;
 
         const start = (currentPage - 1) * rowsPerPage;
         const end = start + rowsPerPage;
