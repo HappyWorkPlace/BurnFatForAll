@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
     <title>Highest Score Leaderboard</title>
 
-    <style>
+      <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -18,14 +18,15 @@
         }
 
         .leaderboard {
-            width: 90%; /* ลดความกว้างของ leaderboard เพื่อไม่ให้เต็มหน้าจอ */
-            max-width:600px; /* กำหนดความกว้างสูงสุด */
-            height: 95vh; /* ความสูงตามขนาดหน้าจอ */
+            width: 90%;
+            max-width: 600px;
+            height: 95vh;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             overflow-y: auto;
-            margin: 20px; /* เพิ่มพื้นที่รอบด้าน */
+            margin: 20px;
+            position: relative; /* To position the spinner */
         }
 
         .leaderboard h2 {
@@ -34,7 +35,7 @@
             text-align: center;
             margin: 0;
             padding: 15px;
-            border-top-left-radius: 8px; /* เพิ่มการโค้งมนที่ขอบบน */
+            border-top-left-radius: 8px;
             border-top-right-radius: 8px;
         }
 
@@ -70,7 +71,7 @@
         }
 
         .leaderboard-content .icon {
-            font-size: 2em; /* เพิ่มขนาดของเหรียญ */
+            font-size: 2em;
         }
 
         .leaderboard-content td.profile {
@@ -138,13 +139,83 @@
         .pagination .page-info {
             margin: 0 10px;
         }
+
+        /* Loading spinner style */
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #3B9097;
+            font-size: 1.5em;
+            display: none; /* Initially hidden */
+        }
+
+        #spinner {
+            margin-bottom: 10px;
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #3B9097;
+            width: 40px;
+            height: 40px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Media queries */
+        @media (max-width: 650px) {
+            .leaderboard {
+                width: 100%;
+                height: 90vh;
+                margin: 10px;
+            }
+
+            .leaderboard h2 {
+                font-size: 1.2em;
+                padding: 10px;
+            }
+
+            .leaderboard-content th, .leaderboard-content td {
+                padding: 8px;
+                font-size: 0.9em;
+            }
+
+            .profile-img {
+                width: 45px;
+                height: 45px;
+            }
+
+            .pagination button {
+                padding: 3px 8px;
+                font-size: 0.9em;
+            }
+
+            #loading {
+                font-size: 1.2em;
+            }
+
+            #spinner {
+                width: 30px;
+                height: 30px;
+            }
+        }
     </style>
 
 </head>
 <body>
 
 <div class="leaderboard">
-    <h2>Highest Score Leaderboard</h2>
+    <h2>TOP 50 Highest Score<br>Leaderboard</br></h2>
+    <div id="loading">
+        <div id="spinner"></div>
+        รอสักครู่..
+    </div>
     <div class="leaderboard-content">
         <table id="leaderboardTable">
             <!-- Content will be injected here by JavaScript -->
@@ -160,11 +231,21 @@
     let data = [];
 
     async function fetchRankingData() {
-        const response = await fetch(API_URL);
-        const rankingData = await response.json();
-        data = rankingData;
-        renderLeaderboard();
-        setupPagination();
+        // Show the loading spinner
+        document.getElementById('loading').style.display = 'block';
+
+        try {
+            const response = await fetch(API_URL);
+            const rankingData = await response.json();
+            data = rankingData;
+            renderLeaderboard();
+            setupPagination();
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        } finally {
+            // Hide the loading spinner
+            document.getElementById('loading').style.display = 'none';
+        }
     }
 
     function setupPagination() {
