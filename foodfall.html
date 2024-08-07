@@ -241,6 +241,15 @@ function recordScore(empNo, name, factory, point) {
 
         const url = `https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=recordScore&empNo=${encodeURIComponent(empNo)}&name=${encodeURIComponent(name)}&factory=${encodeURIComponent(factory)}&point=${encodeURIComponent(point)}`;
 
+        Swal.fire({
+            title: 'กำลังบันทึก...',
+            text: 'กรุณารอสักครู่',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading(); // แสดงภาพหมุนๆ ระหว่างบันทึกข้อมูล
+            }
+        });
+
         fetch(url)
         .then(response => response.json())
         .then(data => {
@@ -249,7 +258,15 @@ function recordScore(empNo, name, factory, point) {
                 title: 'สำเร็จ',
                 text: 'บันทึกคะแนนเรียบร้อยแล้ว!',
                 icon: 'success',
-                confirmButtonText: 'ตกลง'
+                showCancelButton: true,
+                confirmButtonText: 'เล่นต่อ',
+                cancelButtonText: 'ดูลำดับ'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    location.reload(); // รีเฟรชหน้าเพื่อเล่นต่อ
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    window.location.href = 'https://happyworkplace.github.io/BurnFatForAll/rank'; // ไปยังหน้าดูลำดับ
+                }
             });
         })
         .catch((error) => {
@@ -409,13 +426,12 @@ function showFinalScore(finalScore) {
         title: 'จบเกม!',
         text: `คะแนนของคุณคือ : ${finalScore}`,
         icon: 'success',
-        confirmButtonText: 'เล่นอีก',
+        confirmButtonText: 'บันทึกคะแนน',
         allowOutsideClick: false
     }).then((result) => {
         if (result.isConfirmed) {
             // เรียกใช้ฟังก์ชัน recordScore หลังจากเกมจบ
             recordScore(empNo, name, factory, finalScore); 
-            // location.reload();
         }
     });
 }
