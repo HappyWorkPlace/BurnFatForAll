@@ -19,8 +19,8 @@
 
         .leaderboard {
             width: 90%; /* ลดความกว้างของ leaderboard เพื่อไม่ให้เต็มหน้าจอ */
-            max-width: 500px; /* กำหนดความกว้างสูงสุด */
-            height: 100vh; /* ความสูงตามขนาดหน้าจอ */
+            max-width: 600px; /* กำหนดความกว้างสูงสุด */
+            height: 95vh; /* ความสูงตามขนาดหน้าจอ */
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -207,14 +207,7 @@
 
     function renderLeaderboard() {
         const table = document.getElementById('leaderboardTable');
-        table.innerHTML = `
-            <tr>
-                <th>Rank</th>
-                <th>Profile</th>
-                <th>Name & Info</th>
-                <th>Point</th>
-            </tr>
-        `;
+
 
         const start = (currentPage - 1) * rowsPerPage;
         const end = start + rowsPerPage;
