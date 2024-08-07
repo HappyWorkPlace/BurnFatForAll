@@ -189,83 +189,73 @@ let specialFoodInterval;
 let currentSpawnRate = 450; // อัตราการสร้างอาหารเริ่มต้น (450ms)
 let isFastMode = false;
 
-function startGame() {
-    const gameTimer = setInterval(() => {
-        gameTime--;
-        document.getElementById('timer').textContent = `Time: ${gameTime}s`;
-        if (gameTime <= 0) {
-            clearInterval(gameTimer);
-            clearInterval(spawnInterval);
-            clearInterval(specialFoodInterval); // หยุดการสร้างภาพพิเศษเมื่อเกมจบ
-            showFinalScore(score);
-        }
-    }, 1000);
+    function startGame() {
+        const gameTimer = setInterval(() => {
+            gameTime--;
+            document.getElementById('timer').textContent = `Time: ${gameTime}s`;
+            if (gameTime <= 0) {
+                clearInterval(gameTimer);
+                clearInterval(spawnInterval);
+                clearInterval(specialFoodInterval);
+                showFinalScore(score);
+            }
+        }, 1000);
 
-    spawnInterval = setInterval(spawnFood, currentSpawnRate); // สร้างอาหารทุกๆ 0.45 วินาที
+        const spawnInterval = setInterval(spawnFood, 450);
+        specialFoodInterval = setInterval(spawnSpecialFood, 9000);
+    }
 
-    // ตั้งเวลาสำหรับภาพพิเศษ ให้ปรากฏทุกๆ 9 วินาที
-    specialFoodInterval = setInterval(spawnSpecialFood, 9000);
-}
+    function spawnFood() {
+        const isHealthy = Math.random() > 0.3;
+        const food = document.createElement('div');
+        food.classList.add('food');
+        food.style.left = Math.random() * 70 + 'vw';
+        food.style.animationDuration = Math.random() * 2 + 5 + 's';
+        food.style.backgroundImage = `url('${isHealthy ? healthyFoodImages[Math.floor(Math.random() * healthyFoodImages.length)] : unhealthyFoodImages[Math.floor(Math.random() * unhealthyFoodImages.length)]}')`;
+        food.style.top = '-50vh';
 
-function spawnFood() {
-    const isHealthy = Math.random() > 0.3; // 70% โอกาสในการสร้างอาหารสุขภาพ
-    const food = document.createElement('div');
-    food.classList.add('food');
-    food.style.left = Math.random() * 70 + 'vw'; // ปรับขอบเขตการคำนวณตำแหน่ง
-    food.style.animationDuration = Math.random() * 2 + 5 + 's'; // กำหนดความเร็วการตก
-    food.style.backgroundImage = `url('${isHealthy ? healthyFoodImages[Math.floor(Math.random() * healthyFoodImages.length)] : unhealthyFoodImages[Math.floor(Math.random() * unhealthyFoodImages.length)]}')`;
-    food.style.top = '-50vh';
+        food.addEventListener('touchstart', () => {
+            handleClick(food, isHealthy);
+        });
 
-    food.addEventListener('touchstart', () => {
-        handleClick(food, isHealthy);
-    });
+        gameArea.appendChild(food);
 
-    gameArea.appendChild(food);
-
-    const fallDuration = parseFloat(food.style.animationDuration);
-    setTimeout(() => {
-        food.remove();
-    }, fallDuration * 1000); // ลบวัตถุเมื่อออกจากหน้าจอ
-}
-
-function spawnSpecialFood() {
-    const specialFood = document.createElement('div');
-    specialFood.classList.add('food');
-    specialFood.style.left = Math.random() * 70 + 'vw'; // ปรับขอบเขตการคำนวณตำแหน่ง
-    specialFood.style.animationDuration = '3s'; // กำหนดความเร็วการตก
-    specialFood.style.backgroundImage = `url('${specialFoodImage}')`;
-    specialFood.style.top = '-50vh';
-
-    specialFood.addEventListener('touchstart', () => {
-        specialMultiplier *= 2; // เพิ่มคูณพิเศษเป็น 2 เท่า
-        document.querySelector('.combo').textContent = `Combo: x${comboMultiplier * specialMultiplier}`;
-        displayPopup(specialFood, `Combo x${specialMultiplier}`, 'blue');
-        
-        // ปรับจำนวนการสร้างอาหารทั้งหมดเป็น 3 เท่า
-        adjustSpawnRate(currentSpawnRate / 3); 
+        const fallDuration = Math.random() * 3 + 2;
+        food.style.animation = `fall ${fallDuration}s linear forwards`;
 
         setTimeout(() => {
-            specialMultiplier = 1; // กลับมาคูณปกติหลังจาก 5 วินาที
-            document.querySelector('.combo').textContent = `Combo: x${comboMultiplier}`;
-            adjustSpawnRate(currentSpawnRate); // กลับไปอัตราการสร้างปกติ
-        }, 5000);
+            food.remove();
+        }, fallDuration * 1000);
+    }
 
-        specialFood.remove();
-    });
+    function spawnSpecialFood() {
+        const specialFood = document.createElement('div');
+        specialFood.classList.add('food');
+        specialFood.style.left = Math.random() * 70 + 'vw';
+        specialFood.style.animationDuration = Math.random() * 2 + 3 + 's';
+        specialFood.style.backgroundImage = `url('${specialFoodImage}')`;
+        specialFood.style.top = '-50vh';
 
-    gameArea.appendChild(specialFood);
+        specialFood.addEventListener('touchstart', () => {
+            specialMultiplier *= 2;
+            document.querySelector('.combo').textContent = `Combo: x${comboMultiplier * specialMultiplier}`;
+            displayPopup(specialFood, `Combo x${specialMultiplier}`, 'blue');
+            setTimeout(() => {
+                specialMultiplier = 1;
+                document.querySelector('.combo').textContent = `Combo: x${comboMultiplier}`;
+            }, 5000);
+            specialFood.remove();
+        });
 
-    const fallDuration = parseFloat(specialFood.style.animationDuration);
-    setTimeout(() => {
-        specialFood.remove();
-    }, fallDuration * 1000); // ลบวัตถุเมื่อออกจากหน้าจอ
-}
+        gameArea.appendChild(specialFood);
 
-function adjustSpawnRate(newRate) {
-    clearInterval(spawnInterval);
-    spawnInterval = setInterval(spawnFood, newRate);
-}
+        const fallDuration = Math.random() * 3 + 2;
+        specialFood.style.animation = `fall ${fallDuration}s linear forwards`;
 
+        setTimeout(() => {
+            specialFood.remove();
+        }, fallDuration * 1000);
+    }
         function handleClick(foodElement, isHealthy) {
             const pointsToAdd =  Math.floor(Math.random() * 3) +1;// คะแนนสุ่มระหว่าง 1 ถึง 3
             if (isHealthy) {
