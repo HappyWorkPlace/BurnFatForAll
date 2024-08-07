@@ -184,6 +184,11 @@
     const gameArea = document.getElementById('gameArea');
 
     // เริ่มเกม
+let spawnInterval;
+let specialFoodInterval;
+let currentSpawnRate = 450; // อัตราการสร้างอาหารเริ่มต้น (450ms)
+let isFastMode = false;
+
 function startGame() {
     const gameTimer = setInterval(() => {
         gameTime--;
@@ -196,7 +201,7 @@ function startGame() {
         }
     }, 1000);
 
-    const spawnInterval = setInterval(spawnFood, 450); // สร้างอาหารทุกๆ 0.6 วินาที
+    spawnInterval = setInterval(spawnFood, currentSpawnRate); // สร้างอาหารทุกๆ 0.45 วินาที
 
     // ตั้งเวลาสำหรับภาพพิเศษ ให้ปรากฏทุกๆ 9 วินาที
     specialFoodInterval = setInterval(spawnSpecialFood, 9000);
@@ -207,7 +212,7 @@ function spawnFood() {
     const food = document.createElement('div');
     food.classList.add('food');
     food.style.left = Math.random() * 70 + 'vw'; // ปรับขอบเขตการคำนวณตำแหน่ง
-    food.style.animationDuration = Math.random() * 2 + 5 + 's'; // กำหนดความเร็วการตก
+    food.style.animationDuration = isFastMode ? '2s' : Math.random() * 2 + 5 + 's'; // กำหนดความเร็วการตก
     food.style.backgroundImage = `url('${isHealthy ? healthyFoodImages[Math.floor(Math.random() * healthyFoodImages.length)] : unhealthyFoodImages[Math.floor(Math.random() * unhealthyFoodImages.length)]}')`;
     food.style.top = '-50vh';
 
@@ -217,9 +222,7 @@ function spawnFood() {
 
     gameArea.appendChild(food);
 
-    const fallDuration = Math.random() * 3 + 2;
-    food.style.animation = `fall ${fallDuration}s linear forwards`;
-
+    const fallDuration = parseFloat(food.style.animationDuration);
     setTimeout(() => {
         food.remove();
     }, fallDuration * 1000); // ลบวัตถุเมื่อออกจากหน้าจอ
@@ -229,7 +232,7 @@ function spawnSpecialFood() {
     const specialFood = document.createElement('div');
     specialFood.classList.add('food');
     specialFood.style.left = Math.random() * 70 + 'vw'; // ปรับขอบเขตการคำนวณตำแหน่ง
-    specialFood.style.animationDuration = Math.random() * 2 + 3 + 's'; // กำหนดความเร็วการตก
+    specialFood.style.animationDuration = '3s'; // กำหนดความเร็วการตก
     specialFood.style.backgroundImage = `url('${specialFoodImage}')`;
     specialFood.style.top = '-50vh';
 
@@ -238,13 +241,15 @@ function spawnSpecialFood() {
         document.querySelector('.combo').textContent = `Combo: x${comboMultiplier * specialMultiplier}`;
         displayPopup(specialFood, `Combo x${specialMultiplier}`, 'blue');
         
-        // ปรับความเร็วและอัตราการตกของอาหารทั้งหมด
+        // ปรับความเร็วและจำนวนการสร้างอาหารทั้งหมด
         adjustFoodSpeed(0.5); // เพิ่มความเร็วเป็น 2 เท่า
+        adjustSpawnRate(225); // เพิ่มจำนวนการสร้างใหม่ 2 เท่า
 
         setTimeout(() => {
             specialMultiplier = 1; // กลับมาคูณปกติหลังจาก 5 วินาที
             document.querySelector('.combo').textContent = `Combo: x${comboMultiplier}`;
             adjustFoodSpeed(1); // กลับไปเป็นความเร็วปกติ
+            adjustSpawnRate(currentSpawnRate); // กลับไปอัตราการสร้างปกติ
         }, 5000);
 
         specialFood.remove();
@@ -252,9 +257,7 @@ function spawnSpecialFood() {
 
     gameArea.appendChild(specialFood);
 
-    const fallDuration = Math.random() * 3 + 2;
-    specialFood.style.animation = `fall ${fallDuration}s linear forwards`;
-
+    const fallDuration = parseFloat(specialFood.style.animationDuration);
     setTimeout(() => {
         specialFood.remove();
     }, fallDuration * 1000); // ลบวัตถุเมื่อออกจากหน้าจอ
@@ -267,6 +270,13 @@ function adjustFoodSpeed(multiplier) {
         food.style.animationDuration = (currentDuration * multiplier) + 's';
     });
 }
+
+function adjustSpawnRate(newRate) {
+    clearInterval(spawnInterval);
+    spawnInterval = setInterval(spawnFood, newRate);
+    isFastMode = (newRate < currentSpawnRate); // ปรับสถานะ fast mode ตามอัตราการสร้างใหม่
+}
+
 
 
         function handleClick(foodElement, isHealthy) {
