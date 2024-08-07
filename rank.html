@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
-    <title>Leaderboard</title>
+    <title>Highest Score Leaderboard</title>
 
     <style>
         body {
@@ -20,10 +20,11 @@
         .leaderboard {
             width: 100%;
             max-width: 600px;
+            max-height: 80vh; /* Limit the maximum height */
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+            overflow-y: auto; /* Enable vertical scrolling */
         }
 
         .leaderboard h2 {
@@ -65,9 +66,15 @@
             width: 10%;
         }
 
-        .leaderboard-content td.point, .leaderboard-content td.name, .leaderboard-content td.factory, .leaderboard-content td.games {
+        .leaderboard-content td.point, .leaderboard-content td.name, .leaderboard-content td.games {
             text-align: center;
-            width: 20%;
+            width: 30%;
+        }
+
+        .leaderboard-content .factory-text {
+            display: block;
+            font-size: 12px;
+            color: #888;
         }
 
         .leaderboard-content tr:nth-child(even) {
@@ -178,8 +185,7 @@
             <tr>
                 <th>Rank</th>
                 <th>Point</th>
-                <th>Name</th>
-                <th>Factory</th>
+                <th>Name & Factory</th>
                 <th>จำนวนเกม</th>
             </tr>
         `;
@@ -207,8 +213,10 @@
                 <tr>
                     <td class="rank"><span>${displayRank}</span> ${icon}</td>
                     <td>${player.point}</td>
-                    <td>${player.name}</td>
-                    <td>${player.factory}</td>
+                    <td>
+                        ${player.name}
+                        <span class="factory-text">${player.factory}</span>
+                    </td>
                     <td class="games">${player.games}</td>
                 </tr>
             `;
