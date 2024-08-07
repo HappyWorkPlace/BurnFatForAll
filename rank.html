@@ -5,120 +5,124 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
     <title>Highest Score Leaderboard</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f4f4f4;
-        }
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f4f4f4;
+    }
 
-        .leaderboard {
-            width: 100%;
-            max-width: 600px;
-            max-height: 80vh;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            overflow-y: auto;
-        }
+    .leaderboard {
+        width: 90%; /* ลดความกว้างของ leaderboard เพื่อไม่ให้เต็มหน้าจอ */
+        max-width: 500px; /* กำหนดความกว้างสูงสุด */
+        height: 85vh; /* ความสูงตามขนาดหน้าจอ แต่เหลือขอบสำหรับความพอดี */
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        overflow-y: auto;
+        margin: 20px; /* เพิ่มพื้นที่รอบด้าน */
+    }
 
-        .leaderboard h2 {
-            background-color: #3B9097;
-            color: white;
-            text-align: center;
-            margin: 0;
-            padding: 15px;
-        }
+    .leaderboard h2 {
+        background-color: #3B9097;
+        color: white;
+        text-align: center;
+        margin: 0;
+        padding: 15px;
+        border-top-left-radius: 8px; /* เพิ่มการโค้งมนที่ขอบบน */
+        border-top-right-radius: 8px;
+    }
 
-        .leaderboard-content {
-            padding: 0;
-        }
+    .leaderboard-content {
+        padding: 0;
+    }
 
-        .leaderboard-content table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: auto;
-        }
+    .leaderboard-content table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: auto;
+    }
 
-        .leaderboard-content th, .leaderboard-content td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
+    .leaderboard-content th, .leaderboard-content td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
 
-        .leaderboard-content th {
-            background-color: #f6e2bc;
-            text-align: center;
-        }
+    .leaderboard-content th {
+        background-color: #f6e2bc;
+        text-align: center;
+    }
 
-        .leaderboard-content td:first-child {
-            text-align: center;
-            width: 10%;
-        }
+    .leaderboard-content td:first-child {
+        text-align: center;
+        width: 10%;
+    }
 
-        .leaderboard-content td.rank {
-            text-align: center;
-            width: 10%;
-        }
+    .leaderboard-content td.rank {
+        text-align: center;
+        width: 10%;
+    }
 
-        .leaderboard-content td.point {
-            text-align: center;
-            width: 20%; /* เพิ่มพื้นที่ให้คอลัมน์ชื่อ */
-        }
+    .leaderboard-content td.point {
+        text-align: center;
+        width: 20%;
+    }
 
-        .leaderboard-content td.name {
-            text-align: left;
-            width: 70%; /* ปรับให้คอลัมน์ชื่อมีพื้นที่มากขึ้น */
-            white-space: nowrap; /* ป้องกันการตัดบรรทัด */
-        }
+    .leaderboard-content td.name {
+        text-align: left;
+        width: 70%;
+        white-space: nowrap;
+    }
 
-        .leaderboard-content .factory-text, .leaderboard-content .division-text {
-            display: block;
-            font-size: 12px;
-            color: #888;
-        }
+    .leaderboard-content .factory-text, .leaderboard-content .division-text {
+        display: block;
+        font-size: 12px;
+        color: #888;
+    }
 
-        .leaderboard-content tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
+    .leaderboard-content tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
 
-        .leaderboard-content tr:hover {
-            background-color: #f1f1f1;
-        }
+    .leaderboard-content tr:hover {
+        background-color: #f1f1f1;
+    }
 
-        /* Pagination style */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 20px;
-            font-size: 14px;
-        }
+    /* Pagination style */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+        font-size: 14px;
+    }
 
-        .pagination button {
-            background-color: #3B9097;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            margin: 0 5px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+    .pagination button {
+        background-color: #3B9097;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        margin: 0 5px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
 
-        .pagination button.disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
+    .pagination button.disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
 
-        .pagination .page-info {
-            margin: 0 10px;
-        }
-    </style>
+    .pagination .page-info {
+        margin: 0 10px;
+    }
+</style>
+
 </head>
 <body>
 
