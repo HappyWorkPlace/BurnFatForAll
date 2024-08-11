@@ -235,13 +235,16 @@ function recordPlay(empNo, name, factory,mode) {
     });
 }
 
-function recordScore(empNo, name, factory, point,modeRecord) {
+function recordScore(empNo, name, factory, point) {
     liff.getProfile().then(profile => {
         const uid = profile.userId;
         const pictureUrl = profile.pictureUrl; // ดึง URL ของรูปโปรไฟล์
-        const url = `https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=recordScore&empNo=${encodeURIComponent(empNo)}&name=${encodeURIComponent(name)}&factory=${encodeURIComponent(factory)}&point=${encodeURIComponent(point)}&pictureUrl=${encodeURIComponent(pictureUrl)}&modeRecord=${encodeURIComponent(modeRecord)}`;
 
+        // Hardcode modeRecord as 'Hard' for this example
+        const modeRecord = 'Hard';
 
+        // Construct the URL with encoded parameters
+        const url = `https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=recordScore&empNo=${encodeURIComponent(empNo)}&name=${encodeURIComponent(name)}&factory=${encodeURIComponent(factory)}&point=${encodeURIComponent(point)}&pictureUrl=${encodeURIComponent(pictureUrl)}&mode=${encodeURIComponent(modeRecord)}`;
 
         Swal.fire({
             title: 'กำลังบันทึก...',
@@ -252,6 +255,7 @@ function recordScore(empNo, name, factory, point,modeRecord) {
             }
         });
 
+        // Fetch request to record score
         fetch(url)
         .then(response => response.json())
         .then(data => {
@@ -290,7 +294,6 @@ function recordScore(empNo, name, factory, point,modeRecord) {
         });
     });
 }
-
 
     document.addEventListener('dblclick', function(e) {
         e.preventDefault();
