@@ -44,24 +44,34 @@
     .tabs {
         display: flex;
         justify-content: space-around;
-        margin: 15px 0;
-        padding: 10px 0;
-        background-color: #FFF5E1;
-        border-bottom: 2px solid #FF6F61;
+        margin: 10px 0;
+        padding: 5px 10px;
+        background: linear-gradient(90deg, #FF6F61 0%, #FFA07A 100%);
+        border-radius: 30px;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 
     .tab-btn {
-        background-color: #FFA07A;
+        background-color: transparent;
         color: white;
         border: none;
-        padding: 12px 25px;
+        padding: 10px 15px;
         cursor: pointer;
         border-radius: 20px;
-        transition: background-color 0.3s;
-        font-size: 1em;
+        transition: background-color 0.3s, transform 0.3s;
+        font-size: 0.9em;
+        text-align: center;
+        flex-grow: 1;
+        flex-basis: 0;
     }
 
-    .tab-btn:hover, .tab-btn.active {
+    .tab-btn.active {
+        background-color: #FF4500;
+        transform: scale(1.05);
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .tab-btn:hover {
         background-color: #FF4500;
     }
 
@@ -216,7 +226,6 @@
         height: 40px;
         -webkit-animation: spin 2s linear infinite;
         animation: spin 2s linear infinite;
-        
     }
 
     @keyframes spin {
@@ -235,6 +244,19 @@
         .leaderboard h2 {
             font-size: 1.4em;
             padding: 15px;
+        }
+
+        .tabs {
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            width: auto;
+            padding: 8px;
+            margin: 5px;
+            font-size: 0.8em;
         }
 
         .leaderboard-content th, .leaderboard-content td {
@@ -262,6 +284,7 @@
         }
     }
 </style>
+
 
 
 </head>
