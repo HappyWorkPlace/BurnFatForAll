@@ -238,7 +238,7 @@ function recordScore(empNo, name, factory, point,mode) {
     liff.getProfile().then(profile => {
         const uid = profile.userId;
         const pictureUrl = profile.pictureUrl; // ดึง URL ของรูปโปรไฟล์
-        const url = `https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=recordScore&empNo=${encodeURIComponent(empNo)}&name=${encodeURIComponent(name)}&factory=${encodeURIComponent(factory)}&point=${encodeURIComponent(point)}&pictureUrl=${encodeURIComponent(pictureUrl)}&modeRecord=${encodeURIComponent("Hard")}`;
+        const url = `https://script.google.com/macros/s/AKfycbxoanNF-x9LDPjgxHU_ksi-wSXWRBCAI7p3POSwQj0HZELAWwdvY0ZWLP0dc2shl91J/exec?action=recordScore&empNo=${encodeURIComponent(empNo)}&name=${encodeURIComponent(name)}&factory=${encodeURIComponent(factory)}&point=${encodeURIComponent(point)}&pictureUrl=${encodeURIComponent(pictureUrl)}&modeRecord=${encodeURIComponent('Hard')}`;
 
 
 
