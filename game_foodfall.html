@@ -222,17 +222,16 @@
             }
         }, 1000);
 
-        spawnInterval = setInterval(spawnFood, 400);
-
-        specialFoodInterval = setInterval(spawnSpecialFood, 14000);
+        const spawnInterval = setInterval(spawnFood, 600);
+        specialFoodInterval = setInterval(spawnSpecialFood, 9000);
     }
 
     function spawnFood() {
-        const isHealthy = Math.random() > 0.3;
+        const isHealthy = Math.random() > 0.2;
         const food = document.createElement('div');
         food.classList.add('food');
         food.style.left = Math.random() * 70 + 'vw';
-        food.style.animationDuration = Math.random() * 2 + 5 + 's';
+        food.style.animationDuration = Math.random() * 2 + 3 + 's';
         food.style.backgroundImage = `url('${isHealthy ? healthyFoodImages[Math.floor(Math.random() * healthyFoodImages.length)] : unhealthyFoodImages[Math.floor(Math.random() * unhealthyFoodImages.length)]}')`;
         food.style.top = '-50vh';
 
@@ -250,7 +249,7 @@
         }, fallDuration * 1000);
     }
 
-    function spawnSpecialFood() {
+   function spawnSpecialFood() {
         const specialFood = document.createElement('div');
         specialFood.classList.add('food');
         specialFood.style.left = Math.random() * 70 + 'vw';
@@ -262,26 +261,10 @@
             specialMultiplier *= 2;
             document.querySelector('.combo').textContent = `Combo: x${comboMultiplier * specialMultiplier}`;
             displayPopup(specialFood, `Combo x${specialMultiplier}`, 'blue');
-
-            const fireFrame = document.getElementById('fireFrame');
-            fireFrame.style.opacity = 1;
-            fireFrame.classList.add('active-fire-frame');
-
-            const originalSpawnInterval = spawnInterval;
-            clearInterval(spawnInterval);
-            spawnInterval = setInterval(spawnFood, 100);
-
             setTimeout(() => {
                 specialMultiplier = 1;
                 document.querySelector('.combo').textContent = `Combo: x${comboMultiplier}`;
-
-                clearInterval(spawnInterval);
-                spawnInterval = setInterval(spawnFood, 400);
-
-                fireFrame.style.opacity = 0;
-                fireFrame.classList.remove('active-fire-frame');
-            }, 3000);
-
+            }, 5000);
             specialFood.remove();
         });
 
