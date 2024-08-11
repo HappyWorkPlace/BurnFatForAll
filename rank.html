@@ -5,216 +5,292 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
     <title>Highest Score Leaderboard</title>
 
-      <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f4f4f4;
-        }
+ <style>
+    body {
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #FFFAF0;
+    }
 
+    .leaderboard {
+        width: 90%;
+        max-width: 600px;
+        height: 95vh;
+        background-color: #FFF;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        overflow-y: auto;
+        margin: 20px;
+        position: relative;
+    }
+
+    .leaderboard h2 {
+        background-color: #FF6F61;
+        color: white;
+        text-align: center;
+        margin: 0;
+        padding: 20px;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+        font-size: 1.8em;
+        font-weight: bold;
+    }
+
+    .tabs {
+        display: flex;
+        justify-content: space-around;
+        margin: 15px 0;
+        padding: 10px 0;
+        background-color: #FFF5E1;
+        border-bottom: 2px solid #FF6F61;
+    }
+
+    .tab-btn {
+        background-color: #FFA07A;
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        cursor: pointer;
+        border-radius: 20px;
+        transition: background-color 0.3s;
+        font-size: 1em;
+    }
+
+    .tab-btn:hover, .tab-btn.active {
+        background-color: #FF4500;
+    }
+
+    .week-filter {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 20px 0;
+        font-size: 1em;
+        color: #333;
+    }
+
+    .week-filter label {
+        margin-right: 10px;
+        font-weight: bold;
+    }
+
+    #weekSelect {
+        padding: 8px;
+        border-radius: 8px;
+        border: 1px solid #FF6F61;
+        font-size: 1em;
+        background-color: #FFF5E1;
+        color: #333;
+    }
+
+    .leaderboard-content {
+        padding: 0;
+    }
+
+    .leaderboard-content table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: auto;
+    }
+
+    .leaderboard-content th, .leaderboard-content td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+        font-size: 1em;
+    }
+
+    .leaderboard-content th {
+        background-color: #FF6F61;
+        color: white;
+        text-align: center;
+    }
+
+    .leaderboard-content td:first-child {
+        text-align: center;
+        width: 10%;
+    }
+
+    .leaderboard-content td.rank {
+        text-align: center;
+        width: 10%;
+    }
+
+    .leaderboard-content .icon {
+        font-size: 1.5em;
+    }
+
+    .leaderboard-content td.profile {
+        text-align: center;
+        width: 20%;
+    }
+
+    .leaderboard-content td.name {
+        text-align: left;
+        width: 50%;
+        white-space: nowrap;
+    }
+
+    .leaderboard-content td.point {
+        text-align: center;
+        width: 20%;
+        font-weight: bold;
+        color: #FF4500;
+    }
+
+    .leaderboard-content .factory-text, .leaderboard-content .division-text {
+        display: block;
+        font-size: 0.9em;
+        color: #888;
+    }
+
+    .leaderboard-content tr:nth-child(even) {
+        background-color: #FFF5E1;
+    }
+
+    .leaderboard-content tr:hover {
+        background-color: #FFE4B5;
+    }
+
+    /* Profile image style */
+    .profile-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #FF6F61;
+    }
+
+    /* Pagination style */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+        font-size: 1em;
+    }
+
+    .pagination button {
+        background-color: #FFA07A;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        margin: 0 5px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1em;
+    }
+
+    .pagination button.disabled {
+        background-color: #FFDAB9;
+        cursor: not-allowed;
+    }
+
+    .pagination .page-info {
+        margin: 0 10px;
+    }
+
+    /* Loading spinner style */
+    #loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: #FF6F61;
+        font-size: 1.5em;
+        display: none;
+    }
+
+    #spinner {
+        margin-bottom: 10px;
+        border: 4px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 4px solid #FF6F61;
+        width: 40px;
+        height: 40px;
+        -webkit-animation: spin 2s linear infinite;
+        animation: spin 2s linear infinite;
+        
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Media queries */
+    @media (max-width: 650px) {
         .leaderboard {
-            width: 90%;
-            max-width: 600px;
-            height: 95vh;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            overflow-y: auto;
-            margin: 20px;
-            position: relative; /* To position the spinner */
+            width: 100%;
+            height: 90vh;
+            margin: 10px;
         }
 
         .leaderboard h2 {
-            background-color: #3B9097;
-            color: white;
-            text-align: center;
-            margin: 0;
+            font-size: 1.4em;
             padding: 15px;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-        }
-
-        .leaderboard-content {
-            padding: 0;
-        }
-
-        .leaderboard-content table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: auto;
         }
 
         .leaderboard-content th, .leaderboard-content td {
             padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
+            font-size: 0.9em;
         }
 
-        .leaderboard-content th {
-            background-color: #3B9097;
-            text-align: center;
-        }
-
-        .leaderboard-content td:first-child {
-            text-align: center;
-            width: 10%;
-        }
-
-        .leaderboard-content td.rank {
-            text-align: center;
-            width: 10%;
-        }
-
-        .leaderboard-content .icon {
-            font-size: 2em;
-        }
-
-        .leaderboard-content td.profile {
-            text-align: center;
-            width: 20%;
-        }
-
-        .leaderboard-content td.name {
-            text-align: left;
-            width: 50%;
-            white-space: nowrap;
-        }
-
-        .leaderboard-content td.point {
-            text-align: center;
-            width: 20%;
-        }
-
-        .leaderboard-content .factory-text, .leaderboard-content .division-text {
-            display: block;
-            font-size: 12px;
-            color: #888;
-        }
-
-        .leaderboard-content tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        .leaderboard-content tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        /* Profile image style */
         .profile-img {
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        /* Pagination style */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 20px;
-            font-size: 14px;
+            width: 40px;
+            height: 40px;
         }
 
         .pagination button {
-            background-color: #3B9097;
-            color: white;
-            border: none;
             padding: 5px 10px;
-            margin: 0 5px;
-            border-radius: 4px;
-            cursor: pointer;
+            font-size: 0.9em;
         }
 
-        .pagination button.disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-
-        .pagination .page-info {
-            margin: 0 10px;
-        }
-
-        /* Loading spinner style */
         #loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: #3B9097;
-            font-size: 1.5em;
-            display: none; /* Initially hidden */
+            font-size: 1.2em;
         }
 
         #spinner {
-            margin-bottom: 10px;
-            border: 4px solid #f3f3f3;
-            border-radius: 50%;
-            border-top: 4px solid #3B9097;
-            width: 40px;
-            height: 40px;
-            -webkit-animation: spin 2s linear infinite;
-            animation: spin 2s linear infinite;
+            width: 30px;
+            height: 30px;
         }
+    }
+</style>
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Media queries */
-        @media (max-width: 650px) {
-            .leaderboard {
-                width: 100%;
-                height: 90vh;
-                margin: 10px;
-            }
-
-            .leaderboard h2 {
-                font-size: 1.2em;
-                padding: 10px;
-            }
-
-            .leaderboard-content th, .leaderboard-content td {
-                padding: 8px;
-                font-size: 0.9em;
-            }
-
-            .profile-img {
-                width: 45px;
-                height: 45px;
-            }
-
-            .pagination button {
-                padding: 3px 8px;
-                font-size: 0.9em;
-            }
-
-            #loading {
-                font-size: 1.2em;
-            }
-
-            #spinner {
-                width: 30px;
-                height: 30px;
-            }
-        }
-    </style>
 
 </head>
 <body>
 
 <div class="leaderboard">
     <h2>TOP 50 Highest Score<br>Leaderboard</br></h2>
+
+    <!-- Tabs for filtering by game mode -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="filterByMode('Normal', this)">โหมดปกติ</button>
+        <button class="tab-btn" onclick="filterByMode('Hard', this)">โหมดยาก</button>
+        <button class="tab-btn" onclick="filterByMode('Crazy', this)">โหมดปราบเซียน</button>
+    </div>
+
+    <!-- Dropdown for filtering by week -->
+    <div class="week-filter">
+        <label for="weekSelect">คะแนน:</label>
+        <select id="weekSelect" onchange="filterByWeek()">
+            <option value="Week1">สัปดาห์ที่ 1</option>
+            <option value="Week2">สัปดาห์ที่ 2</option>
+            <option value="Week3">สัปดาห์ที่ 3</option>
+            <!-- Add more weeks as necessary -->
+        </select>
+    </div>
+
     <div id="loading">
         <div id="spinner"></div>
-        รอสักครู่..
+ 
     </div>
     <div class="leaderboard-content">
         <table id="leaderboardTable">
@@ -229,6 +305,8 @@
     const rowsPerPage = 10;
     let currentPage = 1;
     let data = [];
+    let currentMode = 'Normal';
+    let currentWeek = 'Week1';
 
     async function fetchRankingData() {
         // Show the loading spinner
@@ -248,8 +326,29 @@
         }
     }
 
+    function filterByMode(mode, element) {
+        currentMode = mode;
+
+        // Remove 'active' class from all buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        
+        // Add 'active' class to the clicked button
+        element.classList.add('active');
+
+        renderLeaderboard();
+        setupPagination();
+    }
+
+    function filterByWeek() {
+        const weekSelect = document.getElementById('weekSelect');
+        currentWeek = weekSelect.value;
+        renderLeaderboard();
+        setupPagination();
+    }
+
     function setupPagination() {
-        const totalPages = Math.ceil(data.length / rowsPerPage);
+        const filteredData = data.filter(player => player.mode === currentMode && player.week === currentWeek);
+        const totalPages = Math.ceil(filteredData.length / rowsPerPage);
         const paginationContainer = document.getElementById('pagination');
 
         paginationContainer.innerHTML = '';
@@ -269,7 +368,7 @@
 
         const pageInfo = document.createElement('span');
         pageInfo.className = 'page-info';
-        pageInfo.textContent = `หน้า ${currentPage} / ${totalPages}`;
+        pageInfo.textContent = `Page ${currentPage} / ${totalPages}`;
         paginationContainer.appendChild(pageInfo);
 
         const nextButton = document.createElement('button');
@@ -290,22 +389,24 @@
         const table = document.getElementById('leaderboardTable');
         table.innerHTML = `
             <tr>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
+                <th>Rank</th>
+                <th>Profile</th>
+                <th>Name</th>
+                <th>Points</th>
             </tr>
         `;
 
         const start = (currentPage - 1) * rowsPerPage;
         const end = start + rowsPerPage;
 
-        const sortedData = data.sort((a, b) => b.point - a.point);
+        const filteredData = data
+            .filter(player => player.mode === currentMode && player.week === currentWeek)
+            .sort((a, b) => b.point - a.point);
 
         let previousScore = null;
         let displayRank = 0;
 
-        sortedData.slice(start, end).forEach((player, index) => {
+        filteredData.slice(start, end).forEach((player, index) => {
             if (player.point !== previousScore) {
                 displayRank = start + index + 1;
             }
@@ -316,7 +417,7 @@
             if (displayRank === 1) icon = '🥇';
             else if (displayRank === 2) icon = '🥈';
             else if (displayRank === 3) icon = '🥉';
-            else rankDisplay = displayRank; // แสดงลำดับปกติหากไม่ได้อันดับที่ 1, 2, หรือ 3
+            else rankDisplay = displayRank;
 
             table.innerHTML += `
                 <tr>
@@ -340,3 +441,4 @@
 
 </body>
 </html>
+
