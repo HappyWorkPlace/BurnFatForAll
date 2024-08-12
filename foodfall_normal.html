@@ -332,7 +332,7 @@ function recordScore(empNo, name, factory, point) {
         const food = document.createElement('div');
         food.classList.add('food');
         food.style.left = Math.random() * 70 + 'vw';
-        food.style.animationDuration = Math.random() * 2 + 3 + 's';
+        food.style.animationDuration = Math.random() * 2 + 2 + 's';
         food.style.backgroundImage = `url('${isHealthy ? healthyFoodImages[Math.floor(Math.random() * healthyFoodImages.length)] : unhealthyFoodImages[Math.floor(Math.random() * unhealthyFoodImages.length)]}')`;
         food.style.top = '-50vh';
 
@@ -342,7 +342,7 @@ function recordScore(empNo, name, factory, point) {
 
         gameArea.appendChild(food);
 
-        const fallDuration = Math.random() * 3 + 2;
+        const fallDuration = Math.random() * 3 + 3;
         food.style.animation = `fall ${fallDuration}s linear forwards`;
 
         setTimeout(() => {
