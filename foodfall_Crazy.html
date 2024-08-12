@@ -308,7 +308,8 @@ function recordScore(empNo, name, factory, point) {
     let comboMultiplier = 1;
     let specialMultiplier = 1;
     let gameTime = 60;
-    let specialFoodInterval;
+    let spawnInterval;
+    let specialFoodInterval; 
     const gameArea = document.getElementById('gameArea');
 
     function startGame() {
@@ -351,7 +352,7 @@ function recordScore(empNo, name, factory, point) {
         }, fallDuration * 1000);
     }
 
-      function spawnSpecialFood() {
+    function spawnSpecialFood() {
         const specialFood = document.createElement('div');
         specialFood.classList.add('food');
         specialFood.style.left = Math.random() * 70 + 'vw';
@@ -419,7 +420,6 @@ function recordScore(empNo, name, factory, point) {
         }
         foodElement.remove();
     }
-
     function displayPopup(element, text, color) {
         const popup = document.createElement('div');
         popup.className = 'popup';
