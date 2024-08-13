@@ -370,9 +370,6 @@ specialFood.addEventListener('touchstart', () => {
 
         clearInterval(spawnInterval);
         spawnInterval = setInterval(spawnFood, 400);
-
-        fireFrame.style.opacity = 0;
-        fireFrame.classList.remove('active-fire-frame');
     }, 3000);
 
     if (specialFood) {  // Check if specialFood exists
