@@ -322,7 +322,7 @@
 
         spawnInterval = setInterval(spawnFood, 400);
 
-        specialFoodInterval = setInterval(spawnSpecialFood, 9000);
+        specialFoodInterval = setInterval(spawnSpecialFood, 14000);
     }
 
     function spawnFood() {
@@ -430,6 +430,7 @@
             popup.remove();
         }, 1000);
     }
+    
     function showComboEffect(comboMultiplier) {
         const comboText = document.getElementById('comboText');
         comboText.textContent = `Combo X${comboMultiplier}`;
@@ -439,8 +440,6 @@
             comboText.style.opacity = 0;
         }, 1000);
     }
-
-    startGame();
 
     function showFinalScore(finalScore) {
         Swal.fire({
