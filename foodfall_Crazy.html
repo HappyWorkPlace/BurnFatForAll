@@ -305,7 +305,7 @@
     let specialMultiplier = 1;
     let gameTime = 60;
     let spawnInterval;
-    let specialFoodInterval;
+    let specialFoodInterval; 
     const gameArea = document.getElementById('gameArea');
 
     function startGame() {
@@ -321,7 +321,8 @@
         }, 1000);
 
         spawnInterval = setInterval(spawnFood, 400);
-        specialFoodInterval = setInterval(spawnSpecialFood, 12000);
+
+        specialFoodInterval = setInterval(spawnSpecialFood, 9000);
     }
 
     function spawnFood() {
@@ -364,6 +365,7 @@
             fireFrame.style.opacity = 1;
             fireFrame.classList.add('active-fire-frame');
 
+            const originalSpawnInterval = spawnInterval;
             clearInterval(spawnInterval);
             spawnInterval = setInterval(spawnFood, 100);
 
@@ -378,7 +380,7 @@
                 fireFrame.classList.remove('active-fire-frame');
             }, 3000);
 
-            specialFood.remove(); // แก้ไข: เพิ่มการลบ specialFood เมื่อถูกคลิก
+            specialFood.remove();
         });
 
         gameArea.appendChild(specialFood);
@@ -428,7 +430,6 @@
             popup.remove();
         }, 1000);
     }
-
     function showComboEffect(comboMultiplier) {
         const comboText = document.getElementById('comboText');
         comboText.textContent = `Combo X${comboMultiplier}`;
@@ -438,6 +439,8 @@
             comboText.style.opacity = 0;
         }, 1000);
     }
+
+    startGame();
 
     function showFinalScore(finalScore) {
         Swal.fire({
