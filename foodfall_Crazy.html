@@ -106,8 +106,8 @@
 
         .food {
             position: absolute;
-            width: 70px; /* ปรับขนาดให้เล็กลง */
-            height: 70px; /* ปรับขนาดให้เล็กลง */
+            width: 65px; /* ปรับขนาดให้เล็กลง */
+            height: 65px; /* ปรับขนาดให้เล็กลง */
             padding: 20px; /* ลบ padding หรือปรับให้น้อยลง */
             background-size: contain;
             background-repeat: no-repeat;
@@ -320,13 +320,13 @@
             }
         }, 1000);
 
-        spawnInterval = setInterval(spawnFood, 400);
+        spawnInterval = setInterval(spawnFood, 330);
 
         specialFoodInterval = setInterval(spawnSpecialFood, 14000);
     }
 
     function spawnFood() {
-        const isHealthy = Math.random() > 0.3;
+        const isHealthy = Math.random() > 0.35;
         const food = document.createElement('div');
         food.classList.add('food');
         food.style.left = Math.random() * 70 + 'vw';
@@ -399,7 +399,7 @@ specialFood.addEventListener('touchstart', () => {
             document.querySelector('.combo').textContent = `Combo: x${comboMultiplier * specialMultiplier}`;
             displayPopup(foodElement, `+${pointsToAdd * comboMultiplier * specialMultiplier}`, 'green');
         } else {
-            const pointsToSubtract = comboMultiplier * specialMultiplier;
+            const pointsToSubtract = comboMultiplier * specialMultiplier + Math.floor(Math.random() * 3)+ 1;
             score -= pointsToSubtract;
             comboCount = 0;
             comboMultiplier = 1;
