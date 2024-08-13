@@ -356,32 +356,33 @@
         specialFood.style.backgroundImage = `url('${specialFoodImage}')`;
         specialFood.style.top = '-50vh';
 
-        specialFood.addEventListener('touchstart', () => {
-            specialMultiplier *= 2;
-            document.querySelector('.combo').textContent = `Combo: x${comboMultiplier * specialMultiplier}`;
-            displayPopup(specialFood, `Combo x${specialMultiplier}`, 'blue');
+specialFood.addEventListener('touchstart', () => {
+    specialMultiplier *= 2;
+    document.querySelector('.combo').textContent = `Combo: x${comboMultiplier * specialMultiplier}`;
+    displayPopup(specialFood, `Combo x${specialMultiplier}`, 'blue');
 
-            const fireFrame = document.getElementById('fireFrame');
-            fireFrame.style.opacity = 1;
-            fireFrame.classList.add('active-fire-frame');
+    const fireFrame = document.getElementById('fireFrame');
+    fireFrame.style.opacity = 1;
+    fireFrame.classList.add('active-fire-frame');
 
-            const originalSpawnInterval = spawnInterval;
-            clearInterval(spawnInterval);
-            spawnInterval = setInterval(spawnFood, 100);
+    clearInterval(spawnInterval);
+    spawnInterval = setInterval(spawnFood, 100);
 
-            setTimeout(() => {
-                specialMultiplier = 1;
-                document.querySelector('.combo').textContent = `Combo: x${comboMultiplier}`;
+    setTimeout(() => {
+        specialMultiplier = 1;
+        document.querySelector('.combo').textContent = `Combo: x${comboMultiplier}`;
 
-                clearInterval(spawnInterval);
-                spawnInterval = setInterval(spawnFood, 400);
+        clearInterval(spawnInterval);
+        spawnInterval = setInterval(spawnFood, 400);
 
-                fireFrame.style.opacity = 0;
-                fireFrame.classList.remove('active-fire-frame');
-            }, 3000);
+        fireFrame.style.opacity = 0;
+        fireFrame.classList.remove('active-fire-frame');
+    }, 3000);
 
-            specialFood.remove();
-        });
+    if (specialFood) {  // Check if specialFood exists
+        specialFood.remove();
+    }
+});
 
         gameArea.appendChild(specialFood);
 
