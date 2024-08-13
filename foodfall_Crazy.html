@@ -361,10 +361,6 @@ specialFood.addEventListener('touchstart', () => {
     document.querySelector('.combo').textContent = `Combo: x${comboMultiplier * specialMultiplier}`;
     displayPopup(specialFood, `Combo x${specialMultiplier}`, 'blue');
 
-    const fireFrame = document.getElementById('fireFrame');
-    fireFrame.style.opacity = 1;
-    fireFrame.classList.add('active-fire-frame');
-
     clearInterval(spawnInterval);
     spawnInterval = setInterval(spawnFood, 100);
 
