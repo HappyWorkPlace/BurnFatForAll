@@ -312,6 +312,7 @@ function recordScore(empNo, name, factory, point) {
     let specialFoodInterval; 
     const gameArea = document.getElementById('gameArea');
 
+    // ฟังก์ชันเริ่มเกม
     function startGame() {
         const gameTimer = setInterval(() => {
             gameTime--;
@@ -325,7 +326,6 @@ function recordScore(empNo, name, factory, point) {
         }, 1000);
 
         spawnInterval = setInterval(spawnFood, 400);
-
         specialFoodInterval = setInterval(spawnSpecialFood, 12000);
     }
 
@@ -352,52 +352,51 @@ function recordScore(empNo, name, factory, point) {
         }, fallDuration * 1000);
     }
 
-function spawnSpecialFood() {
-    const specialFood = document.createElement('div');
-    specialFood.classList.add('food');
-    specialFood.style.left = Math.random() * 70 + 'vw';
-    specialFood.style.animationDuration = Math.random() * 2 + 3 + 's';
-    specialFood.style.backgroundImage = `url('${specialFoodImage}')`;
-    specialFood.style.top = '-50vh';
+    function spawnSpecialFood() {
+        const specialFood = document.createElement('div');
+        specialFood.classList.add('food');
+        specialFood.style.left = Math.random() * 70 + 'vw';
+        specialFood.style.animationDuration = Math.random() * 2 + 3 + 's';
+        specialFood.style.backgroundImage = `url('${specialFoodImage}')`;
+        specialFood.style.top = '-50vh';
 
-    specialFood.addEventListener('touchstart', () => {
-        specialMultiplier *= 2;
-        document.querySelector('.combo').textContent = `Combo: x${comboMultiplier * specialMultiplier}`;
-        displayPopup(specialFood, `Combo x${specialMultiplier}`, 'blue');
+        specialFood.addEventListener('touchstart', () => {
+            specialMultiplier *= 2;
+            document.querySelector('.combo').textContent = `Combo: x${comboMultiplier * specialMultiplier}`;
+            displayPopup(specialFood, `Combo x${specialMultiplier}`, 'blue');
 
-        const fireFrame = document.getElementById('fireFrame');
-        fireFrame.style.opacity = 1;
-        fireFrame.classList.add('active-fire-frame');
+            const fireFrame = document.getElementById('fireFrame');
+            fireFrame.style.opacity = 1;
+            fireFrame.classList.add('active-fire-frame');
 
-        // ทำให้เวลาการตกของอาหารเร็วขึ้นเมื่อ combo active
-        const originalSpawnInterval = spawnInterval;
-        clearInterval(spawnInterval);
-        spawnInterval = setInterval(spawnFood, 100);  // อาหารจะตกทุก 100 มิลลิวินาที
+            // เร่งความเร็วในการตกของอาหาร
+            const originalSpawnInterval = spawnInterval;
+            clearInterval(spawnInterval);
+            spawnInterval = setInterval(spawnFood, 100);
+
+            setTimeout(() => {
+                specialMultiplier = 1;
+                document.querySelector('.combo').textContent = `Combo: x${comboMultiplier}`;
+
+                clearInterval(spawnInterval);
+                spawnInterval = setInterval(spawnFood, 400);
+
+                fireFrame.style.opacity = 0;
+                fireFrame.classList.remove('active-fire-frame');
+            }, 3000); // 3 วินาที
+
+            specialFood.remove();
+        });
+
+        gameArea.appendChild(specialFood);
+
+        const fallDuration = Math.random() * 3 + 2;
+        specialFood.style.animation = `fall ${fallDuration}s linear forwards`;
 
         setTimeout(() => {
-            specialMultiplier = 1;
-            document.querySelector('.combo').textContent = `Combo: x${comboMultiplier}`;
-
-            clearInterval(spawnInterval);
-            spawnInterval = setInterval(spawnFood, 400);  // กลับไปเป็น 400 มิลลิวินาที
-
-            fireFrame.style.opacity = 0;
-            fireFrame.classList.remove('active-fire-frame');
-        }, 3000);  // combo active นาน 3 วินาที
-
-        specialFood.remove();
-    });
-
-    gameArea.appendChild(specialFood);
-
-    const fallDuration = Math.random() * 3 + 2;
-    specialFood.style.animation = `fall ${fallDuration}s linear forwards`;
-
-    setTimeout(() => {
-        specialFood.remove();
-    }, fallDuration * 1000);
-}
-
+            specialFood.remove();
+        }, fallDuration * 1000);
+    }
 
     function handleClick(foodElement, isHealthy) {
         const pointsToAdd = Math.floor(Math.random() * 3) + 1;
@@ -422,6 +421,7 @@ function spawnSpecialFood() {
         }
         foodElement.remove();
     }
+
     function displayPopup(element, text, color) {
         const popup = document.createElement('div');
         popup.className = 'popup';
@@ -435,6 +435,7 @@ function spawnSpecialFood() {
             popup.remove();
         }, 1000);
     }
+
 
     function showComboEffect(comboMultiplier) {
         const comboText = document.getElementById('comboText');
