@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
     <title>กินดีHealthyLife - Food Fall Game</title>
 
-    <style>
+   <style>
         body, html {
             margin: 0;
             padding: 0;
@@ -26,7 +26,7 @@
             -moz-user-select: none;
         }
 
-        #mainContainer {
+        #mainContainer, #practiceContainer {
             position: relative;
             z-index: 10;
             text-align: center;
@@ -36,7 +36,7 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
-        #mainContainer h1 {
+        #mainContainer h1, #practiceContainer h1 {
             margin: 0 0 20px 0;
             padding: 0;
             font-size: 2.5em;
@@ -98,6 +98,10 @@
             0% { top: -100px; }
             100% { top: 100vh; }
         }
+
+        #practiceContainer {
+            display: none;
+        }
     </style>
 
     <!-- FontAwesome for icons -->
@@ -109,14 +113,25 @@
 
 <div id="mainContainer">
     <h1>กินดีHealthyLife Game</h1>
-    <a href="https://happyworkplace.github.io/BurnFatForAll/game_foodfall" class="button practice"><i class="fas fa-dumbbell"></i> ฝึกซ้อม</a>
+    <a href="#" class="button practice" onclick="showPracticeModes()"><i class="fas fa-dumbbell"></i> ฝึกซ้อม 3 โหมด</a>
     <a href="https://happyworkplace.github.io/BurnFatForAll/mode_selection" class="button rank"><i class="fas fa-trophy"></i> โหมดจัดอันดับ</a>
     <a href="https://happyworkplace.github.io/BurnFatForAll/rank" class="button leaderboard"><i class="fas fa-chart-line"></i> กระดานอันดับ</a>
+</div>
+
+<div id="practiceContainer">
+    <h1>เลือกโหมดฝึกซ้อม</h1>
+    <a href="https://happyworkplace.github.io/BurnFatForAll/game_foodfall" class="button practice"><i class="fas fa-dumbbell"></i> โหมดปกติ</a>
+    <a href="https://happyworkplace.github.io/BurnFatForAll/practice_hard" class="button practice"><i class="fas fa-dumbbell"></i> โหมดยาก</a>
+    <a href="https://happyworkplace.github.io/BurnFatForAll/practice_crazy" class="button practice"><i class="fas fa-dumbbell"></i>โหมดปราบเซียน</a>
 </div>
 
 <div id="fallingSnacksContainer"></div>
 
 <script>
+    function showPracticeModes() {
+        document.getElementById('mainContainer').style.display = 'none';
+        document.getElementById('practiceContainer').style.display = 'block';
+    }
     const healthyFoodImages = [
         'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy1.png',
         'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy2.png',
