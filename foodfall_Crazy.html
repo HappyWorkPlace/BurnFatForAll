@@ -199,18 +199,16 @@
                 modeRecord = 'Crazy';
 
                 Swal.fire({
-                    title: 'เข้าโหมดซ้อมระดับปราบเซียนก่อนไหม?',
-                    text: 'จัดอันดับจะใช้สิทธิ์การเล่น 1 ครั้ง',
-                    icon: 'question',
+                    title: 'พร้อมเล่นหรือยัง?',
+                    text: 'การเริ่มเกมนี้จะใช้สิทธิ์การเล่นเกมวันนี้ 1 ครั้ง',
+                    icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'ลุยจัดอันดับเลย',
-                    cancelButtonText: 'ซ้อม'
-                }).then((result) => {
-                    if (result.isConfirmed) {
+                    confirmButtonText: 'เล่นเลย',
+                    cancelButtonText: 'ยกเลิก'
+                }).then((confirmed) => {
+                    if (confirmed.isConfirmed) {
                         recordPlay(empNo, name, factory);
                         startGame();
-                    } else if (result.dismiss === Swal.DismissReason.cancel) {
-                        window.location.href = 'https://happyworkplace.github.io/BurnFatForAll/practice_crazy'; // เปลี่ยนลิ้งนี้ให้เป็นลิ้งไปยังโหมดซ้อม
                     }
                 });
             } else {
