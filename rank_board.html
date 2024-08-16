@@ -54,7 +54,7 @@
         .speech-bubble {
             position: absolute;
             top: 30px;
-            left: 140px;
+            left: 130px;
             border-radius: 5px;
             padding: 10px;
             font-size: 1em;
@@ -85,11 +85,11 @@
     <div class="container">
         <!-- กล่องข้อความของหมี -->
         <div class="speech-bubble">
-            <span class="score" id="user-points">1234</span>
+            <span class="score" id="points-value">รอสักครู่...</span>
         </div>
 
         <!-- ของรางวัลต่างๆ -->
-        <div class="reward-image reward1-image" id="reward1-image">
+        <div class="reward-image reward1-image" id="gift15-image">
             <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/15.png" alt="ทิชชู่คุมะ" onclick="redeemGift(15)">
         </div>
         <div class="reward-info reward1-info">
@@ -98,7 +98,7 @@
             <p>จำนวนคงเหลือ: <span id="gift15-balance">-</span></p>
         </div>
 
-        <div class="reward-image reward2-image" id="reward2-image">
+        <div class="reward-image reward2-image" id="gift30-image">
             <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/30.png" alt="ขวดน้ำ Doraemon" onclick="redeemGift(30)">
         </div>
         <div class="reward-info reward2-info">
@@ -107,7 +107,7 @@
             <p>จำนวนคงเหลือ: <span id="gift30-balance">-</span></p>
         </div>
 
-        <div class="reward-image reward3-image" id="reward3-image">
+        <div class="reward-image reward3-image" id="gift45-image">
             <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/45.png" alt="กล่องอาหาร Super lock" onclick="redeemGift(45)">
         </div>
         <div class="reward-info reward3-info">
@@ -116,7 +116,7 @@
             <p>จำนวนคงเหลือ: <span id="gift45-balance">-</span></p>
         </div>
 
-        <div class="reward-image reward4-image" id="reward4-image">
+        <div class="reward-image reward4-image" id="gift60-image">
             <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/60.png" alt="กระเป๋า" onclick="redeemGift(60)">
         </div>
         <div class="reward-info reward4-info">
@@ -125,7 +125,7 @@
             <p>จำนวนคงเหลือ: <span id="gift60-balance">-</span></p>
         </div>
 
-        <div class="reward-image reward5-image" id="reward5-image">
+        <div class="reward-image reward5-image" id="gift75-image">
             <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/75.png" alt="แก้ว LocknLock" onclick="redeemGift(75)">
         </div>
         <div class="reward-info reward5-info">
@@ -134,7 +134,7 @@
             <p>จำนวนคงเหลือ: <span id="gift75-balance">-</span></p>
         </div>
 
-        <div class="reward-image reward6-image" id="reward6-image">
+        <div class="reward-image reward6-image" id="gift90-image">
             <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/90.png" alt="หมวก MGH" onclick="redeemGift(90)">
         </div>
         <div class="reward-info reward6-info">
@@ -160,7 +160,7 @@ function initializeLiff(myLiffId) {
                 fetchDataAndUpdateUI(uid);
             }).catch(err => {
                 console.error('Failed to get profile:', err);
-                document.getElementById('user-points').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
+                document.getElementById('points-value').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
             });
         } else {
             liff.login();
@@ -189,7 +189,7 @@ function fetchDataAndUpdateUI(uid) {
             updateRewardImages(userData, gifts, points);
         }).catch(err => {
             console.error('Error fetching data:', err);
-            document.getElementById('user-points').innerText = 'กรุณาลงทะเบียนก่อน';
+            document.getElementById('points-value').innerText = 'กรุณาลงทะเบียนก่อน';
         });
 }
 
@@ -203,6 +203,7 @@ function fetchUserData(uid) {
             return response.json();
         })
         .then(data => {
+            console.log(data); // ตรวจสอบข้อมูลที่ได้รับ
             if (data.success) {
                 return data.data;
             } else {
@@ -220,6 +221,7 @@ function fetchGiftList() {
             return response.json();
         })
         .then(data => {
+            console.log(data); // ตรวจสอบข้อมูลที่ได้รับ
             if (data.success) {
                 return data.gifts;
             } else {
@@ -230,13 +232,15 @@ function fetchGiftList() {
 
 function updateRewardImages(userData, gifts, points) {
     gifts.forEach(gift => {
-        const image = document.getElementById(`reward${gift.Level}-image`);
+        const image = document.getElementById(`gift${gift.Level}-image`);
         const balanceElement = document.getElementById(`gift${gift.Level}-balance`);
-        const columnIndex = getColumnIndexByLevel(gift.Level); // I'm assuming this function exists elsewhere
-        const userGiftStatus = userData[columnIndex]; // Make sure userData is an array
+        const columnIndex = getColumnIndexByLevel(gift.Level); 
+        const userGiftStatus = userData[columnIndex]; 
+
+        console.log(`Gift Level: ${gift.Level}, Status: ${userGiftStatus}, Balance: ${gift.Balance}`);
 
         if (balanceElement) {
-            balanceElement.innerText = gift.Balance; // Ensure gift.Balance exists
+            balanceElement.innerText = gift.Balance;
         }
 
         if (image) {
@@ -317,7 +321,7 @@ function redeemGift(level) {
 }
 
 function displayPoints(points) {
-    const pointsElement = document.getElementById('user-points');
+    const pointsElement = document.getElementById('points-value');
     if (pointsElement) {
         pointsElement.innerText = points;
     } else {
