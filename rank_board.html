@@ -2,233 +2,328 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
-    <title>Highest Score Leaderboard</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redeem Rewards</title>
+    <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Kanit', sans-serif;
+            background-color: #f3f4f6;
             margin: 0;
             padding: 0;
-            display: flex;
+            display: block; /* เปลี่ยนจาก flex เป็น block */
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f4f4f4;
+            overflow: hidden; /* ป้องกันการเลื่อนถ้า content ใหญ่กว่าจอ */
         }
-
-        .leaderboard {
-            width: 100%;
-            max-width: 600px;
-            max-height: 80vh;
-            background-color: #fff;
+        .container {
+            position: relative;
+            width: 400px;
+            height: 800px;
+            background-image: url('https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/Gift_NewDesign.png');
+            background-size: cover;
+            background-position: center;
+            margin: 0 auto; /* ให้ container อยู่ตรงกลางหน้าจอ */
+        }
+        .reward-info, .reward-image {
+            position: absolute;
+            text-align: center;
+        }
+        .reward-info {
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 3px;
             border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            overflow-y: auto;
+            width: 150px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-
-        .leaderboard h2 {
-            background-color: #3B9097;
-            color: white;
-            text-align: center;
-            margin: 0;
-            padding: 15px;
+        .reward-info p {
+            margin: 3px 0;
+            font-size: 0.8em;
         }
-
-        .leaderboard-content {
-            padding: 0;
-        }
-
-        .leaderboard-content table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: auto;
-        }
-
-        .leaderboard-content th, .leaderboard-content td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .leaderboard-content th {
-            background-color: #f6e2bc;
-            text-align: center;
-        }
-
-        .leaderboard-content td:first-child {
-            text-align: center;
-            width: 10%;
-        }
-
-        .leaderboard-content td.rank {
-            text-align: center;
-            width: 10%;
-        }
-
-        .leaderboard-content td.point {
-            text-align: center;
-            width: 20%; /* เพิ่มพื้นที่ให้คอลัมน์ชื่อ */
-        }
-
-        .leaderboard-content td.name {
-            text-align: left;
-            width: 70%; /* ปรับให้คอลัมน์ชื่อมีพื้นที่มากขึ้น */
-            white-space: nowrap; /* ป้องกันการตัดบรรทัด */
-        }
-
-        .leaderboard-content .factory-text, .leaderboard-content .division-text {
-            display: block;
-            font-size: 12px;
-            color: #888;
-        }
-
-        .leaderboard-content tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        .leaderboard-content tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        /* Pagination style */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 20px;
-            font-size: 14px;
-        }
-
-        .pagination button {
-            background-color: #3B9097;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            margin: 0 5px;
-            border-radius: 4px;
+        .reward-image img {
+            width: 70px; /* ปรับขนาดได้ตามต้องการ */
+            height: auto;
+            transition: filter 0.3s;
             cursor: pointer;
         }
-
-        .pagination button.disabled {
-            background-color: #ccc;
+        .reward-image.disabled img {
+            filter: grayscale(100%);
             cursor: not-allowed;
         }
-
-        .pagination .page-info {
-            margin: 0 10px;
+        .speech-bubble {
+            position: absolute;
+            top: 30px;
+            left: 120px;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 1em;
+            width: 200px;
         }
+        .speech-bubble .score {
+            color: blue;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        /* ปรับตำแหน่งให้เข้ากับดีไซน์ */
+        .reward1-image { top: 100px; left: 250px; }
+        .reward2-image { top: 220px; left: 130px; }
+        .reward3-image { top: 330px; left: 250px; }
+        .reward4-image { top: 420px; left: 130px; }
+        .reward5-image { top: 535px; left: 245px; }
+        .reward6-image { top: 630px; left: 125px; }
+        
+        .reward1-info { top: 120px; left: 60px; }
+        .reward2-info { top: 220px; left: 230px; }
+        .reward3-info { top: 320px; left: 60px; }
+        .reward4-info { top: 430px; left: 230px; }
+        .reward5-info { top: 530px; left: 60px; }
+        .reward6-info { top: 630px ;left: 230px; }
     </style>
 </head>
 <body>
+    <div class="container">
+        <!-- กล่องข้อความของหมี -->
+        <div class="speech-bubble">
+            <span class="score" id="user-points">1234</span>
+        </div>
 
-<div class="leaderboard">
-    <h2>Highest Score Leaderboard</h2>
-    <div class="leaderboard-content">
-        <table id="leaderboardTable">
-            <!-- Content will be injected here by JavaScript -->
-        </table>
+        <!-- ของรางวัลต่างๆ -->
+        <div class="reward-image reward1-image" id="reward1-image">
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/15.png" alt="ทิชชู่คุมะ" onclick="redeemGift(15)">
+        </div>
+        <div class="reward-info reward1-info">
+            <p><strong>ทิชชู่คุมะ</strong></p>
+            <p>สะสมคะแนนครบ: 15</p>
+            <p>จำนวนคงเหลือ: <span id="gift15-balance">500</span></p>
+        </div>
+
+        <div class="reward-image reward2-image" id="reward2-image">
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/30.png" alt="ขวดน้ำ Doraemon" onclick="redeemGift(30)">
+        </div>
+        <div class="reward-info reward2-info">
+            <p><strong>ขวดน้ำ Doraemon</strong></p>
+            <p>สะสมคะแนนครบ: 30</p>
+            <p>จำนวนคงเหลือ: <span id="gift30-balance">500</span></p>
+        </div>
+
+        <div class="reward-image reward3-image" id="reward3-image">
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/45.png" alt="กล่องอาหาร Super lock" onclick="redeemGift(45)">
+        </div>
+        <div class="reward-info reward3-info">
+            <p><strong>กล่องอาหาร Super lock</strong></p>
+            <p>สะสมคะแนนครบ: 45</p>
+            <p>จำนวนคงเหลือ: <span id="gift45-balance">500</span></p>
+        </div>
+
+        <div class="reward-image reward4-image" id="reward4-image">
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/60.png" alt="กระเป๋า" onclick="redeemGift(60)">
+        </div>
+        <div class="reward-info reward4-info">
+            <p><strong>กระเป๋า</strong></p>
+            <p>สะสมคะแนนครบ: 60</p>
+            <p>จำนวนคงเหลือ: <span id="gift60-balance">500</span></p>
+        </div>
+
+        <div class="reward-image reward5-image" id="reward5-image">
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/75.png" alt="แก้ว LocknLock" onclick="redeemGift(75)">
+        </div>
+        <div class="reward-info reward5-info">
+            <p><strong>แก้ว LocknLock</strong></p>
+            <p>สะสมคะแนนครบ: 75</p>
+            <p>จำนวนคงเหลือ: <span id="gift75-balance">500</span></p>
+        </div>
+
+        <div class="reward-image reward6-image" id="reward6-image">
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/90.png" alt="หมวก MGH" onclick="redeemGift(90)">
+        </div>
+        <div class="reward-info reward6-info">
+            <p><strong>หมวก MGH</strong></p>
+            <p>สะสมคะแนนครบ: 90</p>
+            <p>จำนวนคงเหลือ: <span id="gift90-balance">500</span></p>
+        </div>
     </div>
-    <div class="pagination" id="pagination"></div>
-</div>
 
-<script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbzbi7RXlvS1Lm-o15jKjHJQLxGxZtZm9eR19SMq046xe3tU53JxC1eIGCYlwZ3-tBPu/exec';
-    const rowsPerPage = 10;
-    let currentPage = 1;
-    let data = [];
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    initializeLiff('2004752543-26ldj6RO'); 
+});
 
-    async function fetchRankingData() {
-        const response = await fetch(API_URL);
-        const rankingData = await response.json();
-        data = rankingData;
-        renderLeaderboard();
-        setupPagination();
-    }
+function initializeLiff(myLiffId) {
+    liff.init({
+        liffId: myLiffId
+    }).then(() => {
+        if (liff.isLoggedIn()) {
+            liff.getProfile().then(profile => {
+                const uid = profile.userId;
+                fetchDataAndUpdateUI(uid);
+            }).catch(err => {
+                console.error('Failed to get profile:', err);
+                document.getElementById('user-points').innerText = 'ไม่สามารถดึงคะแนนของผู้ใช้ได้';
+            });
+        } else {
+            liff.login();
+        }
+    }).catch(err => {
+        console.error('LIFF initialization failed', err);
+        document.getElementById('gift-container').innerText = 'ไม่สามารถดึงข้อมูลของขวัญได้';
+    });
+}
 
-    function setupPagination() {
-        const totalPages = Math.ceil(data.length / rowsPerPage);
-        const paginationContainer = document.getElementById('pagination');
+function disableAllRewardImages() {
+    const images = document.querySelectorAll('.reward-image');
+    images.forEach(image => {
+        image.classList.add('disabled');
+        image.querySelector('img').onclick = null; // Remove the click event
+    });
+}
 
-        paginationContainer.innerHTML = '';
+function fetchDataAndUpdateUI(uid) {
+    disableAllRewardImages(); // Disable all images initially
 
-        const prevButton = document.createElement('button');
-        prevButton.textContent = '<';
-        prevButton.className = currentPage === 1 ? 'disabled' : '';
-        prevButton.disabled = currentPage === 1;
-        prevButton.addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                renderLeaderboard();
-                setupPagination();
+    Promise.all([fetchUserData(uid), fetchGiftList()])
+        .then(([userData, gifts]) => {
+            const points = userData[5]; // Assuming points is at index 5
+            displayPoints(points);
+            updateRewardImages(userData, gifts, points);
+        }).catch(err => {
+            console.error('Error fetching data:', err);
+            document.getElementById('user-points').innerText = 'กรุณาลงทะเบียนก่อน';
+        });
+}
+
+
+function fetchUserData(uid) {
+    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getUserData&uid=${uid}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                return data.data;
+            } else {
+                throw new Error('Error fetching user data');
             }
         });
-        paginationContainer.appendChild(prevButton);
+}
 
-        const pageInfo = document.createElement('span');
-        pageInfo.className = 'page-info';
-        pageInfo.textContent = `หน้า ${currentPage} / ${totalPages}`;
-        paginationContainer.appendChild(pageInfo);
-
-        const nextButton = document.createElement('button');
-        nextButton.textContent = '>';
-        nextButton.className = currentPage === totalPages ? 'disabled' : '';
-        nextButton.disabled = currentPage === totalPages;
-        nextButton.addEventListener('click', () => {
-            if (currentPage < totalPages) {
-                currentPage++;
-                renderLeaderboard();
-                setupPagination();
+function fetchGiftList() {
+    return fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=getGiftList`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                return data.gifts;
+            } else {
+                throw new Error('Error fetching gift list');
             }
         });
-        paginationContainer.appendChild(nextButton);
-    }
+}
 
-    function renderLeaderboard() {
-        const table = document.getElementById('leaderboardTable');
-        table.innerHTML = `
-            <tr>
-                <th>Rank</th>
-                <th>Point</th>
-                <th>Name & Info</th>
-            </tr>
-        `;
+function updateRewardImages(userData, gifts, points) {
+    gifts.forEach(gift => {
+        const image = document.getElementById(`reward${gift.Level}-image`);
+        const balanceElement = document.getElementById(`gift${gift.Level}-balance`);
+        const columnIndex = getColumnIndexByLevel(gift.Level); // I'm assuming this function exists elsewhere
+        const userGiftStatus = userData[columnIndex]; // Make sure userData is an array
 
-        const start = (currentPage - 1) * rowsPerPage;
-        const end = start + rowsPerPage;
+        if (balanceElement) {
+            balanceElement.innerText = gift.Balance; // Ensure gift.Balance exists
+        }
 
-        const sortedData = data.sort((a, b) => b.point - a.point);
-
-        let previousScore = null;
-        let displayRank = 0;
-
-        sortedData.slice(start, end).forEach((player, index) => {
-            if (player.point !== previousScore) {
-                displayRank = start + index + 1;
+        if (image) {
+            if (userGiftStatus === 'R') {
+                image.classList.add('disabled');
+                image.querySelector('img').onclick = null; // Remove the click event
+            } else if (userGiftStatus === 'O' || gift.Balance <= 0) {
+                image.classList.add('disabled');
+                image.querySelector('img').onclick = null; // Remove the click event
+            } else if (userGiftStatus === 'Y') {
+                image.classList.remove('disabled');
+                image.querySelector('img').onclick = () => redeemGift(gift.Level);
+            } else {
+                image.classList.add('disabled');
+                image.querySelector('img').onclick = null; // Remove the click event
             }
-            previousScore = player.point;
+        }
+    });
+}
 
-            let icon = '';
-            if (displayRank === 1) icon = '🥇';
-            else if (displayRank === 2) icon = '🥈';
-            else if (displayRank === 3) icon = '🥉';
-
-            table.innerHTML += `
-                <tr>
-                    <td class="rank"><span>${displayRank}</span> ${icon}</td>
-                    <td>${player.point}</td>
-                    <td>
-                        ${player.name}
-                        <span class="division-text">${player.division}</span>
-                        <span class="factory-text">${player.factory}</span>
-                    </td>
-                </tr>
-            `;
-        });
+function getColumnIndexByLevel(level) {
+    switch (level) {
+        case 15:
+            return 6; // Column G
+        case 30:
+            return 7; // Column H
+        case 45:
+            return 8; // Column I
+        case 60:
+            return 9; // Column J
+        case 75:
+            return 10; // Column K
+        case 90:
+            return 11; // Column L
+        default:
+            return null;
     }
+}
 
-    fetchRankingData();
-</script>
+function redeemGift(level) {
+    liff.getProfile().then(profile => {
+        const uid = profile.userId;
+        Swal.fire({
+            title: 'กำลังจองของรางวัล',
+            html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/giftAnimattion.gif" alt="loading" style="width:300px;height:300px;"><p>กรุณารอสักครู่...</p>',
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+                fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=redeemGift&uid=${uid}&level=${level}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        Swal.close();
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'สำเร็จ',
+                                html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemGIF.gif" alt="success" style="width:300px;height:300px;"><p>แลกรับรางวัลเรียบร้อยแล้ว</p>'
+                            }).then(() => {
+                                document.body.innerHTML = `
+                                    <div style="text-align: center;">
+                                        <p style="font-weight: bold; color: blue;">บันทึกข้อมูลเรียบร้อยแล้ว</p>
+                                        <p>คุณสามารถตรวจสอบได้ที่ <a href="https://liff.line.me/2004752543-O6BZm2yN" target="_blank">Link</a></p>
+                                    </div>
+                                `;
+                            });
+                        } else {
+                            Swal.fire('ผิดพลาด', data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error redeeming gift:', error);
+                        Swal.close();
+                        Swal.fire('ผิดพลาด', 'ไม่สามารถรับของรางวัลได้', 'error');
+                    });
+            }
+        });
+    });
+}
 
+function displayPoints(points) {
+    const pointsElement = document.getElementById('user-points');
+    if (pointsElement) {
+        pointsElement.innerText = points;
+    } else {
+        console.error('Points element not found');
+    }
+}
+    </script>
 </body>
 </html>
