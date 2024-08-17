@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redeem Rewards</title>
     <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
     <style>
         body {
             font-family: 'Kanit', sans-serif;
@@ -52,6 +51,12 @@
             filter: grayscale(100%);
             cursor: not-allowed;
         }
+        .click-animation {
+            position: absolute;
+            width: 50px; /* ขนาดของภาพ GIF */
+            height: 50px; /* ขนาดของภาพ GIF */
+            display: none; /* ซ่อนโดยเริ่มต้น */
+        }
         .speech-bubble {
             position: absolute;
             top: 30px;
@@ -92,6 +97,7 @@
         <!-- ของรางวัลต่างๆ -->
         <div class="reward-image reward1-image" id="gift15-image">
             <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/15.png" alt="ทิชชู่คุมะ" onclick="redeemGift(15)">
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/click_animation.gif" class="click-animation" id="gift15-animation">
         </div>
         <div class="reward-info reward1-info">
             <p><strong>ทิชชู่คุมะ</strong></p>
@@ -101,6 +107,7 @@
 
         <div class="reward-image reward2-image" id="gift30-image">
             <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/30.png" alt="ขวดน้ำ Doraemon" onclick="redeemGift(30)">
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/click_animation.gif" class="click-animation" id="gift30-animation">
         </div>
         <div class="reward-info reward2-info">
             <p><strong>ขวดน้ำ Doraemon</strong></p>
@@ -110,6 +117,7 @@
 
         <div class="reward-image reward3-image" id="gift45-image">
             <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/45.png" alt="กล่องอาหาร Super lock" onclick="redeemGift(45)">
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/click_animation.gif" class="click-animation" id="gift45-animation">
         </div>
         <div class="reward-info reward3-info">
             <p><strong>กล่องอาหาร Super lock</strong></p>
@@ -119,6 +127,7 @@
 
         <div class="reward-image reward4-image" id="gift60-image">
             <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/60.png" alt="กระเป๋า" onclick="redeemGift(60)">
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/click_animation.gif" class="click-animation" id="gift60-animation">
         </div>
         <div class="reward-info reward4-info">
             <p><strong>กระเป๋า</strong></p>
@@ -128,6 +137,7 @@
 
         <div class="reward-image reward5-image" id="gift75-image">
             <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/75.png" alt="แก้ว LocknLock" onclick="redeemGift(75)">
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/click_animation.gif" class="click-animation" id="gift75-animation">
         </div>
         <div class="reward-info reward5-info">
             <p><strong>แก้ว LocknLock</strong></p>
@@ -137,6 +147,7 @@
 
         <div class="reward-image reward6-image" id="gift90-image">
             <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/90.png" alt="หมวก MGH" onclick="redeemGift(90)">
+            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/click_animation.gif" class="click-animation" id="gift90-animation">
         </div>
         <div class="reward-info reward6-info">
             <p><strong>หมวก MGH</strong></p>
@@ -177,6 +188,10 @@ function disableAllRewardImages() {
     images.forEach(image => {
         image.classList.add('disabled');
         image.querySelector('img').onclick = null; // Remove the click event
+        const animation = image.querySelector('.click-animation');
+        if (animation) {
+            animation.style.display = 'none'; // ซ่อนภาพเคลื่อนไหว
+        }
     });
 }
 
@@ -234,6 +249,7 @@ function fetchGiftList() {
 function updateRewardImages(userData, gifts, points) {
     gifts.forEach(gift => {
         const image = document.getElementById(`gift${gift.Level}-image`);
+        const animation = document.getElementById(`gift${gift.Level}-animation`);
         const balanceElement = document.getElementById(`gift${gift.Level}-balance`);
         const columnIndex = getColumnIndexByLevel(gift.Level); 
         const userGiftStatus = userData[columnIndex]; 
@@ -248,15 +264,19 @@ function updateRewardImages(userData, gifts, points) {
             if (userGiftStatus === 'R') {
                 image.classList.add('disabled');
                 image.querySelector('img').onclick = null; // Remove the click event
+                if (animation) animation.style.display = 'none'; // Hide animation
             } else if (userGiftStatus === 'O' || gift.Balance <= 0) {
                 image.classList.add('disabled');
                 image.querySelector('img').onclick = null; // Remove the click event
+                if (animation) animation.style.display = 'none'; // Hide animation
             } else if (userGiftStatus === 'Y') {
                 image.classList.remove('disabled');
                 image.querySelector('img').onclick = () => redeemGift(gift.Level);
+                if (animation) animation.style.display = 'block'; // Show animation
             } else {
                 image.classList.add('disabled');
                 image.querySelector('img').onclick = null; // Remove the click event
+                if (animation) animation.style.display = 'none'; // Hide animation
             }
         }
     });
