@@ -111,17 +111,25 @@
             padding: 20px; /* ลบ padding หรือปรับให้น้อยลง */
             background-size: contain;
             background-repeat: no-repeat;
-/*             z-index: 10; */
             will-change: transform, top; /* ช่วยปรับปรุงการทำงานของแอนิเมชัน */
             pointer-events: auto;
             cursor: pointer;
         }
+
         .food:active, .food:focus {
             outline: none;
         }
-/*                 #user-info {
-            display: none;
-        } */
+
+        #fireAnimation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 30;
+            display: none; /* Initially hidden */
+        }
     </style>
 </head>
 <body>
@@ -131,6 +139,7 @@
     <div id="timer">Time: 60s</div>
     <div class="combo">Combo: x1</div>
     <div id="comboText" class="combo-text">Combo X2</div>
+    <img id="fireAnimation" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/fire_animation.gif" alt="Fire Animation">
 
 <script>
     // ลิสต์ภาพที่ใช้ในเกม
@@ -174,7 +183,7 @@
 
     async function initializeLiff() {
         try {
-            await liff.init({ liffId: "2004752543-ao4VyADR" });
+            await liff.init({ liffId: "2004752543-RzOKxMPe" });
             if (liff.isLoggedIn()) {
                 const profile = await liff.getProfile();
                 const uid = profile.userId;
@@ -199,18 +208,16 @@
                 modeRecord = 'Crazy';
 
                 Swal.fire({
-                    title: 'เข้าโหมดซ้อมระดับปราบเซียนก่อนไหม?',
-                    text: 'จัดอันดับจะใช้สิทธิ์การเล่น 1 ครั้ง',
-                    icon: 'question',
+                    title: 'พร้อมเล่นหรือยัง?',
+                    text: 'การเริ่มเกมนี้จะใช้สิทธิ์การเล่นเกมวันนี้ 1 ครั้ง',
+                    icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'ลุยจัดอันดับเลย',
-                    cancelButtonText: 'ซ้อม'
-                }).then((result) => {
-                    if (result.isConfirmed) {
+                    confirmButtonText: 'เล่นเลย',
+                    cancelButtonText: 'ยกเลิก'
+                }).then((confirmed) => {
+                    if (confirmed.isConfirmed) {
                         recordPlay(empNo, name, factory);
                         startGame();
-                    } else if (result.dismiss === Swal.DismissReason.cancel) {
-                        window.location.href = 'https://happyworkplace.github.io/BurnFatForAll/game_foodfall'; // เปลี่ยนลิ้งนี้ให้เป็นลิ้งไปยังโหมดซ้อม
                     }
                 });
             } else {
@@ -324,7 +331,7 @@
 
         spawnInterval = setInterval(spawnFood, 330);
 
-        specialFoodInterval = setInterval(spawnSpecialFood, 14000);
+        specialFoodInterval = setInterval(spawnSpecialFood, 11000);
     }
 
     function spawnFood() {
@@ -358,26 +365,30 @@
         specialFood.style.backgroundImage = `url('${specialFoodImage}')`;
         specialFood.style.top = '-50vh';
 
-specialFood.addEventListener('touchstart', () => {
-    specialMultiplier *= 2;
-    document.querySelector('.combo').textContent = `Combo: x${comboMultiplier * specialMultiplier}`;
-    displayPopup(specialFood, `Combo x${specialMultiplier}`, 'blue');
+        specialFood.addEventListener('touchstart', () => {
+            specialMultiplier *= 2;
+            document.querySelector('.combo').textContent = `Combo: x${comboMultiplier * specialMultiplier}`;
+            displayPopup(specialFood, `Combo x${specialMultiplier}`, 'blue');
 
-    clearInterval(spawnInterval);
-    spawnInterval = setInterval(spawnFood, 100);
+            // Show fire animation
+            showFireAnimation();
 
-    setTimeout(() => {
-        specialMultiplier = 1;
-        document.querySelector('.combo').textContent = `Combo: x${comboMultiplier}`;
+            clearInterval(spawnInterval);
+            spawnInterval = setInterval(spawnFood, 100);
 
-        clearInterval(spawnInterval);
-        spawnInterval = setInterval(spawnFood, 400);
-    }, 3000);
+            setTimeout(() => {
+                specialMultiplier = 1;
+                document.querySelector('.combo').textContent = `Combo: x${comboMultiplier}`;
 
-    if (specialFood) {  // Check if specialFood exists
-        specialFood.remove();
-    }
-});
+                // Hide fire animation
+                hideFireAnimation();
+
+                clearInterval(spawnInterval);
+                spawnInterval = setInterval(spawnFood, 400);
+            }, 3000);
+
+            specialFood.remove();
+        });
 
         gameArea.appendChild(specialFood);
 
@@ -426,7 +437,7 @@ specialFood.addEventListener('touchstart', () => {
             popup.remove();
         }, 1000);
     }
-    
+
     function showComboEffect(comboMultiplier) {
         const comboText = document.getElementById('comboText');
         comboText.textContent = `Combo X${comboMultiplier}`;
@@ -451,8 +462,18 @@ specialFood.addEventListener('touchstart', () => {
         });
     }
 
+    function showFireAnimation() {
+        const fireAnimation = document.getElementById('fireAnimation');
+        fireAnimation.style.display = 'block';
+    }
+
+    function hideFireAnimation() {
+        const fireAnimation = document.getElementById('fireAnimation');
+        fireAnimation.style.display = 'none';
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
-        initializeLiff()
+        initializeLiff();
     });
 </script>
 
