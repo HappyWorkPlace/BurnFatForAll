@@ -102,6 +102,26 @@
         #practiceContainer {
             display: none;
         }
+
+        /* New styles for the blinking Update text */
+        .update-badge {
+            position: absolute;
+            right: -40px;
+            top: 10px;
+            background-color: #ff4757;
+            color: white;
+            font-size: 0.8em;
+            padding: 2px 5px;
+            border-radius: 5px;
+            animation: blink 2s linear infinite;
+            transform: rotate(-15deg);
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
     </style>
 
     <!-- FontAwesome for icons -->
@@ -114,7 +134,7 @@
 <div id="mainContainer">
     <h1>กินดีHealthyLife Game</h1>
     <a href="#" class="button practice" onclick="showPracticeModes()"><i class="fas fa-dumbbell"></i> ฝึกซ้อม 3 โหมด</a>
-    <a href="https://happyworkplace.github.io/BurnFatForAll/mode_selection" class="button rank"><i class="fas fa-trophy"></i> โหมดจัดอันดับ</a>
+    <a href="https://happyworkplace.github.io/BurnFatForAll/mode_selection" class="button rank"><i class="fas fa-trophy"></i> โหมดจัดอันดับ <span class="update-badge">Update! <br>10 เกมต่อวัน</span></a>
     <a href="https://happyworkplace.github.io/BurnFatForAll/rank" class="button leaderboard"><i class="fas fa-chart-line"></i> กระดานอันดับ</a>
 </div>
 
