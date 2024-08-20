@@ -3,17 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
-    <title>กินดีHealthyLife Game : Food Fall Game</title>
+    <title>เลือกโหมด - กินดีHealthyLife</title>
 
-    <!-- SweetAlert2 CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
-
-   <style>
+    <style>
         body, html {
             margin: 0;
             padding: 0;
             overflow: hidden;
-            font-family: Arial, sans-serif;
+            font-family: 'Fredoka One', cursive;
             background-color: #f0f8ff;
             display: flex;
             justify-content: center;
@@ -29,331 +26,124 @@
             -moz-user-select: none;
         }
 
-        #gameArea {
+        #mainContainer {
             position: relative;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            background-color: #F6E2BC;
+            z-index: 10;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
-        #score, #timer {
-            position: absolute;
-            top: 2vh;
-            font-size: 4vw;
+        #mainContainer h1 {
+            margin: 0 0 20px 0;
+            padding: 0;
+            font-size: 2.5em;
+            color: #ff6f61;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        #mainContainer h2 {
+            margin: 0 0 20px 0;
+            padding: 0;
+            font-size: 1.5em;
+            color: #4b6584;
+        }
+
+        .button {
+            display: block;
+            margin: 10px auto;
+            padding: 15px 20px;
+            font-size: 1.2em;
             font-weight: bold;
+            color: #fff;
+            text-align: center;
+            border-radius: 15px;
+            text-decoration: none;
+            width: 220px;
+            transition: background-color 0.3s ease;
+            position: relative;
+        }
+
+        .button.normal {
+            background-color: #f7b731;
             color: #333;
         }
 
-        #score {
-            left: 2vw;
+        .button.hard {
+            background-color: #eb3b5a;
         }
 
-        #timer {
-            right: 2vw;
+        .button.crazy {
+            background-color: #fa8231;
         }
 
-        .combo {
+        .button i {
             position: absolute;
-            top: 2vh;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 6vw;
-            font-weight: bold;
-            color: #ff4500;
-            z-index: 20;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5em;
         }
 
-        .combo-text {
-            font-family: 'Arial Black', sans-serif;
-            font-size: 3em;
-            color: #ff0000;
-            text-transform: uppercase;
-            text-align: center;
-            position: absolute;
-            top: 2vh;
-            left: 50%;
-            transform: translateX(-50%);
-            animation: pulse 1s 1;
-            z-index: 20;
-            opacity: 0;
-        }
-
-        .popup {
-            position: absolute;
-            font-size: 4vw;
-            font-weight: bold;
-            animation: popUp 1s ease-in-out forwards;
-            opacity: 0;
-        }
-
-        @keyframes fall {
-            0% { top: -50vh; }
-            100% { top: 100vh; }
-        }
-
-        @keyframes popUp {
-            0% {
-                transform: translateY(0);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-5vh);
-                opacity: 0;
-            }
-        }
-
-        .food {
-            position: absolute;
-            width: 70px;
-            height: 70px;
-            padding: 20px;
-            background-size: contain;
-            background-repeat: no-repeat;
-            will-change: transform, top;
-            pointer-events: auto;
-            cursor: pointer;
-        }
-
-        .fire-frame {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('https://your-fire-frame-image-url.com');
-            background-size: cover;
-            background-repeat: no-repeat;
-            z-index: 50;
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .active-fire-frame {
-            animation: fireEffect 1s infinite alternate;
-        }
-
-        @keyframes fireEffect {
-            0% {
-                opacity: 0.7;
-                transform: scale(1);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1.05);
-            }
+        .button:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
         }
     </style>
+
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts for title font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap">
 </head>
 <body>
 
-    <div id="gameArea"></div>
-    <div id="score">Score: 0</div>
-    <div id="timer">Time: 60s</div>
-    <div class="combo">Combo: x1</div>
-    <div id="comboText" class="combo-text">Combo X2</div>
-    <div id="fireFrame" class="fire-frame"></div>
+<div id="mainContainer">
+    <h1>เลือกโหมดการเล่น</h1>
+    <h2>จำนวนเกมคงเหลือวันนี้ <span id="gamesPlayed">กำลังโหลด...</span> เกม</h2>
+    <a href="https://liff.line.me/2004752543-k6venxga" class="button normal"><i class="fas fa-smile"></i> โหมดปกติ</a>
+    <a href="https://liff.line.me/2004752543-p6ewVd30" class="button hard"><i class="fas fa-fist-raised"></i> โหมดยาก</a>
+    <a href="https://liff.line.me/2004752543-RzOKxMPe" class="button crazy"><i class="fas fa-bolt"></i> โหมดปราบเซียน</a>
+</div>
+
 <script>
-    const healthyFoodImages = [
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy1.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy2.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy3.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy4.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy5.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy6.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy7.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy8.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy9.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy10.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy11.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy12.png'
-    ];
+  function fetchGameBalance(uid) {
+    fetch('https://script.google.com/macros/s/AKfycbxY6MhQrPB4EBjJ2T-cCKKJBgZmWBGMNSM61SloT84Ho5RzT-5Kz3VoWgS7vLRKEfA/exec', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        uid: uid
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        document.getElementById('gamesPlayed').textContent = data.gameBalance;
+      } else {
+        document.getElementById('gamesPlayed').textContent = "UID ไม่ถูกต้อง";
+      }
+    })
+    .catch(error => console.error('Error:', error));
+  }
 
-    const unhealthyFoodImages = [
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy1.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy2.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy3.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy4.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy5.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy6.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy7.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy8.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy9.png',
-        'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/unhealthy10.png'
-    ];
-
-    const specialFoodImage = 'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card1.png';
-
-    document.addEventListener('dblclick', function(e) {
-        e.preventDefault();
-    }, { passive: false });
-    
-    document.addEventListener('gesturestart', function(e) {
-        e.preventDefault();
-    }, { passive: false });
-
-    function preloadImages(imageArray) {
-        imageArray.forEach(src => {
-            const img = new Image();
-            img.src = src;
-        });
+  // Initialize LIFF and fetch UID
+  liff.init({
+    liffId: "2004752543-p61wlaDA"
+  }).then(() => {
+    if (liff.isLoggedIn()) {
+      liff.getProfile().then(profile => {
+        const uid = profile.userId;
+        fetchGameBalance(uid);
+      }).catch(err => console.error('Error getting profile:', err));
+    } else {
+      liff.login();
     }
-
-    preloadImages([...healthyFoodImages, ...unhealthyFoodImages, specialFoodImage]);
-
-    let score = 0;
-    let comboCount = 0;
-    let comboMultiplier = 1;
-    let specialMultiplier = 1;
-    let gameTime = 60;
-    let spawnInterval;
-    let specialFoodInterval; 
-    const gameArea = document.getElementById('gameArea');
-
-    function startGame() {
-        const gameTimer = setInterval(() => {
-            gameTime--;
-            document.getElementById('timer').textContent = `Time: ${gameTime}s`;
-            if (gameTime <= 0) {
-                clearInterval(gameTimer);
-                clearInterval(spawnInterval);
-                clearInterval(specialFoodInterval);
-                showFinalScore(score);
-            }
-        }, 1000);
-
-        spawnInterval = setInterval(spawnFood, 330);
-
-        specialFoodInterval = setInterval(spawnSpecialFood, 14000);
-    }
-
-    function spawnFood() {
-        const isHealthy = Math.random() > 0.35;
-        const food = document.createElement('div');
-        food.classList.add('food');
-        food.style.left = Math.random() * 70 + 'vw';
-        food.style.animationDuration = Math.random() * 2 + 5 + 's';
-        food.style.backgroundImage = `url('${isHealthy ? healthyFoodImages[Math.floor(Math.random() * healthyFoodImages.length)] : unhealthyFoodImages[Math.floor(Math.random() * unhealthyFoodImages.length)]}')`;
-        food.style.top = '-50vh';
-
-        food.addEventListener('touchstart', () => {
-            handleClick(food, isHealthy);
-        });
-
-        gameArea.appendChild(food);
-
-        const fallDuration = Math.random() * 3 + 1;
-        food.style.animation = `fall ${fallDuration}s linear forwards`;
-
-        setTimeout(() => {
-            food.remove();
-        }, fallDuration * 1000);
-    }
-
-    function spawnSpecialFood() {
-        const specialFood = document.createElement('div');
-        specialFood.classList.add('food');
-        specialFood.style.left = Math.random() * 70 + 'vw';
-        specialFood.style.animationDuration = Math.random() * 2 + 3 + 's';
-        specialFood.style.backgroundImage = `url('${specialFoodImage}')`;
-        specialFood.style.top = '-50vh';
-
-specialFood.addEventListener('touchstart', () => {
-    specialMultiplier *= 2;
-    document.querySelector('.combo').textContent = `Combo: x${comboMultiplier * specialMultiplier}`;
-    displayPopup(specialFood, `Combo x${specialMultiplier}`, 'blue');
-
-    clearInterval(spawnInterval);
-    spawnInterval = setInterval(spawnFood, 100);
-
-    setTimeout(() => {
-        specialMultiplier = 1;
-        document.querySelector('.combo').textContent = `Combo: x${comboMultiplier}`;
-
-        clearInterval(spawnInterval);
-        spawnInterval = setInterval(spawnFood, 400);
-    }, 3000);
-
-    if (specialFood) {  // Check if specialFood exists
-        specialFood.remove();
-    }
-});
-
-        gameArea.appendChild(specialFood);
-
-        const fallDuration = Math.random() * 3 + 2;
-        specialFood.style.animation = `fall ${fallDuration}s linear forwards`;
-
-        setTimeout(() => {
-            specialFood.remove();
-        }, fallDuration * 1000);
-    }
-
-    function handleClick(foodElement, isHealthy) {
-        const pointsToAdd = Math.floor(Math.random() * 3) + 1;
-        if (isHealthy) {
-            score += pointsToAdd * comboMultiplier * specialMultiplier;
-            comboCount++;
-            if (comboCount % 5 === 0) {
-                comboMultiplier++;
-            }
-            document.getElementById('score').textContent = `Score: ${score}`;
-            document.querySelector('.combo').textContent = `Combo: x${comboMultiplier * specialMultiplier}`;
-            displayPopup(foodElement, `+${pointsToAdd * comboMultiplier * specialMultiplier}`, 'green');
-        } else {
-            const pointsToSubtract = comboMultiplier * specialMultiplier + Math.floor(Math.random() * 3)+ 1;
-            score -= pointsToSubtract;
-            comboCount = 0;
-            comboMultiplier = 1;
-            specialMultiplier = 1;
-            document.getElementById('score').textContent = `Score: ${score}`;
-            document.querySelector('.combo').textContent = `Combo: x1`;
-            displayPopup(foodElement, `-${pointsToSubtract}`, 'red');
-        }
-        foodElement.remove();
-    }
-
-    function displayPopup(element, text, color) {
-        const popup = document.createElement('div');
-        popup.className = 'popup';
-        popup.style.color = color;
-        popup.textContent = text;
-        popup.style.left = element.style.left;
-        popup.style.top = element.offsetTop + 'px';
-        gameArea.appendChild(popup);
-
-        setTimeout(() => {
-            popup.remove();
-        }, 1000);
-    }
-
-    function showFinalScore(finalScore) {
-        Swal.fire({
-            title: 'จบเกม!',
-            text: `คะแนนของคุณคือ : ${finalScore}`,
-            icon: 'success',
-            confirmButtonText: 'เล่นอีก',
-            allowOutsideClick: false
-        }).then((result) => {
-            if (result.isConfirmed) {
-                location.reload();
-            }
-        });
-    }
-
-    function showComboEffect(comboMultiplier) {
-        const comboText = document.getElementById('comboText');
-        comboText.textContent = `Combo X${comboMultiplier}`;
-        comboText.style.opacity = 1;
-
-        setTimeout(() => {
-            comboText.style.opacity = 0;
-        }, 1000);
-    }
-
-    startGame();
+  }).catch(err => console.error('LIFF initialization failed:', err));
 </script>
-
 
 </body>
 </html>
