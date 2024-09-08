@@ -304,6 +304,7 @@
     <div class="week-filter">
         <label for="weekSelect">คะแนน:</label>
         <select id="weekSelect" onchange="filterByWeek()">
+            <option value="Week5">สัปดาห์ที่ 5</option>
             <option value="Week4">สัปดาห์ที่ 4</option>
             <option value="Week3">สัปดาห์ที่ 3</option>
             <option value="Week2">สัปดาห์ที่ 2</option>
@@ -330,7 +331,7 @@
     let currentPage = 1;
     let data = [];
     let currentMode = 'Hard';
-    let currentWeek = 'Week4';
+    let currentWeek = 'Week5';
 
     async function fetchRankingData() {
         // Show the loading spinner
