@@ -338,7 +338,7 @@
         document.getElementById('loading').style.display = 'block';
 
         try {
-            const response = await fetch(API_URL);
+            const response = await fetch(API_URL, { mode: 'no-cors' });
             const rankingData = await response.json();
             data = rankingData;
             renderLeaderboard();
