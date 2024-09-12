@@ -85,6 +85,7 @@ function populateDropdown(foodList) {
 
 function recordSelection() {
     const empNo = document.getElementById('empNo').textContent;
+    const name = document.getElementById('name').textContent;
     const factory = document.getElementById('factory').textContent;
     const selectedFood = document.querySelector('.dropdown-input').value;
 
@@ -113,13 +114,13 @@ function recordSelection() {
         });
 }
 
-function checkUserColumnJ(uid, empNo, factory, selectedFood) {
+function checkUserColumnJ(uid, empNo, factory, selectedFood,name) {
     fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=checkUserColumnJ&uid=${uid}`)
         .then(response => response.json())
         .then(data => {
             Swal.close();
             if (data.status === 'TRUE') {
-                saveSelection(empNo, factory, selectedFood, uid);
+                saveSelection(empNo, factory, selectedFood, uid,name);
             } else if (data.status === 'FALSE') {
                 Swal.fire({
                     title: 'แย่จัง..',
@@ -137,7 +138,7 @@ function checkUserColumnJ(uid, empNo, factory, selectedFood) {
 
 
 
-function saveSelection(empNo, factory, selectedFood, uid) {
+function saveSelection(empNo, factory, selectedFood, uid,name) {
     Swal.fire({
         title: 'กำลังบันทึกข้อมูล',
         text: 'รอสักครู่..',
@@ -147,7 +148,7 @@ function saveSelection(empNo, factory, selectedFood, uid) {
         }
     });
 
-    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=saveRedeemData&empNo=${encodeURIComponent(empNo)}&factory=${encodeURIComponent(factory)}&code=${encodeURIComponent(selectedFood)}`)
+    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=saveRedeemData&empNo=${encodeURIComponent(empNo)}&factory=${encodeURIComponent(factory)}&code=${encodeURIComponent(selectedFood)}&name=${encodeURIComponent(name)}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`Network response was not ok: ${response.statusText}`);
