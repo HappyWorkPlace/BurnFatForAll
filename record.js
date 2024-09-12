@@ -106,7 +106,7 @@ function recordSelection() {
     liff.getProfile()
         .then(profile => {
             const uid = profile.userId;
-            checkUserColumnJ(uid, empNo, factory, selectedFood);
+            checkUserColumnJ(uid, empNo, factory, selectedFood,name);
         })
         .catch(err => {
             console.error('Failed to get user profile:', err);
