@@ -4,57 +4,129 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>NMB HappyWorkPlace</title>
-    <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
-   <style>
-        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&display=swap');
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
-            background: linear-gradient(135deg, #FFEBF0, #FFF4E1); /* Gradient background */
-            font-family: 'Prompt', sans-serif; /* New font */
+            background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 30%, #FFC107 70%, #FF9800 100%);
+            font-family: 'Prompt', sans-serif;
             margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start; /* Align items to the top */
+            justify-content: flex-start;
             height: 100vh;
-            color: #6B6966; /* Text color */
+            color: #2d3748;
             position: relative;
             overflow: auto;
-            padding: 20px 20px 200px 20px; 
-/*             min-height: calc(100vh + 100px); */
+            padding: 20px 20px 200px 20px;
+            min-height: calc(100vh + 100px);
         }
 
+        /* Animated background elements */
+        .bg-decoration {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+            font-size: 2rem;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
 
-        .background-stickers img {
-            position: absolute;
-            opacity: 1;
+        .bg-decoration:nth-child(1) { 
+            top: 10%; 
+            left: 10%; 
+            animation-delay: 0s; 
+        }
+        .bg-decoration:nth-child(2) { 
+            top: 20%; 
+            right: 15%; 
+            animation-delay: 1s; 
+        }
+        .bg-decoration:nth-child(3) { 
+            bottom: 30%; 
+            left: 20%; 
+            animation-delay: 2s; 
+        }
+        .bg-decoration:nth-child(4) { 
+            bottom: 10%; 
+            right: 10%; 
+            animation-delay: 3s; 
+        }
+
+        .bg-decoration::before {
+            content: '🥗';
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .container {
-            background-color: #FFFFFF; /* White background */
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            border-radius: 25px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.15);
             width: 90%;
             max-width: 300px;
             text-align: left;
             position: relative;
             z-index: 1;
             margin-top: 5px;
-            margin-bottom: 200px; 
-            overflow: visible; 
+            margin-bottom: 200px;
+            overflow: visible;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: fadeIn 0.8s ease-out;
         }
 
-        .sticker-3 {
+        .container::before {
+            content: '';
             position: absolute;
-            top: -20px; /* Adjust this value to move the sticker up */
-            right: -20px; /* Adjust this value to move the sticker to the right */
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A, #FFC107, #FF9800);
+            border-radius: 25px 25px 0 0;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        .sticker-3,
+        .sticker {
+            position: absolute;
+            top: -20px;
+            right: -20px;
             width: 80px;
             transform: rotate(-5deg);
-            z-index: 2; /* Ensure the sticker is on top of the container */
+            z-index: 2;
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.1));
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: rotate(-5deg) translateY(0); }
+            40% { transform: rotate(-5deg) translateY(-10px); }
+            60% { transform: rotate(-5deg) translateY(-5px); }
         }
 
         .header {
@@ -68,6 +140,8 @@
             width: 100px;
             height: auto;
             margin-right: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
         }
 
         .header-text {
@@ -77,36 +151,52 @@
         }
 
         .header-text .title {
-            color: #6B6966; /* Text color */
+            color: #2d3748;
             font-size: 1.3em;
-            font-weight: bold;
+            font-weight: 700;
             margin: 0;
+            background: linear-gradient(45deg, #4CAF50, #8BC34A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .header-text .subtitle {
-            color: #6B6966; /* Text color */
+            color: #718096;
             font-size: 0.7em;
             margin: 5px 0 0 0;
+            font-weight: 400;
+            line-height: 1.3;
         }
 
         .input-group {
             margin-bottom: 15px;
             position: relative;
-            border-radius: 30px;
+            border-radius: 16px;
             overflow: hidden;
-            background-color: #f7f7f7; /* Background for inputs */
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
             display: flex;
             align-items: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .input-group:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            border-color: rgba(76, 175, 80, 0.3);
         }
 
         .input-group p {
             width: 100%;
             padding: 15px 20px 15px 40px;
             border: none;
-            border-radius: 30px;
-            background-color: transparent; /* Transparent background */
+            border-radius: 16px;
+            background-color: transparent;
             font-size: 1em;
-            margin: 0; /* Adjust margin to remove any default margin */
+            font-weight: 500;
+            color: #2d3748;
+            margin: 0;
             text-align: left;
         }
 
@@ -115,28 +205,42 @@
             left: 15px;
             top: 50%;
             transform: translateY(-50%);
-            color: #7EA8AC; /* Accent color */
+            color: #4CAF50;
+            font-size: 1.1rem;
         }
 
         .dropdown-container {
-            width: 85%;
+            width: 100%;
             position: relative;
             display: inline-block;
             margin-bottom: 15px;
-            border: 2px solid #7EA8AC; /* Add border to editable input */
-            border-radius: 30px;
-            background-color: #E0F7FA; /* Light background for editable input */
-            box-shadow: 0 4px 8px rgba(126, 168, 172, 0.2); /* Add shadow */
-            padding: 15px 20px;
+            background: linear-gradient(135deg, #4CAF50, #8BC34A);
+            border-radius: 16px;
+            padding: 3px;
+            box-shadow: 0 10px 25px rgba(76, 175, 80, 0.3);
+        }
+
+        .dropdown-container .dropdown-inner {
+            background: white;
+            border-radius: 13px;
+            position: relative;
+            overflow: hidden;
         }
 
         .dropdown-container input {
             border: none;
             outline: none;
-            width: calc(100%);
+            width: 100%;
             background: transparent;
-            padding-left: 15px;
+            padding: 15px 20px 15px 50px;
             font-size: 1em;
+            font-weight: 500;
+            color: #2d3748;
+            border-radius: 13px;
+        }
+
+        .dropdown-container input::placeholder {
+            color: #a0aec0;
         }
 
         .dropdown-container i {
@@ -144,62 +248,87 @@
             top: 50%;
             left: 15px;
             transform: translateY(-50%);
-            color: #7EA8AC;
+            color: #4CAF50;
+            font-size: 1.1rem;
+            z-index: 1;
         }
 
         .dropdown-list {
             display: none;
             position: absolute;
-            background-color: #f9f9f9;
+            background-color: white;
             min-width: 100%;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index: 1;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            z-index: 100;
+            border: 1px solid rgba(76, 175, 80, 0.2);
+            border-radius: 16px;
             max-height: 150px;
             overflow-y: auto;
+            margin-top: 8px;
         }
 
         .dropdown-list div {
-            color: black;
+            color: #2d3748;
             padding: 8px 16px;
             text-decoration: none;
             display: block;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #f7fafc;
+            font-weight: 500;
         }
 
         .dropdown-list div:hover,
         .dropdown-list .highlight {
-            background-color: #FF968A;
+            background: linear-gradient(135deg, #4CAF50, #8BC34A);
+            color: white;
+            transform: scale(1.02);
+        }
+
+        .dropdown-list div:last-child {
+            border-bottom: none;
         }
 
         .save-button {
             margin-top: 20px;
             padding: 15px 20px;
-            background-color: #7EA8AC;
+            background: linear-gradient(135deg, #FF9800, #FFC107);
             color: white;
             border: none;
-            border-radius: 30px;
+            border-radius: 16px;
             font-size: 1em;
-            cursor: not-allowed;
+            font-weight: 600;
+            cursor: pointer;
             width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(255, 152, 0, 0.3);
+        }
+
+        .save-button:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(255, 152, 0, 0.4);
         }
 
         .save-button:disabled {
-            background-color: #ccc;
+            background: linear-gradient(135deg, #a0aec0, #cbd5e0);
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
+        /* Register Container Styles */
         .register-container h2 {
             text-align: left;
-            color: #6B6966;
+            color: #2d3748;
             margin-bottom: 20px;
+            font-weight: 600;
         }
 
         .register-container label {
             display: block;
             margin-bottom: 10px;
-            font-weight: bold;
-            color: #6B6966;
+            font-weight: 600;
+            color: #2d3748;
         }
 
         .register-container .date-input-container {
@@ -212,62 +341,89 @@
         .register-container input[type="text"] {
             width: calc(100% - 30px);
             padding: 15px 20px;
-            border: 1px solid #ddd;
-            border-radius: 30px;
-            background-color: #f7f7f7;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
             font-size: 1em;
+            font-weight: 500;
             margin-bottom: 15px;
-            box-sizing: border-box; 
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            color: #2d3748;
         }
-        
+
+        .register-container input[type="text"]:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
         .register-container .date-input-container input[type="text"] {
             width: 35px;
             padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            background-color: #f7f7f7;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
             font-size: 1em;
+            font-weight: 600;
             text-align: center;
             box-sizing: border-box;
+            margin-bottom: 0;
+            transition: all 0.3s ease;
         }
 
+        .register-container .date-input-container input[type="text"]:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
 
         .register-container .date-separator {
             font-size: 1.5em;
             font-weight: bold;
-            color: #6B6966;
+            color: #4CAF50;
         }
 
         .register-container .save-button {
             margin-top: 20px;
             padding: 15px 20px;
-            background-color: #7EA8AC; /* Brighter button color */
+            background: linear-gradient(135deg, #FF9800, #FFC107);
             color: #FFFFFF;
             border: none;
-            border-radius: 30px;
+            border-radius: 16px;
             font-size: 1em;
+            font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
             width: 100%;
+            box-shadow: 0 10px 25px rgba(255, 152, 0, 0.3);
         }
 
         .register-container .save-button:hover {
-            background-color: #689A9D;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(255, 152, 0, 0.4);
         }
 
-        .register-container .sticker {
-            position: absolute;
-            top: -20px;
-            right: -20px;
-            width: 80px;
-            z-index: 2;
+        /* Loading Message */
+        #loadingMessage {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            margin: 20px;
+            animation: fadeIn 0.8s ease-out;
         }
 
+        /* Responsive */
         @media (max-width: 600px) {
             body {
-                padding-bottom: 400px; 
-                min-height: calc(100vh+100px);
+                padding-bottom: 400px;
+                min-height: calc(100vh + 100px);
             }
+            
             .container {
                 padding: 20px;
                 margin-bottom: 200px;
@@ -291,11 +447,11 @@
             }
 
             .dropdown-container {
-                padding: 10px 15px;
+                padding: 2px;
             }
 
             .dropdown-container input {
-                padding-left: 20px;
+                padding: 10px 15px 10px 40px;
             }
 
             .save-button {
@@ -303,21 +459,29 @@
                 font-size: 0.9em;
             }
 
-            .sticker-3 {
+            .sticker-3,
+            .sticker {
                 position: absolute;
-                top: -20px; 
-                right: -20px; 
+                top: -20px;
+                right: -20px;
                 width: 80px;
                 transform: rotate(-5deg);
-                z-index: 2; 
+                z-index: 2;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Background decorations -->
+    <div class="bg-decoration"></div>
+    <div class="bg-decoration"></div>
+    <div class="bg-decoration"></div>
+    <div class="bg-decoration"></div>
+
     <p id="userInfo"></p>
     <div id="userContent">
         <p id="loadingMessage">รอสักครู่...</p>
+        
         <!-- Input Section -->
         <div id="inputSection" style="display:none;">
             <div class="container">
@@ -348,13 +512,16 @@
                 </div>
 
                 <div class="dropdown-container">
-                    <i class="fas fa-utensils"></i>
-                    <input type="text" class="dropdown-input" placeholder="ค้นหาเมนูสุขภาพจากโรงอาหาร..." id="foodInput" oninput="filterDropdown()">
-                    <div class="dropdown-list" id="foodDropdownList"></div>
+                    <div class="dropdown-inner">
+                        <i class="fas fa-utensils"></i>
+                        <input type="text" class="dropdown-input" placeholder="ค้นหาเมนูสุขภาพจากโรงอาหาร..." id="foodInput" oninput="filterDropdown()">
+                        <div class="dropdown-list" id="foodDropdownList"></div>
+                    </div>
                 </div>
                 <button class="save-button" id="saveButton" disabled onclick="recordSelection()">บันทึก</button>
             </div>
         </div>
+        
         <!-- Register Section -->
         <div id="registerSection" style="display:none;">
             <div class="container register-container">
@@ -387,6 +554,7 @@
             </div>
         </div>
     </div>
+    
     <script src="LineLiff.js"></script>
     <script src="record.js"></script>
     <script src="register.js"></script>
