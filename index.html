@@ -1,528 +1,394 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>NMB HappyWorkPlace - กินดี Healthy Life</title>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+    <title>NMB HappyWorkPlace</title>
+    <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&display=swap');
 
-body {
-    background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 30%, #FFC107 70%, #FF9800 100%);
-    font-family: 'Prompt', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    color: #2d3748;
-    position: relative;
-    overflow-x: hidden;
-    padding: 20px;
-    font-size: 16px; /* Base font size */
-}
+        body {
+            background: linear-gradient(135deg, #E8F5E8, #F0F8F0); /* Green gradient background */
+            font-family: 'Prompt', sans-serif; /* New font */
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Align items to the top */
+            height: 100vh;
+            color: #2D5016; /* Dark green text color */
+            position: relative;
+            overflow: auto;
+            padding: 20px 20px 200px 20px; 
+/*             min-height: calc(100vh + 100px); */
+        }
 
-/* Animated background elements */
-.bg-decoration {
-    position: fixed;
-    pointer-events: none;
-    z-index: 0;
-}
 
-.bg-decoration::before {
-    content: '🥗';
-    position: absolute;
-    font-size: 2.5rem;
-    opacity: 0.1;
-    animation: float 6s ease-in-out infinite;
-}
+        .background-stickers img {
+            position: absolute;
+            opacity: 1;
+        }
 
-.bg-decoration:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
-.bg-decoration:nth-child(2) { top: 20%; right: 15%; animation-delay: 1s; }
-.bg-decoration:nth-child(3) { bottom: 30%; left: 20%; animation-delay: 2s; }
-.bg-decoration:nth-child(4) { bottom: 10%; right: 10%; animation-delay: 3s; }
+        .container {
+            background-color: #FFFFFF; /* White background */
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(45, 80, 22, 0.15); /* Green shadow */
+            width: 90%;
+            max-width: 300px;
+            text-align: left;
+            position: relative;
+            z-index: 1;
+            margin-top: 5px;
+            margin-bottom: 200px; 
+            overflow: visible; 
+        }
 
-@keyframes float {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(5deg); }
-}
+        .sticker-3 {
+            position: absolute;
+            top: -20px; /* Adjust this value to move the sticker up */
+            right: -20px; /* Adjust this value to move the sticker to the right */
+            width: 80px;
+            transform: rotate(-5deg);
+            z-index: 2; /* Ensure the sticker is on top of the container */
+        }
 
-.container {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 25px;
-    box-shadow: 0 25px 45px rgba(0, 0, 0, 0.15);
-    width: 90%;
-    max-width: 500px;
-    position: relative;
-    z-index: 1;
-    margin-top: 50px; /* เพิ่มเพื่อให้มีที่สำหรับ sticker */
-    margin-bottom: 40px;
-    overflow: visible; /* เปลี่ยนจาก hidden เป็น visible */
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
 
-.container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #4CAF50, #8BC34A, #FFC107, #FF9800);
-    animation: shimmer 3s ease-in-out infinite;
-}
+        .header-icon {
+            width: 100px;
+            height: auto;
+            margin-right: 20px;
+        }
 
-@keyframes shimmer {
-    0%, 100% { opacity: 0.8; }
-    50% { opacity: 1; }
-}
+        .header-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
 
-.container-content {
-    padding: 30px 25px;
-}
+        .header-text .title {
+            color: #2D5016; /* Dark green text color */
+            font-size: 1.3em;
+            font-weight: bold;
+            margin: 0;
+        }
 
-.sticker-decoration {
-    position: absolute;
-    top: -40px; /* เพิ่มระยะให้ออกนอกกรอบมากขึ้น */
-    right: -30px; /* เพิ่มระยะให้ออกนอกกรอบมากขึ้น */
-    width: 100px; /* เพิ่มขนาด */
-    height: 100px; /* เพิ่มขนาด */
-    z-index: 10; /* เพิ่ม z-index */
-    animation: bounce 2s infinite;
-    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
-    transform-origin: center bottom; /* ปรับจุดหมุนให้ดูธรรมชาติ */
-}
+        .header-text .subtitle {
+            color: #4A7C2A; /* Medium green text color */
+            font-size: 0.7em;
+            margin: 5px 0 0 0;
+        }
 
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-    40% { transform: translateY(-10px); }
-    60% { transform: translateY(-5px); }
-}
+        .input-group {
+            margin-bottom: 15px;
+            position: relative;
+            border-radius: 30px;
+            overflow: hidden;
+            background-color: #F8FDF8; /* Very light green background for inputs */
+            display: flex;
+            align-items: center;
+        }
 
-.header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 30px;
-    text-align: left;
-}
+        .input-group p {
+            width: 100%;
+            padding: 15px 20px 15px 40px;
+            border: none;
+            border-radius: 30px;
+            background-color: transparent; /* Transparent background */
+            font-size: 1em;
+            margin: 0; /* Adjust margin to remove any default margin */
+            text-align: left;
+        }
 
-.header-icon {
-    width: 70px;
-    height: 70px;
-    border-radius: 20px;
-    margin-right: 15px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    object-fit: cover;
-}
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #4A7C2A; /* Medium green accent color */
+        }
 
-.header-text {
-    flex: 1;
-}
+        .dropdown-container {
+            width: 85%;
+            position: relative;
+            display: inline-block;
+            margin-bottom: 15px;
+            border: 2px solid #4A7C2A; /* Green border for editable input */
+            border-radius: 30px;
+            background-color: #E8F5E8; /* Light green background for editable input */
+            box-shadow: 0 4px 8px rgba(74, 124, 42, 0.2); /* Green shadow */
+            padding: 15px 20px;
+        }
 
-.header-text .title {
-    color: #2d3748;
-    font-size: 1.5rem; /* เพิ่มจาก 1.4rem */
-    font-weight: 700;
-    margin-bottom: 5px;
-    background: linear-gradient(45deg, #4CAF50, #8BC34A);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1.2;
-}
+        .dropdown-container input {
+            border: none;
+            outline: none;
+            width: calc(100%);
+            background: transparent;
+            padding-left: 15px;
+            font-size: 1em;
+        }
 
-.header-text .subtitle {
-    color: #718096;
-    font-size: 0.9rem; /* เพิ่มจาก 0.8rem */
-    font-weight: 400;
-    line-height: 1.4;
-}
+        .dropdown-container i {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            color: #4A7C2A; /* Medium green */
+        }
 
-.input-group {
-    margin-bottom: 20px;
-    position: relative;
-    background: linear-gradient(135deg, #f7fafc, #edf2f7);
-    border-radius: 16px;
-    border: 2px solid transparent;
-    transition: all 0.3s ease;
-}
+        .dropdown-list {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 100%;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
 
-.input-group:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    border-color: rgba(76, 175, 80, 0.3);
-}
+        .dropdown-list div {
+            color: black;
+            padding: 8px 16px;
+            text-decoration: none;
+            display: block;
+        }
 
-.input-group p {
-    width: 100%;
-    padding: 20px 20px 20px 55px; /* เพิ่ม padding */
-    border: none;
-    background: transparent;
-    font-size: 1.1rem; /* เพิ่มจาก 1rem */
-    font-weight: 500;
-    color: #2d3748;
-    margin: 0;
-    line-height: 1.3;
-}
+        .dropdown-list div:hover,
+        .dropdown-list .highlight {
+            background-color: #7CB342; /* Bright green highlight */
+        }
 
-.input-group i {
-    position: absolute;
-    left: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #4CAF50;
-    font-size: 1.3rem; /* เพิ่มจาก 1.1rem */
-}
+        .save-button {
+            margin-top: 20px;
+            padding: 15px 20px;
+            background-color: #4A7C2A; /* Medium green button */
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1em;
+            cursor: not-allowed;
+            width: 100%;
+        }
 
-.dropdown-container {
-    position: relative;
-    margin-bottom: 20px;
-    background: linear-gradient(135deg, #4CAF50, #8BC34A);
-    border-radius: 16px;
-    padding: 3px;
-    box-shadow: 0 10px 25px rgba(76, 175, 80, 0.3);
-}
+        .save-button:disabled {
+            background-color: #B8D4A8; /* Light green when disabled */
+            cursor: not-allowed;
+        }
 
-.dropdown-inner {
-    background: white;
-    border-radius: 13px;
-    position: relative;
-    overflow: hidden;
-}
+        .register-container h2 {
+            text-align: left;
+            color: #2D5016; /* Dark green */
+            margin-bottom: 20px;
+        }
 
-.dropdown-container input {
-    width: 100%;
-    padding: 20px 20px 20px 55px; /* เพิ่ม padding */
-    border: none;
-    outline: none;
-    background: transparent;
-    font-size: 1.1rem; /* เพิ่มจาก 1rem */
-    font-weight: 500;
-    color: #2d3748;
-}
+        .register-container label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #2D5016; /* Dark green */
+        }
 
-.dropdown-container input::placeholder {
-    color: #a0aec0;
-    font-size: 1rem;
-}
+        .register-container .date-input-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
 
-.dropdown-container i {
-    position: absolute;
-    top: 50%;
-    left: 20px;
-    transform: translateY(-50%);
-    color: #4CAF50;
-    font-size: 1.3rem; /* เพิ่มจาก 1.1rem */
-    z-index: 1;
-}
+        .register-container input[type="text"] {
+            width: calc(100% - 30px);
+            padding: 15px 20px;
+            border: 1px solid #7CB342; /* Green border */
+            border-radius: 30px;
+            background-color: #F8FDF8; /* Very light green */
+            font-size: 1em;
+            margin-bottom: 15px;
+            box-sizing: border-box; 
+        }
+        
+        .register-container .date-input-container input[type="text"] {
+            width: 35px;
+            padding: 10px;
+            border: 1px solid #7CB342; /* Green border */
+            border-radius: 10px;
+            background-color: #F8FDF8; /* Very light green */
+            font-size: 1em;
+            text-align: center;
+            box-sizing: border-box;
+        }
 
-.dropdown-list {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    z-index: 100;
-    max-height: 250px; /* เพิ่มจาก 200px */
-    overflow-y: auto;
-    margin-top: 8px;
-    border: 1px solid rgba(76, 175, 80, 0.2);
-}
 
-.dropdown-list div {
-    padding: 18px 20px; /* เพิ่ม padding */
-    color: #2d3748;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border-bottom: 1px solid #f7fafc;
-    font-weight: 500;
-    font-size: 1.05rem; /* เพิ่มขนาด font */
-}
+        .register-container .date-separator {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2D5016; /* Dark green */
+        }
 
-.dropdown-list div:hover,
-.dropdown-list .highlight {
-    background: linear-gradient(135deg, #4CAF50, #8BC34A);
-    color: white;
-    transform: scale(1.02);
-}
+        .register-container .save-button {
+            margin-top: 20px;
+            padding: 15px 20px;
+            background-color: #4A7C2A; /* Medium green button color */
+            color: #FFFFFF;
+            border: none;
+            border-radius: 30px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
 
-.dropdown-list div:last-child {
-    border-bottom: none;
-}
+        .register-container .save-button:hover {
+            background-color: #3D6922; /* Darker green on hover */
+        }
 
-.save-button {
-    width: 100%;
-    padding: 20px; /* เพิ่มจาก 18px */
-    background: linear-gradient(135deg, #FF9800, #FFC107);
-    color: white;
-    border: none;
-    border-radius: 16px;
-    font-size: 1.2rem; /* เพิ่มจาก 1.1rem */
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 10px 25px rgba(255, 152, 0, 0.3);
-    margin-top: 25px;
-    letter-spacing: 0.5px;
-}
+        .register-container .sticker {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 80px;
+            z-index: 2;
+        }
 
-.save-button:hover:not(:disabled) {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 35px rgba(255, 152, 0, 0.4);
-}
+        @media (max-width: 600px) {
+            body {
+                padding-bottom: 400px; 
+                min-height: calc(100vh+100px);
+            }
+            .container {
+                padding: 20px;
+                margin-bottom: 200px;
+            }
 
-.save-button:disabled {
-    background: linear-gradient(135deg, #a0aec0, #cbd5e0);
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
+            .header-icon {
+                width: 60px;
+                margin-right: 10px;
+            }
 
-/* Mock data styles */
-.employee-info {
-    margin-bottom: 25px;
-}
+            .header-text .title {
+                font-size: 1em;
+            }
 
-.food-search {
-    margin-bottom: 25px;
-}
+            .header-text .subtitle {
+                font-size: 0.7em;
+            }
 
-/* Responsive - ปรับสำหรับหน้าจอเล็ก */
-@media (max-width: 480px) {
-    body {
-        font-size: 14px;
-        padding: 15px;
-    }
-    
-    .container {
-        margin: 10px;
-        margin-top: 40px; /* เพิ่มเพื่อให้มีที่สำหรับ sticker */
-        max-width: calc(100vw - 20px);
-        border-radius: 20px;
-    }
-    
-    .container-content {
-        padding: 20px;
-    }
+            .input-group p {
+                padding: 10px 15px 10px 35px;
+            }
 
-    .header-icon {
-        width: 60px;
-        height: 60px;
-    }
+            .dropdown-container {
+                padding: 10px 15px;
+            }
 
-    .header-text .title {
-        font-size: 1.3rem;
-    }
+            .dropdown-container input {
+                padding-left: 20px;
+            }
 
-    .header-text .subtitle {
-        font-size: 0.85rem;
-    }
-    
-    .input-group p,
-    .dropdown-container input {
-        font-size: 1rem;
-        padding: 18px 18px 18px 50px;
-    }
-    
-    .input-group i,
-    .dropdown-container i {
-        font-size: 1.2rem;
-        left: 18px;
-    }
-    
-    .dropdown-list div {
-        padding: 16px 18px;
-        font-size: 1rem;
-    }
-    
-    .save-button {
-        font-size: 1.1rem;
-        padding: 18px;
-    }
-    
-    .sticker-decoration {
-        width: 80px; /* ปรับขนาดให้เล็กลงสำหรับมือถือ */
-        height: 80px;
-        top: -30px;
-        right: -20px;
-    }
-}
+            .save-button {
+                padding: 10px 15px;
+                font-size: 0.9em;
+            }
 
-/* Responsive - สำหรับหน้าจอขนาดกลาง */
-@media (min-width: 481px) and (max-width: 768px) {
-    .header-text .title {
-        font-size: 1.6rem;
-    }
-    
-    .header-text .subtitle {
-        font-size: 0.95rem;
-    }
-    
-    .input-group p,
-    .dropdown-container input {
-        font-size: 1.15rem;
-    }
-    
-    .save-button {
-        font-size: 1.25rem;
-    }
-}
-
-/* สำหรับหน้าจอที่เล็กมาก */
-@media (max-width: 360px) {
-    .header-text .title {
-        font-size: 1.2rem;
-    }
-    
-    .header-text .subtitle {
-        font-size: 0.8rem;
-    }
-    
-    .input-group p,
-    .dropdown-container input {
-        font-size: 0.95rem;
-    }
-    
-    .save-button {
-        font-size: 1.05rem;
-    }
-}
-
-/* Additional animations */
-.fade-in {
-    animation: fadeIn 0.8s ease-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* ปรับ scrollbar ให้เล็กลงสำหรับ dropdown */
-.dropdown-list::-webkit-scrollbar {
-    width: 6px;
-}
-
-.dropdown-list::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-}
-
-.dropdown-list::-webkit-scrollbar-thumb {
-    background: #4CAF50;
-    border-radius: 10px;
-}
-
-.dropdown-list::-webkit-scrollbar-thumb:hover {
-    background: #45a049;
-}
+            .sticker-3 {
+                position: absolute;
+                top: -20px; 
+                right: -20px; 
+                width: 80px;
+                transform: rotate(-5deg);
+                z-index: 2; 
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Background decorations -->
-    <div class="bg-decoration"></div>
-    <div class="bg-decoration"></div>
-    <div class="bg-decoration"></div>
-    <div class="bg-decoration"></div>
-
-    <div class="container fade-in">
-        <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_3.png" alt="Healthy Food" class="sticker-decoration">
-        
-        <div class="container-content">
-            <div class="header">
-                <img class="header-icon" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/LogoProject.JPG" alt="Logo">
-                <div class="header-text">
-                    <div class="title">กินดี Healthy Life</div>
-                    <div class="subtitle">Happy Work Place : Happy Body</div>
-                    <div class="subtitle">NMB Minebea Thai</div>
+    <p id="userInfo"></p>
+    <div id="userContent">
+        <p id="loadingMessage">รอสักครู่...</p>
+        <!-- Input Section -->
+        <div id="inputSection" style="display:none;">
+            <div class="container">
+                <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_3.png" alt="Sticker 3" class="sticker-3">
+                <div class="header">
+                    <img class="header-icon" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/LogoProject.JPG" alt="Logo">
+                    <div class="header-text">
+                        <div class="title">กินดี Healthy Life</div>
+                        <div class="subtitle">Happy Work Place : Happy Body</div>
+                        <div class="subtitle">NMB Minebea Thai</div>
+                    </div>
                 </div>
-            </div>
-
-            <div class="employee-info">
                 <div class="input-group">
                     <i class="far fa-id-card"></i>
-                    <p>LC046</p>
+                    <p type="text" placeholder="EmpNo" id="empNo" disabled></p>
                 </div>
-                
                 <div class="input-group">
                     <i class="fas fa-user"></i>
-                    <p>MR. KUNANON SUKJARUEN</p>
+                    <p type="text" placeholder="Name" id="name" disabled></p>
                 </div>
-                
                 <div class="input-group">
                     <i class="fas fa-building"></i>
-                    <p>HRA (LPB)</p>
+                    <p type="text" placeholder="Division" id="division" disabled></p>
                 </div>
-                
                 <div class="input-group">
                     <i class="fas fa-industry"></i>
-                    <p>LOPBURI</p>
+                    <p type="text" placeholder="Factory" id="factory" disabled></p>
                 </div>
-            </div>
 
-            <div class="food-search">
                 <div class="dropdown-container">
-                    <div class="dropdown-inner">
-                        <i class="fas fa-utensils"></i>
-                        <input type="text" placeholder="ค้นหาเมนูสุขภาพจากโรงอาหาร..." id="foodInput">
-                    </div>
-                    <div class="dropdown-list" style="display: block;">
+                    <i class="fas fa-utensils"></i>
+                    <input type="text" class="dropdown-input" placeholder="ค้นหาเมนูสุขภาพจากโรงอาหาร..." id="foodInput" oninput="filterDropdown()">
+                    <div class="dropdown-list" id="foodDropdownList"></div>
+                </div>
+                <button class="save-button" id="saveButton" disabled onclick="recordSelection()">บันทึก</button>
+            </div>
+        </div>
+        <!-- Register Section -->
+        <div id="registerSection" style="display:none;">
+            <div class="container register-container">
+                <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_3.png" alt="Sticker" class="sticker">
+                <div class="header">
+                    <img class="header-icon" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/LogoProject.JPG" alt="Logo">
+                    <div class="header-text">
+                        <div class="title">กินดี Healthy Life</div>
+                        <div class="subtitle">Happy Work Place : Happy Body</div>
+                        <div class="subtitle">NMB Minebea Thai</div>
                     </div>
                 </div>
+                <h2>หน้าลงทะเบียน</h2>
+                <label for="empNoInput"><i class="far fa-id-badge"></i> 1.กรอกรหัสพนักงาน</label>
+                <input type="text" id="empNoInput" placeholder="กรอกรหัสพนักงาน" oninput="convertToUpper(this)">
+                <label for="emp-date"><i class="far fa-calendar-alt"></i> 2.กรอกวันที่เข้างาน: วัน/เดือน/ปี ค.ศ.<br>ตัวอย่าง: 20/04/1950 (ปี ค.ศ.)</label>
+                <div id="emp-date" class="date-input-container">
+                    <input type="text" id="date1" name="date1" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date2')">
+                    <input type="text" id="date2" name="date2" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date3')">
+                    <span class="date-separator">/</span>
+                    <input type="text" id="date3" name="date3" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date4')">
+                    <input type="text" id="date4" name="date4" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date5')">
+                    <span class="date-separator">/</span>
+                    <input type="text" id="date5" name="date5" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date6')">
+                    <input type="text" id="date6" name="date6" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date7')">
+                    <input type="text" id="date7" name="date7" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date8')">
+                    <input type="text" id="date8" name="date8" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'checkButton')">
+                </div>
+                <button id="checkButton" class="save-button" onclick="checkUserInfo()">ตรวจสอบข้อมูล</button>
             </div>
-
-            <button class="save-button">
-                <i class="fas fa-save"></i> บันทึกการเลือกเมนู
-            </button>
         </div>
     </div>
-
-    <script>
-        // Simple interaction for demo
-        document.getElementById('foodInput').addEventListener('input', function(e) {
-            const value = e.target.value.toLowerCase();
-            const dropdownItems = document.querySelectorAll('.dropdown-list div');
-            
-            dropdownItems.forEach(item => {
-                const text = item.textContent.toLowerCase();
-                if (text.includes(value)) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        });
-
-        // Add click interaction for dropdown items
-        document.querySelectorAll('.dropdown-list div').forEach(item => {
-            item.addEventListener('click', function() {
-                document.getElementById('foodInput').value = this.textContent;
-                document.querySelector('.dropdown-list').style.display = 'none';
-                document.querySelector('.save-button').disabled = false;
-                document.querySelector('.save-button').style.background = 'linear-gradient(135deg, #FF9800, #FFC107)';
-            });
-        });
-
-        // Show dropdown when input is focused
-        document.getElementById('foodInput').addEventListener('focus', function() {
-            document.querySelector('.dropdown-list').style.display = 'block';
-        });
-
-        // Hide dropdown when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.dropdown-container')) {
-                document.querySelector('.dropdown-list').style.display = 'none';
-            }
-        });
-    </script>
+    <script src="LineLiff.js"></script>
+    <script src="record.js"></script>
+    <script src="register.js"></script>
 </body>
 </html>
