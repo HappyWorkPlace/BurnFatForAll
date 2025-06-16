@@ -62,9 +62,9 @@ body {
     max-width: 500px;
     position: relative;
     z-index: 1;
-    margin-top: 20px;
+    margin-top: 50px; /* เพิ่มเพื่อให้มีที่สำหรับ sticker */
     margin-bottom: 40px;
-    overflow: hidden;
+    overflow: visible; /* เปลี่ยนจาก hidden เป็น visible */
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -90,13 +90,14 @@ body {
 
 .sticker-decoration {
     position: absolute;
-    top: -20px;
-    right: -20px;
-    width: 80px;
-    height: 80px;
-    z-index: 3;
+    top: -40px; /* เพิ่มระยะให้ออกนอกกรอบมากขึ้น */
+    right: -30px; /* เพิ่มระยะให้ออกนอกกรอบมากขึ้น */
+    width: 100px; /* เพิ่มขนาด */
+    height: 100px; /* เพิ่มขนาด */
+    z-index: 10; /* เพิ่ม z-index */
     animation: bounce 2s infinite;
-    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.1));
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
+    transform-origin: center bottom; /* ปรับจุดหมุนให้ดูธรรมชาติ */
 }
 
 @keyframes bounce {
@@ -304,6 +305,7 @@ body {
     
     .container {
         margin: 10px;
+        margin-top: 40px; /* เพิ่มเพื่อให้มีที่สำหรับ sticker */
         max-width: calc(100vw - 20px);
         border-radius: 20px;
     }
@@ -348,10 +350,10 @@ body {
     }
     
     .sticker-decoration {
-        width: 70px;
-        height: 70px;
-        top: -15px;
-        right: -15px;
+        width: 80px; /* ปรับขนาดให้เล็กลงสำหรับมือถือ */
+        height: 80px;
+        top: -30px;
+        right: -20px;
     }
 }
 
