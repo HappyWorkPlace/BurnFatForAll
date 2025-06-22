@@ -1,394 +1,1335 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>NMB HappyWorkPlace</title>
-    <link href="https://fonts.googleapis.com/css?family=Kanit&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
-<style>
-        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&display=swap');
-
-        body {
-            background: linear-gradient(135deg, #E8F5E8, #F0F8F0); /* Green gradient background */
-            font-family: 'Prompt', sans-serif; /* New font */
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NMB HappyWorkPlace - กินดี Healthy Life</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
             margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start; /* Align items to the top */
-            height: 100vh;
-            color: #2D5016; /* Dark green text color */
-            position: relative;
-            overflow: auto;
-            padding: 20px 20px 200px 20px; 
-/*             min-height: calc(100vh + 100px); */
-        }
-
-
-        .background-stickers img {
-            position: absolute;
-            opacity: 1;
-        }
-
-        .container {
-            background-color: #FFFFFF; /* White background */
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(45, 80, 22, 0.15); /* Green shadow */
-            width: 90%;
-            max-width: 300px;
-            text-align: left;
-            position: relative;
-            z-index: 1;
-            margin-top: 5px;
-            margin-bottom: 200px; 
-            overflow: visible; 
-        }
-
-        .sticker-3 {
-            position: absolute;
-            top: -20px; /* Adjust this value to move the sticker up */
-            right: -20px; /* Adjust this value to move the sticker to the right */
-            width: 80px;
-            transform: rotate(-5deg);
-            z-index: 2; /* Ensure the sticker is on top of the container */
-        }
-
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .header-icon {
-            width: 100px;
-            height: auto;
-            margin-right: 20px;
-        }
-
-        .header-text {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .header-text .title {
-            color: #2D5016; /* Dark green text color */
-            font-size: 1.3em;
-            font-weight: bold;
-            margin: 0;
-        }
-
-        .header-text .subtitle {
-            color: #4A7C2A; /* Medium green text color */
-            font-size: 0.7em;
-            margin: 5px 0 0 0;
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-            position: relative;
-            border-radius: 30px;
-            overflow: hidden;
-            background-color: #F8FDF8; /* Very light green background for inputs */
-            display: flex;
-            align-items: center;
-        }
-
-        .input-group p {
-            width: 100%;
-            padding: 15px 20px 15px 40px;
-            border: none;
-            border-radius: 30px;
-            background-color: transparent; /* Transparent background */
-            font-size: 1em;
-            margin: 0; /* Adjust margin to remove any default margin */
-            text-align: left;
-        }
-
-        .input-group i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #4A7C2A; /* Medium green accent color */
-        }
-
-        .dropdown-container {
-            width: 85%;
-            position: relative;
-            display: inline-block;
-            margin-bottom: 15px;
-            border: 2px solid #4A7C2A; /* Green border for editable input */
-            border-radius: 30px;
-            background-color: #E8F5E8; /* Light green background for editable input */
-            box-shadow: 0 4px 8px rgba(74, 124, 42, 0.2); /* Green shadow */
-            padding: 15px 20px;
-        }
-
-        .dropdown-container input {
-            border: none;
-            outline: none;
-            width: calc(100%);
-            background: transparent;
-            padding-left: 15px;
-            font-size: 1em;
-        }
-
-        .dropdown-container i {
-            position: absolute;
-            top: 50%;
-            left: 15px;
-            transform: translateY(-50%);
-            color: #4A7C2A; /* Medium green */
-        }
-
-        .dropdown-list {
-            display: none;
-            position: absolute;
-            background-color: #f9f9f9;
-            min-width: 100%;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index: 1;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            max-height: 150px;
-            overflow-y: auto;
-        }
-
-        .dropdown-list div {
-            color: black;
-            padding: 8px 16px;
-            text-decoration: none;
-            display: block;
-        }
-
-        .dropdown-list div:hover,
-        .dropdown-list .highlight {
-            background-color: #7CB342; /* Bright green highlight */
-        }
-
-        .save-button {
-            margin-top: 20px;
-            padding: 15px 20px;
-            background-color: #4A7C2A; /* Medium green button */
-            color: white;
-            border: none;
-            border-radius: 30px;
-            font-size: 1em;
-            cursor: not-allowed;
-            width: 100%;
-        }
-
-        .save-button:disabled {
-            background-color: #B8D4A8; /* Light green when disabled */
-            cursor: not-allowed;
-        }
-
-        .register-container h2 {
-            text-align: left;
-            color: #2D5016; /* Dark green */
-            margin-bottom: 20px;
-        }
-
-        .register-container label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: bold;
-            color: #2D5016; /* Dark green */
-        }
-
-        .register-container .date-input-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .register-container input[type="text"] {
-            width: calc(100% - 30px);
-            padding: 15px 20px;
-            border: 1px solid #7CB342; /* Green border */
-            border-radius: 30px;
-            background-color: #F8FDF8; /* Very light green */
-            font-size: 1em;
-            margin-bottom: 15px;
-            box-sizing: border-box; 
-        }
-        
-        .register-container .date-input-container input[type="text"] {
-            width: 35px;
-            padding: 10px;
-            border: 1px solid #7CB342; /* Green border */
-            border-radius: 10px;
-            background-color: #F8FDF8; /* Very light green */
-            font-size: 1em;
-            text-align: center;
+            padding: 0;
             box-sizing: border-box;
         }
 
-
-        .register-container .date-separator {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #2D5016; /* Dark green */
+        body {
+            font-family: 'Prompt', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            color: #1e293b;
+            overflow-x: hidden;
         }
 
-        .register-container .save-button {
-            margin-top: 20px;
-            padding: 15px 20px;
-            background-color: #4A7C2A; /* Medium green button color */
-            color: #FFFFFF;
-            border: none;
-            border-radius: 30px;
-            font-size: 1em;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            width: 100%;
+        .app-container {
+            max-width: 420px;
+            margin: 0 auto;
+            background: #ffffff;
+            min-height: 100vh;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
 
-        .register-container .save-button:hover {
-            background-color: #3D6922; /* Darker green on hover */
+        /* Header Section */
+        .header {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 30px 20px 20px;
+            text-align: center;
+            position: relative;
         }
 
-        .register-container .sticker {
+        .logo-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .header-text h1 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .header-text p {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            margin-bottom: 2px;
+        }
+
+
+
+        /* Member Card */
+        .points-card {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            margin: 20px 20px;
+            padding: 25px;
+            border-radius: 24px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .points-card::before {
+            content: '';
             position: absolute;
-            top: -20px;
-            right: -20px;
-            width: 80px;
-            z-index: 2;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
+            border-radius: 0 0 0 100px;
         }
 
-        @media (max-width: 600px) {
-            body {
-                padding-bottom: 400px; 
-                min-height: calc(100vh+100px);
+        .card-top-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .member-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            border: 3px solid white;
+        }
+
+        .member-info {
+            flex: 1;
+        }
+
+        .member-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 3px;
+        }
+
+        .member-dept {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .member-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .points-section {
+            text-align: right;
+        }
+
+        .points-value {
+            font-size: 2.4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #10b981, #059669);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 2px;
+            line-height: 1;
+        }
+
+        .points-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Gifts Carousel */
+        .gifts-carousel {
+            margin-top: 20px;
+        }
+
+        .gifts-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x mandatory;
+            gap: 0;
+        }
+
+        .gifts-container::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .gifts-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 2px;
+        }
+
+        .gifts-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 2px;
+        }
+
+        .gifts-container::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .gift-slide {
+            flex-shrink: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+            scroll-snap-align: start;
+            background: transparent;
+        }
+
+        .gift-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .gift-icon-large {
+            width: 64px;
+            height: 64px;
+            border-radius: 18px;
+            background: rgba(16, 185, 129, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            border: 2px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .gift-details {
+            flex: 1;
+        }
+
+        .gift-name-large {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #1e293b;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .gift-points-large {
+            font-size: 0.9rem;
+            color: #10b981;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .gift-stock-large {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .gift-action {
+            flex-shrink: 0;
+        }
+
+        .gift-button-large {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-family: 'Prompt', sans-serif;
+            white-space: nowrap;
+            min-width: 80px;
+        }
+
+        .gift-button-large:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .gift-button-large:disabled {
+            background: #e2e8f0;
+            color: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Carousel indicators */
+        .carousel-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 15px;
+        }
+
+        .indicator-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #cbd5e1;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator-dot.active {
+            background: #10b981;
+            transform: scale(1.2);
+        }
+
+        .progress-section {
+            position: relative;
+        }
+
+        .progress-track {
+            height: 6px;
+            background: #f1f5f9;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            border-radius: 10px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .milestones {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding: 0 2px;
+        }
+
+        .milestone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .milestones {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 18px;
+            padding: 0 2px;
+        }
+
+        .milestone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .milestone-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }
+
+        .milestone.achieved .milestone-dot {
+            background: #10b981;
+            box-shadow: 0 2px 12px rgba(16, 185, 129, 0.4);
+            color: white;
+        }
+
+        .milestone.current .milestone-dot {
+            background: #f59e0b;
+            box-shadow: 0 2px 12px rgba(245, 158, 11, 0.4);
+            animation: pulse 2s infinite;
+            color: white;
+        }
+
+        .milestone-icon {
+            display: none;
+        }
+
+        .milestone.achieved .milestone-icon,
+        .milestone.current .milestone-icon {
+            display: block;
+        }
+
+        .milestone-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .milestone.achieved .milestone-label {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .milestone.current .milestone-label {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* Navigation */
+        .nav-container {
+            padding: 0 20px;
+            margin-bottom: 25px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 12px 8px;
+            text-align: center;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: transparent;
+            border: none;
+            color: #64748b;
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #10b981;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            font-weight: 600;
+        }
+
+        .nav-tab i {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+
+        /* Content */
+        .content {
+            padding: 0 20px 30px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Food Recording */
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 20px 16px 50px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 1rem;
+            background: white;
+            transition: all 0.3s ease;
+            font-family: 'Prompt', sans-serif;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .dropdown-list {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            max-height: 240px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+        }
+
+        .dropdown-item {
+            padding: 14px 20px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .dropdown-item:hover {
+            background: #f8fafc;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .record-button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 12px;
+            font-family: 'Prompt', sans-serif;
+        }
+
+        .record-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .record-button:disabled {
+            background: #e2e8f0;
+            color: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* History */
+        .history-item {
+            background: white;
+            padding: 18px 20px;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border-left: 4px solid #10b981;
+        }
+
+        .history-date {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .history-food {
+            font-weight: 500;
+            color: #1e293b;
+            font-size: 1rem;
+        }
+
+        /* Gifts */
+        .gifts-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .gift-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .gift-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .gift-image {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .gift-info {
+            flex: 1;
+        }
+
+        .gift-name {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #1e293b;
+            font-size: 0.95rem;
+        }
+
+        .gift-points {
+            font-size: 0.85rem;
+            color: #10b981;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .gift-stock {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .redeem-button {
+            padding: 10px 18px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            font-family: 'Prompt', sans-serif;
+            white-space: nowrap;
+        }
+
+        .redeem-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .redeem-button:disabled {
+            background: #e2e8f0;
+            color: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Loading & Empty States */
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+        }
+
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid #f1f5f9;
+            border-top: 3px solid #10b981;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+        }
+
+        .empty-state i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            opacity: 0.4;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .header {
+                padding: 25px 15px 15px;
             }
-            .container {
-                padding: 20px;
-                margin-bottom: 200px;
+            
+            .points-card {
+                margin: 15px 15px;
+                padding: 20px 16px;
+            }
+            
+            .content {
+                padding: 0 15px 25px;
+            }
+            
+            .nav-container {
+                padding: 0 15px;
+            }
+            
+            .points-value {
+                font-size: 2rem;
             }
 
-            .header-icon {
-                width: 60px;
-                margin-right: 10px;
+            .logo {
+                width: 45px;
+                height: 45px;
             }
 
-            .header-text .title {
-                font-size: 1em;
+            .header-text h1 {
+                font-size: 1.2rem;
             }
 
-            .header-text .subtitle {
-                font-size: 0.7em;
+            .header-text p {
+                font-size: 0.75rem;
             }
 
-            .input-group p {
-                padding: 10px 15px 10px 35px;
+            .card-top-section {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+                margin-bottom: 15px;
             }
 
-            .dropdown-container {
-                padding: 10px 15px;
+            .member-header {
+                gap: 10px;
             }
 
-            .dropdown-container input {
-                padding-left: 20px;
+            .profile-avatar {
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
             }
 
-            .save-button {
-                padding: 10px 15px;
-                font-size: 0.9em;
+            .member-name {
+                font-size: 0.9rem;
             }
 
-            .sticker-3 {
-                position: absolute;
-                top: -20px; 
-                right: -20px; 
-                width: 80px;
-                transform: rotate(-5deg);
-                z-index: 2; 
+            .member-dept {
+                font-size: 0.7rem;
+            }
+
+            .member-badge {
+                font-size: 0.6rem;
+                padding: 2px 8px;
+            }
+
+            .points-section {
+                text-align: left;
+            }
+
+            .points-value {
+                font-size: 2rem;
+            }
+
+            .points-label {
+                font-size: 0.75rem;
+            }
+
+            .gift-slide {
+                padding: 16px 0;
+            }
+
+            .gift-content {
+                gap: 15px;
+            }
+
+            .gift-icon-large {
+                width: 56px;
+                height: 56px;
+                font-size: 1.6rem;
+            }
+
+            .gift-name-large {
+                font-size: 1rem;
+                margin-bottom: 4px;
+            }
+
+            .gift-points-large {
+                font-size: 0.8rem;
+            }
+
+            .gift-stock-large {
+                font-size: 0.75rem;
+            }
+
+            .gift-button-large {
+                padding: 10px 20px;
+                font-size: 0.8rem;
+                min-width: 70px;
+            }
+
+            .carousel-indicators {
+                margin-top: 12px;
+            }
+
+            .indicator-dot {
+                width: 6px;
+                height: 6px;
             }
         }
     </style>
 </head>
 <body>
-    <p id="userInfo"></p>
-    <div id="userContent">
-        <p id="loadingMessage">รอสักครู่...</p>
-        <!-- Input Section -->
-        <div id="inputSection" style="display:none;">
-            <div class="container">
-                <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_3.png" alt="Sticker 3" class="sticker-3">
-                <div class="header">
-                    <img class="header-icon" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/LogoProject.JPG" alt="Logo">
-                    <div class="header-text">
-                        <div class="title">กินดี Healthy Life</div>
-                        <div class="subtitle">Happy Work Place : Happy Body</div>
-                        <div class="subtitle">NMB Minebea Thai</div>
-                    </div>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-section">
+                <div class="logo">
+                    <i class="fas fa-leaf" style="color: white; font-size: 1.5rem;"></i>
                 </div>
-                <div class="input-group">
-                    <i class="far fa-id-card"></i>
-                    <p type="text" placeholder="EmpNo" id="empNo" disabled></p>
+                <div class="header-text">
+                    <h1>กินดี Healthy Life</h1>
+                    <p>Happy Work Place : Happy Body</p>
+                    <p>NMB Minebea Thai</p>
                 </div>
-                <div class="input-group">
-                    <i class="fas fa-user"></i>
-                    <p type="text" placeholder="Name" id="name" disabled></p>
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-building"></i>
-                    <p type="text" placeholder="Division" id="division" disabled></p>
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-industry"></i>
-                    <p type="text" placeholder="Factory" id="factory" disabled></p>
-                </div>
-
-                <div class="dropdown-container">
-                    <i class="fas fa-utensils"></i>
-                    <input type="text" class="dropdown-input" placeholder="ค้นหาเมนูสุขภาพจากโรงอาหาร..." id="foodInput" oninput="filterDropdown()">
-                    <div class="dropdown-list" id="foodDropdownList"></div>
-                </div>
-                <button class="save-button" id="saveButton" disabled onclick="recordSelection()">บันทึก</button>
             </div>
         </div>
-        <!-- Register Section -->
-        <div id="registerSection" style="display:none;">
-            <div class="container register-container">
-                <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_3.png" alt="Sticker" class="sticker">
-                <div class="header">
-                    <img class="header-icon" src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/LogoProject.JPG" alt="Logo">
-                    <div class="header-text">
-                        <div class="title">กินดี Healthy Life</div>
-                        <div class="subtitle">Happy Work Place : Happy Body</div>
-                        <div class="subtitle">NMB Minebea Thai</div>
+
+        <!-- Member Card -->
+        <div class="points-card">
+            <div class="card-top-section">
+                <div class="member-header">
+                    <div class="profile-avatar" id="profileAvatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="member-info">
+                        <div class="member-name" id="memberName">ผู้ใช้งาน</div>
+                        <div class="member-dept" id="memberDept">กำลังโหลดข้อมูล...</div>
+                        <div class="member-badge" id="memberBadge">Lopburi Factory</div>
                     </div>
                 </div>
-                <h2>หน้าลงทะเบียน</h2>
-                <label for="empNoInput"><i class="far fa-id-badge"></i> 1.กรอกรหัสพนักงาน</label>
-                <input type="text" id="empNoInput" placeholder="กรอกรหัสพนักงาน" oninput="convertToUpper(this)">
-                <label for="emp-date"><i class="far fa-calendar-alt"></i> 2.กรอกวันที่เข้างาน: วัน/เดือน/ปี ค.ศ.<br>ตัวอย่าง: 20/04/1950 (ปี ค.ศ.)</label>
-                <div id="emp-date" class="date-input-container">
-                    <input type="text" id="date1" name="date1" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date2')">
-                    <input type="text" id="date2" name="date2" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date3')">
-                    <span class="date-separator">/</span>
-                    <input type="text" id="date3" name="date3" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date4')">
-                    <input type="text" id="date4" name="date4" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date5')">
-                    <span class="date-separator">/</span>
-                    <input type="text" id="date5" name="date5" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date6')">
-                    <input type="text" id="date6" name="date6" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date7')">
-                    <input type="text" id="date7" name="date7" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'date8')">
-                    <input type="text" id="date8" name="date8" maxlength="1" size="1" min="0" max="9" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'checkButton')">
+                
+                <div class="points-section">
+                    <div class="points-value" id="pointsValue">150</div>
+                    <div class="points-label">คะแนนสะสม</div>
                 </div>
-                <button id="checkButton" class="save-button" onclick="checkUserInfo()">ตรวจสอบข้อมูล</button>
+            </div>
+            
+            <div class="progress-section">
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill" style="width: 98.7%;"></div>
+                </div>
+                
+                <div class="milestones">
+                    <div class="milestone achieved">
+                        <div class="milestone-dot"></div>
+                        <div class="milestone-label">0</div>
+                    </div>
+                    <div class="milestone achieved">
+                        <div class="milestone-dot">
+                            <i class="fas fa-tissue milestone-icon"></i>
+                        </div>
+                        <div class="milestone-label">30</div>
+                    </div>
+                    <div class="milestone achieved">
+                        <div class="milestone-dot">
+                            <i class="fas fa-umbrella milestone-icon"></i>
+                        </div>
+                        <div class="milestone-label">60</div>
+                    </div>
+                    <div class="milestone achieved">
+                        <div class="milestone-dot">
+                            <i class="fas fa-box milestone-icon"></i>
+                        </div>
+                        <div class="milestone-label">90</div>
+                    </div>
+                    <div class="milestone achieved">
+                        <div class="milestone-dot">
+                            <i class="fas fa-shopping-bag milestone-icon"></i>
+                        </div>
+                        <div class="milestone-label">120</div>
+                    </div>
+                    <div class="milestone current">
+                        <div class="milestone-dot">
+                            <i class="fas fa-glass-water milestone-icon"></i>
+                        </div>
+                        <div class="milestone-label">150</div>
+                    </div>
+                    <div class="milestone">
+                        <div class="milestone-dot"></div>
+                        <div class="milestone-label">152</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gifts Carousel -->
+            <div class="gifts-carousel">
+                <div class="gifts-container" id="giftsContainer">
+                    <div class="gift-slide">
+                        <div class="gift-content">
+                            <div class="gift-icon-large">
+                                <i class="fas fa-tissue" style="color: #ef4444;"></i>
+                            </div>
+                            <div class="gift-details">
+                                <div class="gift-name-large">ทิชชู่คุมะ</div>
+                                <div class="gift-points-large">15 คะแนน</div>
+                                <div class="gift-stock-large">คงเหลือ 25 ชิ้น</div>
+                            </div>
+                        </div>
+                        <div class="gift-action">
+                            <button class="gift-button-large">แลกรับ</button>
+                        </div>
+                    </div>
+
+                    <div class="gift-slide">
+                        <div class="gift-content">
+                            <div class="gift-icon-large">
+                                <i class="fas fa-mug-hot" style="color: #8b5cf6;"></i>
+                            </div>
+                            <div class="gift-details">
+                                <div class="gift-name-large">แก้วน้ำเซรามิกคละสี</div>
+                                <div class="gift-points-large">30 คะแนน</div>
+                                <div class="gift-stock-large">คงเหลือ 12 ชิ้น</div>
+                            </div>
+                        </div>
+                        <div class="gift-action">
+                            <button class="gift-button-large">แลกรับ</button>
+                        </div>
+                    </div>
+
+                    <div class="gift-slide">
+                        <div class="gift-content">
+                            <div class="gift-icon-large">
+                                <i class="fas fa-box" style="color: #f59e0b;"></i>
+                            </div>
+                            <div class="gift-details">
+                                <div class="gift-name-large">กล่องอาหาร Super lock</div>
+                                <div class="gift-points-large">45 คะแนน</div>
+                                <div class="gift-stock-large">คงเหลือ 8 ชิ้น</div>
+                            </div>
+                        </div>
+                        <div class="gift-action">
+                            <button class="gift-button-large">แลกรับ</button>
+                        </div>
+                    </div>
+
+                    <div class="gift-slide">
+                        <div class="gift-content">
+                            <div class="gift-icon-large">
+                                <i class="fas fa-shopping-bag" style="color: #06b6d4;"></i>
+                            </div>
+                            <div class="gift-details">
+                                <div class="gift-name-large">กระเป๋า</div>
+                                <div class="gift-points-large">60 คะแนน</div>
+                                <div class="gift-stock-large">คงเหลือ 5 ชิ้น</div>
+                            </div>
+                        </div>
+                        <div class="gift-action">
+                            <button class="gift-button-large">แลกรับ</button>
+                        </div>
+                    </div>
+
+                    <div class="gift-slide">
+                        <div class="gift-content">
+                            <div class="gift-icon-large">
+                                <i class="fas fa-glass-water" style="color: #3b82f6;"></i>
+                            </div>
+                            <div class="gift-details">
+                                <div class="gift-name-large">แก้ว LocknLock</div>
+                                <div class="gift-points-large">75 คะแนน</div>
+                                <div class="gift-stock-large">คงเหลือ 3 ชิ้น</div>
+                            </div>
+                        </div>
+                        <div class="gift-action">
+                            <button class="gift-button-large">แลกรับ</button>
+                        </div>
+                    </div>
+
+                    <div class="gift-slide">
+                        <div class="gift-content">
+                            <div class="gift-icon-large">
+                                <i class="fas fa-hat-cowboy" style="color: #84cc16;"></i>
+                            </div>
+                            <div class="gift-details">
+                                <div class="gift-name-large">หมวก MGH</div>
+                                <div class="gift-points-large">90 คะแนน</div>
+                                <div class="gift-stock-large">คงเหลือ 2 ชิ้น</div>
+                            </div>
+                        </div>
+                        <div class="gift-action">
+                            <button class="gift-button-large" disabled>คะแนนไม่พอ</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="carousel-indicators">
+                    <div class="indicator-dot active" onclick="scrollToGift(0)"></div>
+                    <div class="indicator-dot" onclick="scrollToGift(1)"></div>
+                    <div class="indicator-dot" onclick="scrollToGift(2)"></div>
+                    <div class="indicator-dot" onclick="scrollToGift(3)"></div>
+                    <div class="indicator-dot" onclick="scrollToGift(4)"></div>
+                    <div class="indicator-dot" onclick="scrollToGift(5)"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-container">
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="switchTab('record')">
+                    <i class="fas fa-utensils"></i>
+                    <span>บันทึก</span>
+                </button>
+                <button class="nav-tab" onclick="switchTab('history')">
+                    <i class="fas fa-history"></i>
+                    <span>ประวัติ</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Food Recording -->
+            <div id="recordSection" class="section active">
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="ค้นหาเมนูสุขภาพจากโรงอาหาร..." id="foodSearch">
+                    <i class="fas fa-search search-icon"></i>
+                    <div class="dropdown-list" id="foodDropdown">
+                        <div class="dropdown-item">ข้าวผัดผักรวม</div>
+                        <div class="dropdown-item">ผัดผักคะน้าใส่หมู</div>
+                        <div class="dropdown-item">แกงเขียวหวานไก่</div>
+                        <div class="dropdown-item">ยำขนมจีน</div>
+                        <div class="dropdown-item">สลัดผักรวม</div>
+                    </div>
+                </div>
+                <button class="record-button" id="recordBtn" disabled>
+                    <i class="fas fa-save"></i> เลือกเมนูก่อน
+                </button>
+            </div>
+
+            <!-- History -->
+            <div id="historySection" class="section">
+                <div class="loading" id="historyLoading">
+                    <div class="spinner"></div>
+                    <p>กำลังโหลดประวัติ...</p>
+                </div>
+                <div id="historyList">
+                    <div class="history-item">
+                        <div class="history-date">วันนี้ - 12:30</div>
+                        <div class="history-food">ข้าวผัดผักรวม</div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-date">เมื่อวาน - 12:15</div>
+                        <div class="history-food">แกงเขียวหวานไก่</div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-date">2 วันที่แล้ว - 12:45</div>
+                        <div class="history-food">สลัดผักรวม</div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-date">3 วันที่แล้ว - 13:00</div>
+                        <div class="history-food">ต้มยำไก่</div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-date">4 วันที่แล้ว - 12:20</div>
+                        <div class="history-food">ผัดผักรวมมิตร</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <script src="LineLiff.js"></script>
+
+    <script>
+        // Mock data
+        let userPoints = 150;
+        let selectedFood = '';
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.closest('.nav-tab').classList.add('active');
+
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            const targetSection = document.getElementById(tabName + 'Section');
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+
+            if (tabName === 'history') {
+                loadHistory();
+            }
+        }
+
+        // Food search
+        document.getElementById('foodSearch').addEventListener('input', function() {
+            const value = this.value;
+            const dropdown = document.getElementById('foodDropdown');
+            
+            if (value.length > 0) {
+                dropdown.style.display = 'block';
+                const items = dropdown.querySelectorAll('.dropdown-item');
+                items.forEach(item => {
+                    if (item.textContent.toLowerCase().includes(value.toLowerCase())) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            } else {
+                dropdown.style.display = 'none';
+            }
+
+            updateRecordButton(value);
+        });
+
+        document.getElementById('foodDropdown').addEventListener('click', function(e) {
+            if (e.target.classList.contains('dropdown-item')) {
+                const searchInput = document.getElementById('foodSearch');
+                searchInput.value = e.target.textContent;
+                selectedFood = e.target.textContent;
+                this.style.display = 'none';
+                updateRecordButton(selectedFood);
+            }
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.search-container')) {
+                document.getElementById('foodDropdown').style.display = 'none';
+            }
+        });
+
+        function updateRecordButton(food) {
+            const button = document.getElementById('recordBtn');
+            if (food && food.trim() !== '') {
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-save"></i> บันทึกการรับประทาน';
+            } else {
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-save"></i> เลือกเมนูก่อน';
+            }
+        }
+
+        // Record food
+        document.getElementById('recordBtn').addEventListener('click', function() {
+            if (selectedFood) {
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
+                this.disabled = true;
+                
+                setTimeout(() => {
+                    userPoints += 5;
+                    updatePointsDisplay(userPoints);
+                    
+                    showToast('บันทึกสำเร็จ! +5 คะแนน', 'success');
+                    
+                    document.getElementById('foodSearch').value = '';
+                    selectedFood = '';
+                    this.innerHTML = '<i class="fas fa-save"></i> เลือกเมนูก่อน';
+                    this.disabled = true;
+                    
+                    updateGiftButtons();
+                }, 1500);
+            }
+        });
+
+        function updatePointsDisplay(points) {
+            document.getElementById('pointsValue').textContent = points;
+            
+            const maxPoints = 152;
+            const progressPercent = Math.min((points / maxPoints) * 100, 100);
+            
+            document.getElementById('progressFill').style.width = progressPercent + '%';
+            
+            const milestones = document.querySelectorAll('.milestone');
+            const milestoneValues = [0, 30, 60, 90, 120, 150, 152];
+            
+            milestones.forEach((milestone, index) => {
+                const milestoneValue = milestoneValues[index];
+                milestone.classList.remove('achieved', 'current');
+                
+                if (points >= milestoneValue) {
+                    milestone.classList.add('achieved');
+                } else if (index > 0 && points >= milestoneValues[index - 1] && points < milestoneValue) {
+                    milestone.classList.add('current');
+                }
+            });
+
+            updateGiftButtons(points);
+        }
+
+        function loadHistory() {
+            const loading = document.getElementById('historyLoading');
+            const list = document.getElementById('historyList');
+            
+            loading.style.display = 'block';
+            list.style.display = 'none';
+            
+            setTimeout(() => {
+                loading.style.display = 'none';
+                list.style.display = 'block';
+            }, 1000);
+        }
+
+        function updateGiftButtons(points = userPoints) {
+            const buttons = document.querySelectorAll('.gift-button-large');
+            buttons.forEach((button, index) => {
+                const requiredPoints = [15, 30, 45, 60, 75, 90][index];
+                if (points >= requiredPoints) {
+                    button.disabled = false;
+                    button.textContent = 'แลกรับ';
+                } else {
+                    button.disabled = true;
+                    button.textContent = 'คะแนนไม่พอ';
+                }
+            });
+        }
+
+        // Carousel functionality
+        function scrollToGift(index) {
+            const container = document.getElementById('giftsContainer');
+            const giftWidth = container.children[0].offsetWidth;
+            container.scrollTo({
+                left: giftWidth * index,
+                behavior: 'smooth'
+            });
+            updateIndicators(index);
+        }
+
+        function updateIndicators(activeIndex) {
+            const indicators = document.querySelectorAll('.indicator-dot');
+            indicators.forEach((indicator, index) => {
+                if (index === activeIndex) {
+                    indicator.classList.add('active');
+                } else {
+                    indicator.classList.remove('active');
+                }
+            });
+        }
+
+        // Auto-update indicators on scroll
+        document.getElementById('giftsContainer').addEventListener('scroll', function() {
+            const container = this;
+            const giftWidth = container.children[0].offsetWidth;
+            const scrollLeft = container.scrollLeft;
+            const activeIndex = Math.round(scrollLeft / giftWidth);
+            updateIndicators(activeIndex);
+        });
+
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: ${type === 'success' ? '#10b981' : '#ef4444'};
+                color: white;
+                padding: 12px 24px;
+                border-radius: 50px;
+                z-index: 1000;
+                font-weight: 500;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+                animation: slideDown 0.3s ease;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translate(-50%, -100%); opacity: 0; }
+                to { transform: translate(-50%, 0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize
+        updatePointsDisplay(userPoints);
+        updateGiftButtons();
+    </script>
     <script src="record.js"></script>
-    <script src="register.js"></script>
 </body>
 </html>
