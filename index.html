@@ -377,8 +377,8 @@
             border-radius: 10px;
             position: absolute;
             top: 50%;
-            left: 60px;
-            right: 60px;
+            left: 20px;
+            right: 20px;
             transform: translateY(-50%);
             overflow: hidden;
         }
@@ -411,7 +411,7 @@
             display: flex;
             justify-content: space-between;
             position: relative;
-            padding: 0 60px;
+            padding: 0 20px;
         }
 
         .milestone {
@@ -420,6 +420,15 @@
             align-items: center;
             position: relative;
             z-index: 2;
+            flex: 1;
+        }
+
+        .milestone:first-child {
+            margin-left: 12%;
+        }
+
+        .milestone:last-child {
+            margin-right: 12%;
         }
 
         .milestone-dot {
@@ -903,12 +912,12 @@
             }
 
             .milestones {
-                padding: 0 40px;
+                padding: 0 20px;
             }
 
             .progress-track {
-                left: 40px;
-                right: 40px;
+                left: 20px;
+                right: 20px;
             }
 
             .milestone-dot {
@@ -975,33 +984,33 @@
                     </div>
                     
                     <div class="milestones">
-                        <div class="milestone">
+                        <div class="milestone achieved">
                             <div class="milestone-dot">
-                                <i class="fas fa-mug-hot milestone-icon"></i>
+                                <i class="fas fa-tissue milestone-icon"></i>
                             </div>
                             <div class="milestone-label">30</div>
                         </div>
-                        <div class="milestone">
+                        <div class="milestone achieved">
                             <div class="milestone-dot">
-                                <i class="fas fa-box milestone-icon"></i>
+                                <i class="fas fa-umbrella milestone-icon"></i>
                             </div>
                             <div class="milestone-label">60</div>
                         </div>
-                        <div class="milestone">
+                        <div class="milestone achieved">
                             <div class="milestone-dot">
-                                <i class="fas fa-shopping-bag milestone-icon"></i>
+                                <i class="fas fa-box milestone-icon"></i>
                             </div>
                             <div class="milestone-label">90</div>
                         </div>
-                        <div class="milestone">
+                        <div class="milestone achieved">
                             <div class="milestone-dot">
-                                <i class="fas fa-glass-water milestone-icon"></i>
+                                <i class="fas fa-shopping-bag milestone-icon"></i>
                             </div>
                             <div class="milestone-label">120</div>
                         </div>
-                        <div class="milestone">
+                        <div class="milestone current">
                             <div class="milestone-dot">
-                                <i class="fas fa-hat-cowboy milestone-icon"></i>
+                                <i class="fas fa-glass-water milestone-icon"></i>
                             </div>
                             <div class="milestone-label">150</div>
                         </div>
@@ -1011,19 +1020,32 @@
 
             <!-- Updated Gifts Carousel with Auto-scroll -->
             <div class="gifts-carousel">
-                <div class="carousel-hint">
-                    <i class="fas fa-hand-point-left"></i> เลื่อนดู
-                </div>
                 <div class="gifts-container" id="giftsContainer">
                     <div class="gift-slide">
                         <div class="gift-content">
                             <div class="gift-icon-large">
-                                <i class="fas fa-mug-hot" style="color: #8b5cf6;"></i>
+                                <i class="fas fa-tissue" style="color: #ef4444;"></i>
                             </div>
                             <div class="gift-details">
-                                <div class="gift-name-large">แก้วน้ำเซรามิกคละสี</div>
+                                <div class="gift-name-large">ทิชชู่คุมะ</div>
                                 <div class="gift-points-large">30 คะแนน</div>
-                                <div class="gift-stock-large">คงเหลือ 12 ชิ้น</div>
+                                <div class="gift-stock-large">คงเหลือ 25 ชิ้น</div>
+                            </div>
+                        </div>
+                        <div class="gift-action">
+                            <button class="gift-button-large">แลกรับ</button>
+                        </div>
+                    </div>
+
+                    <div class="gift-slide">
+                        <div class="gift-content">
+                            <div class="gift-icon-large">
+                                <i class="fas fa-umbrella" style="color: #8b5cf6;"></i>
+                            </div>
+                            <div class="gift-details">
+                                <div class="gift-name-large">ร่มพับ</div>
+                                <div class="gift-points-large">60 คะแนน</div>
+                                <div class="gift-stock-large">คงเหลือ 15 ชิ้น</div>
                             </div>
                         </div>
                         <div class="gift-action">
@@ -1038,7 +1060,7 @@
                             </div>
                             <div class="gift-details">
                                 <div class="gift-name-large">กล่องอาหาร Super lock</div>
-                                <div class="gift-points-large">60 คะแนน</div>
+                                <div class="gift-points-large">90 คะแนน</div>
                                 <div class="gift-stock-large">คงเหลือ 8 ชิ้น</div>
                             </div>
                         </div>
@@ -1054,7 +1076,7 @@
                             </div>
                             <div class="gift-details">
                                 <div class="gift-name-large">กระเป๋า ECO</div>
-                                <div class="gift-points-large">90 คะแนน</div>
+                                <div class="gift-points-large">120 คะแนน</div>
                                 <div class="gift-stock-large">คงเหลือ 5 ชิ้น</div>
                             </div>
                         </div>
@@ -1070,22 +1092,6 @@
                             </div>
                             <div class="gift-details">
                                 <div class="gift-name-large">แก้ว LocknLock</div>
-                                <div class="gift-points-large">120 คะแนน</div>
-                                <div class="gift-stock-large">คงเหลือ 3 ชิ้น</div>
-                            </div>
-                        </div>
-                        <div class="gift-action">
-                            <button class="gift-button-large">แลกรับ</button>
-                        </div>
-                    </div>
-
-                    <div class="gift-slide">
-                        <div class="gift-content">
-                            <div class="gift-icon-large">
-                                <i class="fas fa-hat-cowboy" style="color: #84cc16;"></i>
-                            </div>
-                            <div class="gift-details">
-                                <div class="gift-name-large">หมวก MGH Premium</div>
                                 <div class="gift-points-large">150 คะแนน</div>
                                 <div class="gift-stock-large">คงเหลือ 2 ชิ้น</div>
                             </div>
@@ -1102,6 +1108,10 @@
                     <div class="indicator-dot" onclick="scrollToGift(2)"></div>
                     <div class="indicator-dot" onclick="scrollToGift(3)"></div>
                     <div class="indicator-dot" onclick="scrollToGift(4)"></div>
+                </div>
+                
+                <div class="carousel-hint">
+                    <i class="fas fa-hand-point-left"></i> เลื่อนดู
                 </div>
             </div>
         </div>
@@ -1578,14 +1588,14 @@
         function updatePointsDisplay(points) {
             document.getElementById('pointsValue').textContent = points;
             
-            // Updated milestone values (removed 0 and 152)
-            const maxPoints = 150;
+            // Updated to use max 152 points with milestones at 30, 60, 90, 120, 150
+            const maxPoints = 152;
             const progressPercent = Math.min((points / maxPoints) * 100, 100);
             
             document.getElementById('progressFill').style.width = progressPercent + '%';
             
             const milestones = document.querySelectorAll('.milestone');
-            const milestoneValues = [30, 60, 90, 120, 150]; // Updated values
+            const milestoneValues = [30, 60, 90, 120, 150];
             
             milestones.forEach((milestone, index) => {
                 const milestoneValue = milestoneValues[index];
@@ -1618,7 +1628,7 @@
 
         function updateGiftButtons(points = userPoints) {
             const buttons = document.querySelectorAll('.gift-button-large');
-            const requiredPoints = [30, 60, 90, 120, 150]; // Updated to match new milestones
+            const requiredPoints = [30, 60, 90, 120, 150]; // Updated to match new gift structure
             
             buttons.forEach((button, index) => {
                 if (points >= requiredPoints[index]) {
