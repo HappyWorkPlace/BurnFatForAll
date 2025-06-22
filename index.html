@@ -810,8 +810,8 @@
             }
 
             .logo {
-                width: 80px;
-                height: 80px;
+                width: 120px;
+                height: 120px;
             }
 
             .header-text h1 {
@@ -1640,7 +1640,7 @@
                         const prevMilestone = i === 0 ? 0 : milestoneValues[i - 1];
                         const currentMilestone = milestoneValues[i];
                         const segmentProgress = (points - prevMilestone) / (currentMilestone - prevMilestone);
-                        progressPercent = ((i + segmentProgress) / milestoneValues.length) * 100;
+                        progressPercent = ((i + segmentProgress) / milestoneValues.length) * 100 - (15);
                         break;
                     }
                 }
