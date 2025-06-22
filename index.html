@@ -6,6 +6,8 @@
     <title>NMB HappyWorkPlace - กินดี Healthy Life</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         * {
             margin: 0;
@@ -28,6 +30,43 @@
             min-height: 100vh;
             box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
             position: relative;
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            color: white;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        .loading-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         /* Header Section */
@@ -70,8 +109,6 @@
             opacity: 0.9;
             margin-bottom: 2px;
         }
-
-
 
         /* Member Card */
         .points-card {
@@ -123,6 +160,14 @@
             font-size: 1.2rem;
             box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
             border: 3px solid white;
+            overflow: hidden;
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
         }
 
         .member-info {
@@ -355,20 +400,6 @@
             display: flex;
             justify-content: space-between;
             margin-top: 20px;
-            padding: 0 2px;
-        }
-
-        .milestone {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-        }
-
-        .milestones {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 18px;
             padding: 0 2px;
         }
 
@@ -708,11 +739,6 @@
             margin: 0 auto 15px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
         .empty-state {
             text-align: center;
             padding: 40px 20px;
@@ -854,6 +880,15 @@
     </style>
 </head>
 <body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">
+            <div>กำลังเชื่อมต่อ LINE</div>
+            <div style="font-size: 0.9rem; margin-top: 10px; opacity: 0.8;">โปรดรอสักครู่...</div>
+        </div>
+    </div>
+
     <div class="app-container">
         <!-- Header -->
         <div class="header">
@@ -877,53 +912,53 @@
                         <i class="fas fa-user"></i>
                     </div>
                     <div class="member-info">
-                        <div class="member-name" id="memberName">ผู้ใช้งาน</div>
+                        <div class="member-name" id="memberName">กำลังโหลด...</div>
                         <div class="member-dept" id="memberDept">กำลังโหลดข้อมูล...</div>
-                        <div class="member-badge" id="memberBadge">Lopburi Factory</div>
+                        <div class="member-badge" id="memberBadge">กำลังโหลด...</div>
                     </div>
                 </div>
                 
                 <div class="points-section">
-                    <div class="points-value" id="pointsValue">150</div>
+                    <div class="points-value" id="pointsValue">0</div>
                     <div class="points-label">คะแนนสะสม</div>
                 </div>
             </div>
             
             <div class="progress-section">
                 <div class="progress-track">
-                    <div class="progress-fill" id="progressFill" style="width: 98.7%;"></div>
+                    <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
                 </div>
                 
                 <div class="milestones">
-                    <div class="milestone achieved">
+                    <div class="milestone">
                         <div class="milestone-dot"></div>
                         <div class="milestone-label">0</div>
                     </div>
-                    <div class="milestone achieved">
+                    <div class="milestone">
                         <div class="milestone-dot">
                             <i class="fas fa-tissue milestone-icon"></i>
                         </div>
                         <div class="milestone-label">30</div>
                     </div>
-                    <div class="milestone achieved">
+                    <div class="milestone">
                         <div class="milestone-dot">
                             <i class="fas fa-umbrella milestone-icon"></i>
                         </div>
                         <div class="milestone-label">60</div>
                     </div>
-                    <div class="milestone achieved">
+                    <div class="milestone">
                         <div class="milestone-dot">
                             <i class="fas fa-box milestone-icon"></i>
                         </div>
                         <div class="milestone-label">90</div>
                     </div>
-                    <div class="milestone achieved">
+                    <div class="milestone">
                         <div class="milestone-dot">
                             <i class="fas fa-shopping-bag milestone-icon"></i>
                         </div>
                         <div class="milestone-label">120</div>
                     </div>
-                    <div class="milestone current">
+                    <div class="milestone">
                         <div class="milestone-dot">
                             <i class="fas fa-glass-water milestone-icon"></i>
                         </div>
@@ -1114,9 +1149,172 @@
     </div>
 
     <script>
-        // Mock data
-        let userPoints = 150;
+        // Global variables
+        let userPoints = 0;
         let selectedFood = '';
+        let currentUserData = null;
+
+        // LIFF Configuration
+        const LIFF_ID = '2004752543-O6bmBeMw';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec';
+
+        // Initialize LIFF when page loads
+        window.onload = function() {
+            console.log("Window loaded, initializing LIFF");
+            initializeLiff();
+        };
+
+        // Initialize LIFF
+        function initializeLiff() {
+            if (typeof liff === 'undefined') {
+                console.error("LIFF SDK is not defined");
+                showErrorAndHideLoading('LIFF SDK ไม่พร้อมใช้งาน กรุณาเปิดใน LINE Browser');
+                return;
+            }
+
+            liff.init({
+                liffId: LIFF_ID
+            }).then(() => {
+                console.log("LIFF initialized successfully");
+                if (liff.isLoggedIn()) {
+                    console.log("User is logged in, getting profile");
+                    getUserProfile();
+                } else {
+                    console.log("User is not logged in, redirecting to login");
+                    liff.login();
+                }
+            }).catch(err => {
+                console.error('LIFF Initialization failed:', err);
+                showErrorAndHideLoading('การเชื่อมต่อ LINE ล้มเหลว');
+            });
+        }
+
+        // Get user profile from LINE
+        function getUserProfile() {
+            liff.getProfile().then(profile => {
+                console.log("Profile obtained: ", profile);
+                const uid = profile.userId;
+                const displayName = profile.displayName;
+                const pictureUrl = profile.pictureUrl;
+                
+                // Update avatar with LINE profile picture
+                updateUserAvatar(displayName, pictureUrl);
+                
+                // Fetch user data from Google Sheets
+                getUserData(uid, displayName);
+            }).catch(err => {
+                console.error('Failed to get user profile:', err);
+                showErrorAndHideLoading('ไม่สามารถดึงข้อมูลโปรไฟล์ LINE ได้');
+            });
+        }
+
+        // Update user avatar
+        function updateUserAvatar(displayName, pictureUrl) {
+            const profileAvatar = document.getElementById('profileAvatar');
+            
+            if (pictureUrl) {
+                // Use LINE profile picture
+                profileAvatar.innerHTML = `<img src="${pictureUrl}" alt="${displayName}" class="profile-image">`;
+            } else {
+                // Use initials as fallback
+                const initials = displayName.substring(0, 2).toUpperCase();
+                profileAvatar.innerHTML = initials;
+            }
+        }
+
+        // Fetch user data from Google Sheets
+        function getUserData(uid, displayName) {
+            console.log("Fetching user data for UID:", uid);
+            
+            fetch(`${API_URL}?action=getUserData2&uid=${uid}`)
+                .then(response => {
+                    console.log("User data response received");
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("User data:", data);
+                    if (data.error) {
+                        // User not found in database
+                        showUserNotFoundError(displayName);
+                    } else {
+                        // User found, display data
+                        displayUserData(data.data, displayName);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching user data:', error);
+                    showErrorAndHideLoading('ไม่สามารถดึงข้อมูลผู้ใช้ได้');
+                });
+        }
+
+        // Display user data
+        function displayUserData(userData, displayName) {
+            console.log("Displaying user data:", userData);
+            
+            currentUserData = userData;
+            
+            // Update UI with user data
+            document.getElementById('memberName').textContent = displayName;
+            document.getElementById('memberDept').textContent = userData.Division || 'ไม่ระบุแผนก';
+            document.getElementById('memberBadge').textContent = userData.Factory || 'ไม่ระบุโรงงาน';
+            
+            // Update points
+            userPoints = parseInt(userData.Point) || 0;
+            updatePointsDisplay(userPoints);
+            
+            // Hide loading screen
+            hideLoadingScreen();
+        }
+
+        // Show user not found error
+        function showUserNotFoundError(displayName) {
+            hideLoadingScreen();
+            
+            Swal.fire({
+                title: 'ไม่พบข้อมูลผู้ใช้',
+                html: `
+                    <p>ไม่พบข้อมูลของ <strong>${displayName}</strong> ในระบบ</p>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: #666;">
+                        กรุณาติดต่อ HR เพื่อลงทะเบียนในระบบ
+                    </p>
+                `,
+                icon: 'warning',
+                confirmButtonText: 'รับทราบ',
+                confirmButtonColor: '#10b981'
+            }).then(() => {
+                // Show default user info
+                document.getElementById('memberName').textContent = displayName;
+                document.getElementById('memberDept').textContent = 'ไม่พบข้อมูลในระบบ';
+                document.getElementById('memberBadge').textContent = 'ติดต่อ HR';
+            });
+        }
+
+        // Show error and hide loading
+        function showErrorAndHideLoading(message) {
+            hideLoadingScreen();
+            
+            Swal.fire({
+                title: 'เกิดข้อผิดพลาด',
+                text: message,
+                icon: 'error',
+                confirmButtonText: 'รับทราบ',
+                confirmButtonColor: '#ef4444'
+            });
+        }
+
+        // Hide loading screen
+        function hideLoadingScreen() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            if (loadingScreen) {
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 300);
+            }
+        }
 
         // Tab switching
         function switchTab(tabName) {
@@ -1139,7 +1337,7 @@
             }
         }
 
-        // Food search
+        // Food search functionality
         document.getElementById('foodSearch').addEventListener('input', function() {
             const value = this.value;
             const dropdown = document.getElementById('foodDropdown');
@@ -1317,6 +1515,7 @@
             }, 3000);
         }
 
+        // Add animation styles
         const style = document.createElement('style');
         style.textContent = `
             @keyframes slideDown {
@@ -1326,10 +1525,11 @@
         `;
         document.head.appendChild(style);
 
-        // Initialize
-        updatePointsDisplay(userPoints);
-        updateGiftButtons();
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize gift buttons
+            updateGiftButtons();
+        });
     </script>
-    <script src="record.js"></script>
 </body>
 </html>
