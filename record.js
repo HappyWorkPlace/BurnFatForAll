@@ -1,4 +1,4 @@
-// NMB Wellness App - Complete Index.js
+// NMB Wellness App - Complete record.js
 // Author: Assistant
 // Version: 2.0
 
