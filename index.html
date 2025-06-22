@@ -220,143 +220,9 @@
             font-weight: 500;
         }
 
-        /* Progress Section - Fixed alignment */
-        .progress-section {
-            position: relative;
-            margin-top: 20px;
-        }
-
-        .milestones-progress {
-            position: relative;
-            padding: 20px 0;
-        }
-
-        .progress-track {
-            height: 6px;
-            background: #f1f5f9;
-            border-radius: 10px;
-            position: absolute;
-            top: 50%;
-            left: 30px;
-            right: 30px;
-            transform: translateY(-50%);
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #10b981, #34d399);
-            border-radius: 10px;
-            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-        }
-
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            animation: shimmer 2s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .milestones {
-            display: flex;
-            position: relative;
-            padding: 0 30px;
-        }
-
-        .milestone {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: absolute;
-            z-index: 2;
-        }
-
-        /* Position milestones at correct percentages of 152-point scale */
-        .milestone:nth-child(1) { left: calc(30px + (30/152) * (100% - 60px)); } /* 30 points */
-        .milestone:nth-child(2) { left: calc(30px + (60/152) * (100% - 60px)); } /* 60 points */
-        .milestone:nth-child(3) { left: calc(30px + (90/152) * (100% - 60px)); } /* 90 points */
-        .milestone:nth-child(4) { left: calc(30px + (120/152) * (100% - 60px)); } /* 120 points */
-        .milestone:nth-child(5) { left: calc(30px + (150/152) * (100% - 60px)); } /* 150 points */
-
-        .milestone-dot {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: #e2e8f0;
-            border: 3px solid white;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 8px;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            transform: translateX(-50%);
-        }
-
-        .milestone.achieved .milestone-dot {
-            background: #10b981;
-            box-shadow: 0 2px 12px rgba(16, 185, 129, 0.4);
-            color: white;
-        }
-
-        .milestone.current .milestone-dot {
-            background: #f59e0b;
-            box-shadow: 0 2px 12px rgba(245, 158, 11, 0.4);
-            animation: pulse 2s infinite;
-            color: white;
-        }
-
-        .milestone-icon {
-            display: none;
-        }
-
-        .milestone.achieved .milestone-icon,
-        .milestone.current .milestone-icon {
-            display: block;
-        }
-
-        .milestone-label {
-            font-size: 0.75rem;
-            color: #64748b;
-            font-weight: 500;
-            background: white;
-            padding: 2px 6px;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            transform: translateX(-50%);
-            white-space: nowrap;
-        }
-
-        .milestone.achieved .milestone-label {
-            color: #10b981;
-            font-weight: 600;
-        }
-
-        .milestone.current .milestone-label {
-            color: #f59e0b;
-            font-weight: 600;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: translateX(-50%) scale(1); }
-            50% { transform: translateX(-50%) scale(1.2); }
-        }
-
         /* Gifts Carousel */
         .gifts-carousel {
             margin-top: 20px;
-            position: relative;
         }
 
         .gifts-container {
@@ -494,25 +360,137 @@
             transform: scale(1.2);
         }
 
-        /* Auto-scroll hint */
-        .carousel-hint {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 500;
-            z-index: 3;
-            opacity: 0.8;
-            animation: slideHint 2s infinite;
+        /* Updated Progress Section - Combined with Milestones */
+        .progress-section {
+            position: relative;
+            margin-top: 20px;
         }
 
-        @keyframes slideHint {
-            0%, 100% { transform: translateX(0); }
-            50% { transform: translateX(3px); }
+        .milestones-progress {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .progress-track {
+            height: 6px;
+            background: #f1f5f9;
+            border-radius: 10px;
+            position: absolute;
+            top: 36%;
+            left: 20px;
+            right: 20px;
+            transform: translateY(-50%);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            border-radius: 10px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .milestones {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            padding: 0 20px;
+        }
+
+        .milestone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+        }
+
+        .milestone:first-child {
+            margin-left: 12%;
+        }
+
+        .milestone:last-child {
+            margin-right: 12%;
+        }
+
+        .milestone-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .milestone.achieved .milestone-dot {
+            background: #10b981;
+            box-shadow: 0 2px 12px rgba(16, 185, 129, 0.4);
+            color: white;
+        }
+
+        .milestone.current .milestone-dot {
+            background: #f59e0b;
+            box-shadow: 0 2px 12px rgba(245, 158, 11, 0.4);
+            animation: pulse 2s infinite;
+            color: white;
+        }
+
+        .milestone-icon {
+            display: none;
+        }
+
+        .milestone.achieved .milestone-icon,
+        .milestone.current .milestone-icon {
+            display: block;
+        }
+
+        .milestone-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 500;
+            background: white;
+            padding: 2px 6px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .milestone.achieved .milestone-label {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .milestone.current .milestone-label {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
         }
 
         /* Navigation */
@@ -684,6 +662,91 @@
             font-size: 1rem;
         }
 
+        /* Gifts */
+        .gifts-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .gift-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .gift-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .gift-image {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .gift-info {
+            flex: 1;
+        }
+
+        .gift-name {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #1e293b;
+            font-size: 0.95rem;
+        }
+
+        .gift-points {
+            font-size: 0.85rem;
+            color: #10b981;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .gift-stock {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .redeem-button {
+            padding: 10px 18px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            font-family: 'Prompt', sans-serif;
+            white-space: nowrap;
+        }
+
+        .redeem-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .redeem-button:disabled {
+            background: #e2e8f0;
+            color: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
         /* Loading & Empty States */
         .loading {
             text-align: center;
@@ -713,10 +776,34 @@
             opacity: 0.4;
         }
 
+        /* Auto-scroll hint */
+        .carousel-hint {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            z-index: 3;
+            opacity: 0.8;
+        }
+
         /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideHint {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(3px); }
+        }
+
+        .carousel-hint {
+            animation: slideHint 2s infinite;
         }
 
         /* Responsive */
@@ -825,20 +912,13 @@
             }
 
             .milestones {
-                padding: 0 25px;
+                padding: 0 20px;
             }
 
             .progress-track {
-                left: 25px;
-                right: 25px;
+                left: 20px;
+                right: 20px;
             }
-
-            /* Adjust milestone positions for mobile */
-            .milestone:nth-child(1) { left: calc(25px + (30/152) * (100% - 50px)); }
-            .milestone:nth-child(2) { left: calc(25px + (60/152) * (100% - 50px)); }
-            .milestone:nth-child(3) { left: calc(25px + (90/152) * (100% - 50px)); }
-            .milestone:nth-child(4) { left: calc(25px + (120/152) * (100% - 50px)); }
-            .milestone:nth-child(5) { left: calc(25px + (150/152) * (100% - 50px)); }
 
             .milestone-dot {
                 width: 28px;
@@ -896,7 +976,7 @@
                 </div>
             </div>
             
-            <!-- Progress Section with Perfect Alignment -->
+            <!-- Updated Progress Section with Combined Milestones -->
             <div class="progress-section">
                 <div class="milestones-progress">
                     <div class="progress-track">
@@ -938,11 +1018,8 @@
                 </div>
             </div>
 
-            <!-- Gifts Carousel -->
+            <!-- Updated Gifts Carousel with Auto-scroll -->
             <div class="gifts-carousel">
-                <div class="carousel-hint">
-                    <i class="fas fa-hand-point-left"></i> เลื่อนดู
-                </div>
                 <div class="gifts-container" id="giftsContainer">
                     <div class="gift-slide">
                         <div class="gift-content">
@@ -1032,6 +1109,10 @@
                     <div class="indicator-dot" onclick="scrollToGift(3)"></div>
                     <div class="indicator-dot" onclick="scrollToGift(4)"></div>
                 </div>
+                
+                <div class="carousel-hint">
+                    <i class="fas fa-hand-point-left"></i> เลื่อนดู
+                </div>
             </div>
         </div>
 
@@ -1115,7 +1196,7 @@
         const API_URL = 'https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec';
         
         // Development mode flag (set to true for testing outside LINE)
-        const DEV_MODE = true;
+        const DEV_MODE = false;
         
         // Mock data for development
         const MOCK_USER_DATA = {
@@ -1390,7 +1471,7 @@
 
         // Auto-scroll functionality
         function startAutoScroll() {
-            const totalGifts = 5;
+            const totalGifts = 5; // Updated to match new gift count
             
             autoScrollInterval = setInterval(() => {
                 if (!userInteracted) {
@@ -1547,7 +1628,7 @@
 
         function updateGiftButtons(points = userPoints) {
             const buttons = document.querySelectorAll('.gift-button-large');
-            const requiredPoints = [30, 60, 90, 120, 150];
+            const requiredPoints = [30, 60, 90, 120, 150]; // Updated to match new gift structure
             
             buttons.forEach((button, index) => {
                 if (points >= requiredPoints[index]) {
@@ -1560,7 +1641,7 @@
             });
         }
 
-        // Carousel functionality
+        // Updated Carousel functionality
         function scrollToGift(index) {
             const container = document.getElementById('giftsContainer');
             const giftWidth = container.children[0].offsetWidth;
