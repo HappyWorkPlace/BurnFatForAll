@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NMB HappyWorkPlace - กินดี Healthy Life#2</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -621,6 +622,16 @@
             transform: none;
             box-shadow: none;
         }
+        .highlight {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #92400e;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(146, 64, 14, 0.1);
+            box-shadow: 0 1px 3px rgba(251, 191, 36, 0.3);
+            animation: highlightPulse 0.3s ease-out;
+        }
 
         /* History */
         .history-item {
@@ -827,8 +838,8 @@
             }
 
             .profile-avatar {
-                width: 70px;
-                height: 70px;
+                width: 80px;
+                height: 80px;
                 font-size: 1.1rem;
             }
 
@@ -967,7 +978,7 @@
                     <div class="milestones">
                         <div class="milestone">
                             <div class="milestone-dot">
-                                <i class="fal fa-box-tissue"></i>
+                                <i class="fas fa-box-tissue milestone-icon"></i>
                             </div>
                             <div class="milestone-label">30</div>
                         </div>
@@ -1607,7 +1618,13 @@
                 document.getElementById('foodDropdown').style.display = 'none';
             }
         });
-
+        function highlightText(text, keyword) {
+            if (!keyword || keyword.trim() === '') return text;
+            
+            const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`(${escapedKeyword})`, 'gi');
+            return text.replace(regex, '<span class="highlight">$1</span>');
+        }
         // Record food
         document.getElementById('recordBtn').addEventListener('click', function() {
             if (selectedFood) {
