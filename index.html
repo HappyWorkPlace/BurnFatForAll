@@ -775,10 +775,6 @@
             .nav-container {
                 padding: 0 15px;
             }
-            
-            .points-value {
-                font-size: 2rem;
-            }
 
             .logo {
                 width: 45px;
@@ -791,13 +787,6 @@
 
             .header-text p {
                 font-size: 0.75rem;
-            }
-
-            .card-top-section {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-                margin-bottom: 15px;
             }
 
             .member-header {
@@ -821,10 +810,6 @@
             .member-badge {
                 font-size: 0.6rem;
                 padding: 2px 8px;
-            }
-
-            .points-section {
-                text-align: left;
             }
 
             .points-value {
@@ -1354,13 +1339,31 @@
                 document.getElementById('devModeIndicator').style.display = 'block';
             }
             
+            // Parse userData - check if it's an array or object
+            let parsedData = {};
+            if (Array.isArray(userData)) {
+                // If userData is an array, map it to object structure
+                // Array structure: [UID, EmpNo, Name, Division, Factory, Point, ...]
+                parsedData = {
+                    Name: userData[2] || displayName,
+                    Division: userData[3] || 'ไม่ระบุแผนก', 
+                    Factory: userData[4] || 'ไม่ระบุโรงงาน',
+                    Point: userData[5] || 0
+                };
+            } else {
+                // If userData is already an object
+                parsedData = userData;
+            }
+            
+            console.log("Parsed user data:", parsedData);
+            
             // Update UI with user data
             document.getElementById('memberName').textContent = displayName;
-            document.getElementById('memberDept').textContent = userData.Division || 'ไม่ระบุแผนก';
-            document.getElementById('memberBadge').textContent = userData.Factory || 'ไม่ระบุโรงงาน';
+            document.getElementById('memberDept').textContent = parsedData.Division || 'ไม่ระบุแผนก';
+            document.getElementById('memberBadge').textContent = parsedData.Factory || 'ไม่ระบุโรงงาน';
             
             // Update points
-            userPoints = parseInt(userData.Point) || 0;
+            userPoints = parseInt(parsedData.Point) || 0;
             updatePointsDisplay(userPoints);
             
             // Hide loading screen
