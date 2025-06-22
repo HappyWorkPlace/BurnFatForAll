@@ -931,7 +931,7 @@
         <div class="header">
             <div class="logo-section">
                 <div class="logo">
-                    <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/a1bf7def2a171ee1e3281ff8d68b56aa34729e38/LogoProject.JPG" alt="Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+                    <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/a1bf7def2a171ee1e3281ff8d68b56aa34729e38/Logo_healthylife2.png" alt="Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
                 </div>
                 <div class="header-text">
                     <h1>กินดี Healthy Life</h1>
@@ -1396,7 +1396,10 @@
             
             // Update UI with user data
             document.getElementById('memberName').textContent = displayName;
-            document.getElementById('memberDept').textContent = `${parsedData.Name || ''} ${parsedData.Division || ''}`.trim() || 'ไม่ระบุ';
+            const deptText = parsedData.Name && parsedData.Division 
+                ? `${parsedData.Name}<br>${parsedData.Division}` 
+                : (parsedData.Name || parsedData.Division || 'ไม่ระบุ');
+            document.getElementById('memberDept').innerHTML = deptText;
             document.getElementById('memberBadge').textContent = parsedData.Factory || 'ไม่ระบุโรงงาน';
             
             // Update points
@@ -1576,8 +1579,8 @@
         function updatePointsDisplay(points) {
             document.getElementById('pointsValue').textContent = points;
             
-            // Updated to use max 152 points with milestones at 30, 60, 90, 120, 150
-            const maxPoints = 152;
+            // Updated to use max 150 points to match milestones at 30, 60, 90, 120, 150
+            const maxPoints = 150;
             const progressPercent = Math.min((points / maxPoints) * 100, 100);
             
             document.getElementById('progressFill').style.width = progressPercent + '%';
