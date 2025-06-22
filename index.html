@@ -900,6 +900,9 @@
                     <h1>กินดี Healthy Life</h1>
                     <p>Happy Work Place : Happy Body</p>
                     <p>NMB Minebea Thai</p>
+                    <div id="devModeIndicator" style="display: none; margin-top: 8px; padding: 4px 8px; background: rgba(255,255,255,0.2); border-radius: 12px; font-size: 0.7rem; font-weight: 500;">
+                        🔧 โหมดทดสอบ
+                    </div>
                 </div>
             </div>
         </div>
@@ -1157,25 +1160,70 @@
         // LIFF Configuration
         const LIFF_ID = '2004752543-O6bmBeMw';
         const API_URL = 'https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec';
+        
+        // Development mode flag (set to true for testing outside LINE)
+        const DEV_MODE = false;
+        
+        // Mock data for development
+        const MOCK_USER_DATA = {
+            uid: 'dev-user-001',
+            displayName: 'Test User',
+            pictureUrl: null,
+            userData: {
+                Name: 'Test User',
+                Division: 'NMB BEARING',
+                Factory: 'AYUTTHAYA',
+                Point: '150'
+            }
+        };
 
         // Initialize LIFF when page loads
         window.onload = function() {
-            console.log("Window loaded, initializing LIFF");
-            initializeLiff();
+            console.log("Window loaded, initializing app");
+            
+            if (DEV_MODE) {
+                console.log("Running in development mode");
+                setTimeout(() => {
+                    simulateUserLogin();
+                }, 1000);
+            } else {
+                initializeLiff();
+            }
         };
+
+        // Simulate user login for development
+        function simulateUserLogin() {
+            console.log("Simulating user login with mock data");
+            
+            // Update avatar
+            updateUserAvatar(MOCK_USER_DATA.displayName, MOCK_USER_DATA.pictureUrl);
+            
+            // Display user data
+            displayUserData(MOCK_USER_DATA.userData, MOCK_USER_DATA.displayName);
+        }
 
         // Initialize LIFF
         function initializeLiff() {
+            console.log("Initializing LIFF...");
+            
             if (typeof liff === 'undefined') {
                 console.error("LIFF SDK is not defined");
-                showErrorAndHideLoading('LIFF SDK ไม่พร้อมใช้งาน กรุณาเปิดใน LINE Browser');
+                handleLiffError('LIFF SDK ไม่พร้อมใช้งาน กรุณาเปิดใน LINE Browser');
                 return;
             }
+
+            // Set timeout for LIFF initialization
+            const timeoutId = setTimeout(() => {
+                console.error("LIFF initialization timeout");
+                handleLiffError('การเชื่อมต่อ LINE หมดเวลา กรุณาลองใหม่อีกครั้ง');
+            }, 10000);
 
             liff.init({
                 liffId: LIFF_ID
             }).then(() => {
+                clearTimeout(timeoutId);
                 console.log("LIFF initialized successfully");
+                
                 if (liff.isLoggedIn()) {
                     console.log("User is logged in, getting profile");
                     getUserProfile();
@@ -1184,8 +1232,44 @@
                     liff.login();
                 }
             }).catch(err => {
+                clearTimeout(timeoutId);
                 console.error('LIFF Initialization failed:', err);
-                showErrorAndHideLoading('การเชื่อมต่อ LINE ล้มเหลว');
+                handleLiffError('การเชื่อมต่อ LINE ล้มเหลว กรุณาเปิดแอปใน LINE');
+            });
+        }
+
+        // Handle LIFF errors
+        function handleLiffError(message) {
+            hideLoadingScreen();
+            
+            Swal.fire({
+                title: 'ไม่สามารถเชื่อมต่อ LINE ได้',
+                html: `
+                    <p>${message}</p>
+                    <div style="margin-top: 15px; padding: 10px; background: #f3f4f6; border-radius: 8px; font-size: 0.85rem;">
+                        <strong>วิธีแก้ไข:</strong><br>
+                        1. เปิดแอปใน LINE Browser<br>
+                        2. ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต<br>
+                        3. ลองปิดแล้วเปิดใหม่
+                    </div>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'ใช้โหมดทดสอบ',
+                cancelButtonText: 'ลองใหม่',
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#6b7280'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Switch to development mode
+                    console.log("Switching to development mode");
+                    setTimeout(() => {
+                        simulateUserLogin();
+                    }, 500);
+                } else {
+                    // Retry LIFF initialization
+                    location.reload();
+                }
             });
         }
 
@@ -1226,6 +1310,15 @@
         function getUserData(uid, displayName) {
             console.log("Fetching user data for UID:", uid);
             
+            // In development mode, skip API call and use mock data
+            if (DEV_MODE) {
+                console.log("Development mode: using mock data");
+                setTimeout(() => {
+                    displayUserData(MOCK_USER_DATA.userData, displayName);
+                }, 1000);
+                return;
+            }
+            
             fetch(`${API_URL}?action=getUserData2&uid=${uid}`)
                 .then(response => {
                     console.log("User data response received");
@@ -1255,6 +1348,11 @@
             console.log("Displaying user data:", userData);
             
             currentUserData = userData;
+            
+            // Show development mode indicator if in dev mode
+            if (DEV_MODE) {
+                document.getElementById('devModeIndicator').style.display = 'block';
+            }
             
             // Update UI with user data
             document.getElementById('memberName').textContent = displayName;
