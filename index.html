@@ -69,11 +69,11 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Header Section */
+        /* Header Section - Reduced padding */
         .header {
             background: linear-gradient(135deg, #10b981, #059669);
             color: white;
-            padding: 30px 20px 20px;
+            padding: 20px 20px 15px;
             text-align: left;
             position: relative;
         }
@@ -83,29 +83,25 @@
             align-items: center;
             justify-content: center;
             gap: 12px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .logo {
-            width: 120px;
-            height: 120px;
-/*          border-radius: 14px;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px); */
+            width: 100px;
+            height: 100px;
             display: flex;
             align-items: center;
             justify-content: center;
-/*             border: 1px solid rgba(255, 255, 255, 0.3); */
         }
 
         .header-text h1 {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 600;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .header-text p {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             opacity: 0.9;
             margin-bottom: 2px;
         }
@@ -150,7 +146,7 @@
 
         .profile-avatar {
             width: 80px;
-            height: 180px;
+            height: 80px;
             border-radius: 14px;
             background: linear-gradient(135deg, #10b981, #059669);
             display: flex;
@@ -360,7 +356,7 @@
             transform: scale(1.2);
         }
 
-        /* Updated Progress Section - Combined with Milestones */
+        /* Progress Section */
         .progress-section {
             position: relative;
             margin-top: 10px;
@@ -797,7 +793,7 @@
         /* Responsive */
         @media (max-width: 480px) {
             .header {
-                padding: 25px 10px 10px;
+                padding: 15px 10px 10px;
             }
             
             .points-card {
@@ -814,16 +810,16 @@
             }
 
             .logo {
-                width: 140px;
-                height: 140px;
+                width: 80px;
+                height: 80px;
             }
 
             .header-text h1 {
-                font-size: 1.3rem;
+                font-size: 1.1rem;
             }
 
             .header-text p {
-                font-size: 0.75rem;
+                font-size: 0.7rem;
             }
 
             .member-header {
@@ -831,8 +827,8 @@
             }
 
             .profile-avatar {
-                width: 80px;
-                height: 80px;
+                width: 70px;
+                height: 70px;
                 font-size: 1.1rem;
             }
 
@@ -931,15 +927,12 @@
         <div class="header">
             <div class="logo-section">
                 <div class="logo">
-                    <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/a0dcbf74c655bcf4a0dde03cc15a7eacf3d6d084/Logo_healthylife2.png" alt="Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+                    <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/6c3f085cbc8c545c01d759c700ff2546fc16e7f0/Logo_healthylife2.png" alt="Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
                 </div>
                 <div class="header-text">
                     <h1>กินดี Healthy Life #2</h1>
                     <p>Happy Work Place : Happy Body</p>
                     <p>NMB Minebea Thai</p>
-                    <div id="devModeIndicator" style="display: none; margin-top: 8px; padding: 4px 8px; background: rgba(255,255,255,0.2); border-radius: 12px; font-size: 0.7rem; font-weight: 500;">
-                        🔧 โหมดทดสอบ
-                    </div>
                 </div>
             </div>
         </div>
@@ -964,7 +957,7 @@
                 </div>
             </div>
             
-            <!-- Updated Progress Section with Combined Milestones -->
+            <!-- Progress Section with Milestones -->
             <div class="progress-section">
                 <div class="milestones-progress">
                     <div class="progress-track">
@@ -972,31 +965,31 @@
                     </div>
                     
                     <div class="milestones">
-                        <div class="milestone achieved">
+                        <div class="milestone">
                             <div class="milestone-dot">
                                 <i class="fas fa-tissue milestone-icon"></i>
                             </div>
                             <div class="milestone-label">30</div>
                         </div>
-                        <div class="milestone achieved">
+                        <div class="milestone">
                             <div class="milestone-dot">
                                 <i class="fas fa-umbrella milestone-icon"></i>
                             </div>
                             <div class="milestone-label">60</div>
                         </div>
-                        <div class="milestone achieved">
+                        <div class="milestone">
                             <div class="milestone-dot">
                                 <i class="fas fa-box milestone-icon"></i>
                             </div>
                             <div class="milestone-label">90</div>
                         </div>
-                        <div class="milestone achieved">
+                        <div class="milestone">
                             <div class="milestone-dot">
                                 <i class="fas fa-shopping-bag milestone-icon"></i>
                             </div>
                             <div class="milestone-label">120</div>
                         </div>
-                        <div class="milestone current">
+                        <div class="milestone">
                             <div class="milestone-dot">
                                 <i class="fas fa-glass-water milestone-icon"></i>
                             </div>
@@ -1006,7 +999,7 @@
                 </div>
             </div>
 
-            <!-- Updated Gifts Carousel with Auto-scroll -->
+            <!-- Gifts Carousel -->
             <div class="gifts-carousel">
                 <div class="gifts-container" id="giftsContainer">
                     <div class="gift-slide">
@@ -1126,11 +1119,7 @@
                     <input type="text" class="search-input" placeholder="ค้นหาเมนูสุขภาพจากโรงอาหาร..." id="foodSearch">
                     <i class="fas fa-search search-icon"></i>
                     <div class="dropdown-list" id="foodDropdown">
-                        <div class="dropdown-item">ข้าวผัดผักรวม</div>
-                        <div class="dropdown-item">ผัดผักคะน้าใส่หมู</div>
-                        <div class="dropdown-item">แกงเขียวหวานไก่</div>
-                        <div class="dropdown-item">ยำขนมจีน</div>
-                        <div class="dropdown-item">สลัดผักรวม</div>
+                        <!-- Food items will be loaded dynamically -->
                     </div>
                 </div>
                 <button class="record-button" id="recordBtn" disabled>
@@ -1145,26 +1134,7 @@
                     <p>กำลังโหลดประวัติ...</p>
                 </div>
                 <div id="historyList">
-                    <div class="history-item">
-                        <div class="history-date">วันนี้ - 12:30</div>
-                        <div class="history-food">ข้าวผัดผักรวม</div>
-                    </div>
-                    <div class="history-item">
-                        <div class="history-date">เมื่อวาน - 12:15</div>
-                        <div class="history-food">แกงเขียวหวานไก่</div>
-                    </div>
-                    <div class="history-item">
-                        <div class="history-date">2 วันที่แล้ว - 12:45</div>
-                        <div class="history-food">สลัดผักรวม</div>
-                    </div>
-                    <div class="history-item">
-                        <div class="history-date">3 วันที่แล้ว - 13:00</div>
-                        <div class="history-food">ต้มยำไก่</div>
-                    </div>
-                    <div class="history-item">
-                        <div class="history-date">4 วันที่แล้ว - 12:20</div>
-                        <div class="history-food">ผัดผักรวมมิตร</div>
-                    </div>
+                    <!-- History items will be loaded dynamically -->
                 </div>
             </div>
         </div>
@@ -1175,6 +1145,7 @@
         let userPoints = 0;
         let selectedFood = '';
         let currentUserData = null;
+        let userData = null;
         let autoScrollInterval = null;
         let currentGiftIndex = 0;
         let userInteracted = false;
@@ -1182,47 +1153,12 @@
         // LIFF Configuration
         const LIFF_ID = '2004752543-O6bmBeMw';
         const API_URL = 'https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec';
-        
-        // Development mode flag (set to true for testing outside LINE)
-        const DEV_MODE = false;
-        
-        // Mock data for development
-        const MOCK_USER_DATA = {
-            uid: 'dev-user-001',
-            displayName: 'Test User',
-            pictureUrl: null,
-            userData: {
-                Name: 'Test User',
-                Division: 'NMB BEARING',
-                Factory: 'AYUTTHAYA',
-                Point: '45'
-            }
-        };
 
         // Initialize LIFF when page loads
         window.onload = function() {
             console.log("Window loaded, initializing app");
-            
-            if (DEV_MODE) {
-                console.log("Running in development mode");
-                setTimeout(() => {
-                    simulateUserLogin();
-                }, 1000);
-            } else {
-                initializeLiff();
-            }
+            initializeLiff();
         };
-
-        // Simulate user login for development
-        function simulateUserLogin() {
-            console.log("Simulating user login with mock data");
-            
-            // Update avatar
-            updateUserAvatar(MOCK_USER_DATA.displayName, MOCK_USER_DATA.pictureUrl);
-            
-            // Display user data
-            displayUserData(MOCK_USER_DATA.userData, MOCK_USER_DATA.displayName);
-        }
 
         // Initialize LIFF
         function initializeLiff() {
@@ -1276,22 +1212,10 @@
                     </div>
                 `,
                 icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'ใช้โหมดทดสอบ',
-                cancelButtonText: 'ลองใหม่',
-                confirmButtonColor: '#10b981',
-                cancelButtonColor: '#6b7280'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Switch to development mode
-                    console.log("Switching to development mode");
-                    setTimeout(() => {
-                        simulateUserLogin();
-                    }, 500);
-                } else {
-                    // Retry LIFF initialization
-                    location.reload();
-                }
+                confirmButtonText: 'ลองใหม่',
+                confirmButtonColor: '#10b981'
+            }).then(() => {
+                location.reload();
             });
         }
 
@@ -1332,15 +1256,6 @@
         function getUserData(uid, displayName) {
             console.log("Fetching user data for UID:", uid);
             
-            // In development mode, skip API call and use mock data
-            if (DEV_MODE) {
-                console.log("Development mode: using mock data");
-                setTimeout(() => {
-                    displayUserData(MOCK_USER_DATA.userData, displayName);
-                }, 1000);
-                return;
-            }
-            
             fetch(`${API_URL}?action=getUserData2&uid=${uid}`)
                 .then(response => {
                     console.log("User data response received");
@@ -1366,30 +1281,26 @@
         }
 
         // Display user data
-        function displayUserData(userData, displayName) {
-            console.log("Displaying user data:", userData);
+        function displayUserData(userDataResponse, displayName) {
+            console.log("Displaying user data:", userDataResponse);
             
-            currentUserData = userData;
-            
-            // Show development mode indicator if in dev mode
-            if (DEV_MODE) {
-                document.getElementById('devModeIndicator').style.display = 'block';
-            }
+            currentUserData = userDataResponse;
+            userData = userDataResponse; // Set global userData
             
             // Parse userData - check if it's an array or object
             let parsedData = {};
-            if (Array.isArray(userData)) {
+            if (Array.isArray(userDataResponse)) {
                 // If userData is an array, map it to object structure
                 // Array structure: [UID, EmpNo, Name, Division, Factory, Point, ...]
                 parsedData = {
-                    Name: userData[2] || displayName,
-                    Division: userData[3] || 'ไม่ระบุแผนก', 
-                    Factory: userData[4] || 'ไม่ระบุโรงงาน',
-                    Point: userData[5] || 0
+                    Name: userDataResponse[2] || displayName,
+                    Division: userDataResponse[3] || 'ไม่ระบุแผนก', 
+                    Factory: userDataResponse[4] || 'ไม่ระบุโรงงาน',
+                    Point: userDataResponse[5] || 0
                 };
             } else {
                 // If userData is already an object
-                parsedData = userData;
+                parsedData = userDataResponse;
             }
             
             console.log("Parsed user data:", parsedData);
@@ -1405,6 +1316,9 @@
             // Update points
             userPoints = parseInt(parsedData.Point) || 0;
             updatePointsDisplay(userPoints);
+            
+            // Load food list
+            loadFoodList();
             
             // Start auto-scroll for carousel
             startAutoScroll();
@@ -1460,9 +1374,166 @@
             }
         }
 
+        // =================
+        // Food System
+        // =================
+
+        function loadFoodList() {
+            return fetch(`${API_URL}?action=getFoodList&sheetName=MENU&column=A`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        populateDropdown(data.data);
+                        return data.data;
+                    } else {
+                        console.error('Failed to fetch food list:', data.message);
+                        throw new Error('Failed to fetch food list');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching food list:', error);
+                    // Use fallback food list
+                    const fallbackFoods = [
+                        'ข้าวผัดผักรวม',
+                        'ผัดผักคะน้าใส่หมู',
+                        'แกงเขียวหวานไก่',
+                        'ยำขนมจีน',
+                        'สลัดผักรวม',
+                        'ต้มยำไก่',
+                        'ผัดผักรวมมิตร'
+                    ];
+                    populateDropdown(fallbackFoods);
+                    throw error;
+                });
+        }
+
+        function populateDropdown(foodList) {
+            const dropdownList = document.getElementById('foodDropdown');
+            if (!dropdownList) return;
+            
+            dropdownList.innerHTML = '';
+            
+            foodList.forEach(food => {
+                const item = document.createElement('div');
+                item.className = 'dropdown-item';
+                item.textContent = food;
+                dropdownList.appendChild(item);
+            });
+        }
+
+        function updateRecordButton(food) {
+            const button = document.getElementById('recordBtn');
+            if (!button) return;
+            
+            if (food && food.trim() !== '') {
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-save"></i> บันทึกการรับประทาน';
+            } else {
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-save"></i> เลือกเมนูก่อน';
+            }
+        }
+
+        function recordSelection() {
+            if (!userData || !selectedFood) {
+                Swal.fire('Error', 'กรุณาเลือกเมนูอาหาร', 'error');
+                return;
+            }
+
+            Swal.fire({
+                title: 'วันนี้บันทึกไปรึยังน้า...',
+                text: 'ตรวจสอบสักครู่..',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            liff.getProfile()
+                .then(profile => {
+                    const uid = profile.userId;
+                    checkUserColumnJ(uid, userData[1], userData[4], selectedFood, userData[2]);
+                })
+                .catch(err => {
+                    console.error('Failed to get user profile:', err);
+                    Swal.fire('Error', 'Failed to get user profile. Please try again later.', 'error');
+                });
+        }
+
+        function checkUserColumnJ(uid, empNo, factory, selectedFood, name) {
+            fetch(`${API_URL}?action=checkUserColumnJ&uid=${uid}`)
+                .then(response => response.json())
+                .then(data => {
+                    Swal.close();
+                    if (data.status === 'TRUE') {
+                        saveSelection(empNo, factory, selectedFood, uid, name);
+                    } else if (data.status === 'FALSE') {
+                        Swal.fire({
+                            title: 'แย่จัง..',
+                            html: `วันนี้คุณบันทึกข้อมูลไปแล้วเมื่อ ${new Date(data.lastTimestamp).toLocaleString()} พรุ่งนี้ค่อยมาใหม่นะ <br><img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_error.png" alt="icon" style="width:100px;height:100px;">`
+                        });
+                    } else {
+                        Swal.fire('Error', 'Failed to check user status.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking user column J:', error);
+                    Swal.fire('Error', 'Failed to check user status. Please try again later.', 'error');
+                });
+        }
+
+        function saveSelection(empNo, factory, selectedFood, uid, name) {
+            Swal.fire({
+                title: 'กำลังบันทึกข้อมูล',
+                text: 'รอสักครู่..',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            fetch(`${API_URL}?action=saveRedeemData&empNo=${encodeURIComponent(empNo)}&factory=${encodeURIComponent(factory)}&code=${encodeURIComponent(selectedFood)}&name=${encodeURIComponent(name)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Network response was not ok: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    Swal.close();
+                    if (data.success) {
+                        // Add points and update UI
+                        userPoints += 5;
+                        updatePointsDisplay(userPoints);
+                        
+                        Swal.fire({
+                            title: 'สำเร็จ!',
+                            html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_1.png" alt="success" style="width:100px;height:100px;"><p>บันทึกข้อมูลแล้ว +5 คะแนน</p>',
+                            showConfirmButton: true,
+                            confirmButtonText: 'ตกลง'
+                        });
+                        
+                        // Reset form
+                        const foodSearch = document.getElementById('foodSearch');
+                        if (foodSearch) foodSearch.value = '';
+                        selectedFood = '';
+                        updateRecordButton('');
+                        
+                        // Update gift buttons
+                        updateGiftButtons(userPoints);
+                    } else {
+                        Swal.fire('Error', data.message || 'Failed to save data.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error saving data:', error);
+                    Swal.fire('Error', `Network error: ${error.message}`, 'error');
+                });
+        }
+
         // Auto-scroll functionality
         function startAutoScroll() {
-            const totalGifts = 5; // Updated to match new gift count
+            const totalGifts = 5;
             
             autoScrollInterval = setInterval(() => {
                 if (!userInteracted) {
@@ -1543,50 +1614,42 @@
             }
         });
 
-        function updateRecordButton(food) {
-            const button = document.getElementById('recordBtn');
-            if (food && food.trim() !== '') {
-                button.disabled = false;
-                button.innerHTML = '<i class="fas fa-save"></i> บันทึกการรับประทาน';
-            } else {
-                button.disabled = true;
-                button.innerHTML = '<i class="fas fa-save"></i> เลือกเมนูก่อน';
-            }
-        }
-
         // Record food
         document.getElementById('recordBtn').addEventListener('click', function() {
             if (selectedFood) {
                 this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
                 this.disabled = true;
                 
-                setTimeout(() => {
-                    userPoints += 5;
-                    updatePointsDisplay(userPoints);
-                    
-                    showToast('บันทึกสำเร็จ! +5 คะแนน', 'success');
-                    
-                    document.getElementById('foodSearch').value = '';
-                    selectedFood = '';
-                    this.innerHTML = '<i class="fas fa-save"></i> เลือกเมนูก่อน';
-                    this.disabled = true;
-                    
-                    updateGiftButtons();
-                }, 1500);
+                recordSelection();
             }
         });
 
+        // Fixed progress calculation
         function updatePointsDisplay(points) {
             document.getElementById('pointsValue').textContent = points;
             
-            // Updated to use max 150 points to match milestones at 30, 60, 90, 120, 150
-            const maxPoints = 150;
-            const progressPercent = Math.min((points / maxPoints) * 100, 100);
+            const milestoneValues = [30, 60, 90, 120, 150];
+            let progressPercent = 0;
+            
+            // Calculate progress based on milestone segments
+            if (points >= 150) {
+                progressPercent = 100;
+            } else {
+                for (let i = 0; i < milestoneValues.length; i++) {
+                    if (points <= milestoneValues[i]) {
+                        const prevMilestone = i === 0 ? 0 : milestoneValues[i - 1];
+                        const currentMilestone = milestoneValues[i];
+                        const segmentProgress = (points - prevMilestone) / (currentMilestone - prevMilestone);
+                        progressPercent = ((i + segmentProgress) / milestoneValues.length) * 100;
+                        break;
+                    }
+                }
+            }
             
             document.getElementById('progressFill').style.width = progressPercent + '%';
             
+            // Update milestone states
             const milestones = document.querySelectorAll('.milestone');
-            const milestoneValues = [30, 60, 90, 120, 150];
             
             milestones.forEach((milestone, index) => {
                 const milestoneValue = milestoneValues[index];
@@ -1611,15 +1674,32 @@
             loading.style.display = 'block';
             list.style.display = 'none';
             
+            // Simulate loading history
             setTimeout(() => {
                 loading.style.display = 'none';
                 list.style.display = 'block';
+                
+                // You can replace this with actual API call to load history
+                list.innerHTML = `
+                    <div class="history-item">
+                        <div class="history-date">วันนี้ - 12:30</div>
+                        <div class="history-food">ข้าวผัดผักรวม</div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-date">เมื่อวาน - 12:15</div>
+                        <div class="history-food">แกงเขียวหวานไก่</div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-date">2 วันที่แล้ว - 12:45</div>
+                        <div class="history-food">สลัดผักรวม</div>
+                    </div>
+                `;
             }, 1000);
         }
 
         function updateGiftButtons(points = userPoints) {
             const buttons = document.querySelectorAll('.gift-button-large');
-            const requiredPoints = [30, 60, 90, 120, 150]; // Updated to match new gift structure
+            const requiredPoints = [30, 60, 90, 120, 150];
             
             buttons.forEach((button, index) => {
                 if (points >= requiredPoints[index]) {
@@ -1632,7 +1712,7 @@
             });
         }
 
-        // Updated Carousel functionality
+        // Carousel functionality
         function scrollToGift(index) {
             const container = document.getElementById('giftsContainer');
             const giftWidth = container.children[0].offsetWidth;
@@ -1642,7 +1722,7 @@
             });
             updateIndicators(index);
             currentGiftIndex = index;
-            stopAutoScroll(); // Stop auto-scroll when user interacts
+            stopAutoScroll();
         }
 
         function updateIndicators(activeIndex) {
