@@ -1,9 +1,9 @@
-// NMB Wellness App - Complete record.js
+// NMB Wellness App - Complete Index.js
 // Author: Assistant
 // Version: 2.0
 
 // Global Variables
-let userPoints = 0;
+let userPoints = 150; // Set initial mock data
 let selectedFood = '';
 let userData = null;
 let lineProfile = null;
