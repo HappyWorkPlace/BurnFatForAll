@@ -360,15 +360,26 @@
             transform: scale(1.2);
         }
 
+        /* Updated Progress Section - Combined with Milestones */
         .progress-section {
             position: relative;
+            margin-top: 20px;
+        }
+
+        .milestones-progress {
+            position: relative;
+            padding: 20px 0;
         }
 
         .progress-track {
             height: 6px;
             background: #f1f5f9;
             border-radius: 10px;
-            position: relative;
+            position: absolute;
+            top: 50%;
+            left: 60px;
+            right: 60px;
+            transform: translateY(-50%);
             overflow: hidden;
         }
 
@@ -399,8 +410,8 @@
         .milestones {
             display: flex;
             justify-content: space-between;
-            margin-top: 20px;
-            padding: 0 2px;
+            position: relative;
+            padding: 0 60px;
         }
 
         .milestone {
@@ -408,21 +419,22 @@
             flex-direction: column;
             align-items: center;
             position: relative;
+            z-index: 2;
         }
 
         .milestone-dot {
-            width: 24px;
-            height: 24px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background: #e2e8f0;
-            border: 2px solid white;
+            border: 3px solid white;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             margin-bottom: 8px;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.7rem;
+            font-size: 0.8rem;
         }
 
         .milestone.achieved .milestone-dot {
@@ -451,6 +463,10 @@
             font-size: 0.75rem;
             color: #64748b;
             font-weight: 500;
+            background: white;
+            padding: 2px 6px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .milestone.achieved .milestone-label {
@@ -751,10 +767,34 @@
             opacity: 0.4;
         }
 
+        /* Auto-scroll hint */
+        .carousel-hint {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            z-index: 3;
+            opacity: 0.8;
+        }
+
         /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideHint {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(3px); }
+        }
+
+        .carousel-hint {
+            animation: slideHint 2s infinite;
         }
 
         /* Responsive */
@@ -861,6 +901,21 @@
                 width: 6px;
                 height: 6px;
             }
+
+            .milestones {
+                padding: 0 40px;
+            }
+
+            .progress-track {
+                left: 40px;
+                right: 40px;
+            }
+
+            .milestone-dot {
+                width: 28px;
+                height: 28px;
+                font-size: 0.7rem;
+            }
         }
     </style>
 </head>
@@ -912,72 +967,54 @@
                 </div>
             </div>
             
+            <!-- Updated Progress Section with Combined Milestones -->
             <div class="progress-section">
-                <div class="progress-track">
-                    <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
-                </div>
-                
-                <div class="milestones">
-                    <div class="milestone">
-                        <div class="milestone-dot"></div>
-                        <div class="milestone-label">0</div>
+                <div class="milestones-progress">
+                    <div class="progress-track">
+                        <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
                     </div>
-                    <div class="milestone">
-                        <div class="milestone-dot">
-                            <i class="fas fa-tissue milestone-icon"></i>
+                    
+                    <div class="milestones">
+                        <div class="milestone">
+                            <div class="milestone-dot">
+                                <i class="fas fa-mug-hot milestone-icon"></i>
+                            </div>
+                            <div class="milestone-label">30</div>
                         </div>
-                        <div class="milestone-label">30</div>
-                    </div>
-                    <div class="milestone">
-                        <div class="milestone-dot">
-                            <i class="fas fa-umbrella milestone-icon"></i>
+                        <div class="milestone">
+                            <div class="milestone-dot">
+                                <i class="fas fa-box milestone-icon"></i>
+                            </div>
+                            <div class="milestone-label">60</div>
                         </div>
-                        <div class="milestone-label">60</div>
-                    </div>
-                    <div class="milestone">
-                        <div class="milestone-dot">
-                            <i class="fas fa-box milestone-icon"></i>
+                        <div class="milestone">
+                            <div class="milestone-dot">
+                                <i class="fas fa-shopping-bag milestone-icon"></i>
+                            </div>
+                            <div class="milestone-label">90</div>
                         </div>
-                        <div class="milestone-label">90</div>
-                    </div>
-                    <div class="milestone">
-                        <div class="milestone-dot">
-                            <i class="fas fa-shopping-bag milestone-icon"></i>
+                        <div class="milestone">
+                            <div class="milestone-dot">
+                                <i class="fas fa-glass-water milestone-icon"></i>
+                            </div>
+                            <div class="milestone-label">120</div>
                         </div>
-                        <div class="milestone-label">120</div>
-                    </div>
-                    <div class="milestone">
-                        <div class="milestone-dot">
-                            <i class="fas fa-glass-water milestone-icon"></i>
+                        <div class="milestone">
+                            <div class="milestone-dot">
+                                <i class="fas fa-hat-cowboy milestone-icon"></i>
+                            </div>
+                            <div class="milestone-label">150</div>
                         </div>
-                        <div class="milestone-label">150</div>
-                    </div>
-                    <div class="milestone">
-                        <div class="milestone-dot"></div>
-                        <div class="milestone-label">152</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Gifts Carousel -->
+            <!-- Updated Gifts Carousel with Auto-scroll -->
             <div class="gifts-carousel">
+                <div class="carousel-hint">
+                    <i class="fas fa-hand-point-left"></i> เลื่อนดู
+                </div>
                 <div class="gifts-container" id="giftsContainer">
-                    <div class="gift-slide">
-                        <div class="gift-content">
-                            <div class="gift-icon-large">
-                                <i class="fas fa-tissue" style="color: #ef4444;"></i>
-                            </div>
-                            <div class="gift-details">
-                                <div class="gift-name-large">ทิชชู่คุมะ</div>
-                                <div class="gift-points-large">15 คะแนน</div>
-                                <div class="gift-stock-large">คงเหลือ 25 ชิ้น</div>
-                            </div>
-                        </div>
-                        <div class="gift-action">
-                            <button class="gift-button-large">แลกรับ</button>
-                        </div>
-                    </div>
-
                     <div class="gift-slide">
                         <div class="gift-content">
                             <div class="gift-icon-large">
@@ -1001,7 +1038,7 @@
                             </div>
                             <div class="gift-details">
                                 <div class="gift-name-large">กล่องอาหาร Super lock</div>
-                                <div class="gift-points-large">45 คะแนน</div>
+                                <div class="gift-points-large">60 คะแนน</div>
                                 <div class="gift-stock-large">คงเหลือ 8 ชิ้น</div>
                             </div>
                         </div>
@@ -1016,8 +1053,8 @@
                                 <i class="fas fa-shopping-bag" style="color: #06b6d4;"></i>
                             </div>
                             <div class="gift-details">
-                                <div class="gift-name-large">กระเป๋า</div>
-                                <div class="gift-points-large">60 คะแนน</div>
+                                <div class="gift-name-large">กระเป๋า ECO</div>
+                                <div class="gift-points-large">90 คะแนน</div>
                                 <div class="gift-stock-large">คงเหลือ 5 ชิ้น</div>
                             </div>
                         </div>
@@ -1033,7 +1070,7 @@
                             </div>
                             <div class="gift-details">
                                 <div class="gift-name-large">แก้ว LocknLock</div>
-                                <div class="gift-points-large">75 คะแนน</div>
+                                <div class="gift-points-large">120 คะแนน</div>
                                 <div class="gift-stock-large">คงเหลือ 3 ชิ้น</div>
                             </div>
                         </div>
@@ -1048,8 +1085,8 @@
                                 <i class="fas fa-hat-cowboy" style="color: #84cc16;"></i>
                             </div>
                             <div class="gift-details">
-                                <div class="gift-name-large">หมวก MGH</div>
-                                <div class="gift-points-large">90 คะแนน</div>
+                                <div class="gift-name-large">หมวก MGH Premium</div>
+                                <div class="gift-points-large">150 คะแนน</div>
                                 <div class="gift-stock-large">คงเหลือ 2 ชิ้น</div>
                             </div>
                         </div>
@@ -1065,7 +1102,6 @@
                     <div class="indicator-dot" onclick="scrollToGift(2)"></div>
                     <div class="indicator-dot" onclick="scrollToGift(3)"></div>
                     <div class="indicator-dot" onclick="scrollToGift(4)"></div>
-                    <div class="indicator-dot" onclick="scrollToGift(5)"></div>
                 </div>
             </div>
         </div>
@@ -1141,6 +1177,9 @@
         let userPoints = 0;
         let selectedFood = '';
         let currentUserData = null;
+        let autoScrollInterval = null;
+        let currentGiftIndex = 0;
+        let userInteracted = false;
 
         // LIFF Configuration
         const LIFF_ID = '2004752543-O6bmBeMw';
@@ -1158,7 +1197,7 @@
                 Name: 'Test User',
                 Division: 'NMB BEARING',
                 Factory: 'AYUTTHAYA',
-                Point: '150'
+                Point: '45'
             }
         };
 
@@ -1359,13 +1398,15 @@
             
             // Update UI with user data
             document.getElementById('memberName').textContent = displayName;
-            // โค้ดที่สมบูรณ์และครอบคลุมทุกกรณี
             document.getElementById('memberDept').textContent = `${parsedData.Name || ''} ${parsedData.Division || ''}`.trim() || 'ไม่ระบุ';
             document.getElementById('memberBadge').textContent = parsedData.Factory || 'ไม่ระบุโรงงาน';
             
             // Update points
             userPoints = parseInt(parsedData.Point) || 0;
             updatePointsDisplay(userPoints);
+            
+            // Start auto-scroll for carousel
+            startAutoScroll();
             
             // Hide loading screen
             hideLoadingScreen();
@@ -1415,6 +1456,30 @@
                 setTimeout(() => {
                     loadingScreen.style.display = 'none';
                 }, 300);
+            }
+        }
+
+        // Auto-scroll functionality
+        function startAutoScroll() {
+            const totalGifts = 5; // Updated to match new gift count
+            
+            autoScrollInterval = setInterval(() => {
+                if (!userInteracted) {
+                    currentGiftIndex = (currentGiftIndex + 1) % totalGifts;
+                    scrollToGift(currentGiftIndex);
+                }
+            }, 3000);
+        }
+
+        function stopAutoScroll() {
+            if (autoScrollInterval) {
+                clearInterval(autoScrollInterval);
+                userInteracted = true;
+                // Resume auto-scroll after 10 seconds of no interaction
+                setTimeout(() => {
+                    userInteracted = false;
+                    startAutoScroll();
+                }, 10000);
             }
         }
 
@@ -1513,13 +1578,14 @@
         function updatePointsDisplay(points) {
             document.getElementById('pointsValue').textContent = points;
             
-            const maxPoints = 152;
+            // Updated milestone values (removed 0 and 152)
+            const maxPoints = 150;
             const progressPercent = Math.min((points / maxPoints) * 100, 100);
             
             document.getElementById('progressFill').style.width = progressPercent + '%';
             
             const milestones = document.querySelectorAll('.milestone');
-            const milestoneValues = [0, 30, 60, 90, 120, 150, 152];
+            const milestoneValues = [30, 60, 90, 120, 150]; // Updated values
             
             milestones.forEach((milestone, index) => {
                 const milestoneValue = milestoneValues[index];
@@ -1527,6 +1593,8 @@
                 
                 if (points >= milestoneValue) {
                     milestone.classList.add('achieved');
+                } else if (index === 0 && points >= 0 && points < milestoneValue) {
+                    milestone.classList.add('current');
                 } else if (index > 0 && points >= milestoneValues[index - 1] && points < milestoneValue) {
                     milestone.classList.add('current');
                 }
@@ -1550,9 +1618,10 @@
 
         function updateGiftButtons(points = userPoints) {
             const buttons = document.querySelectorAll('.gift-button-large');
+            const requiredPoints = [30, 60, 90, 120, 150]; // Updated to match new milestones
+            
             buttons.forEach((button, index) => {
-                const requiredPoints = [15, 30, 45, 60, 75, 90][index];
-                if (points >= requiredPoints) {
+                if (points >= requiredPoints[index]) {
                     button.disabled = false;
                     button.textContent = 'แลกรับ';
                 } else {
@@ -1562,7 +1631,7 @@
             });
         }
 
-        // Carousel functionality
+        // Updated Carousel functionality
         function scrollToGift(index) {
             const container = document.getElementById('giftsContainer');
             const giftWidth = container.children[0].offsetWidth;
@@ -1571,6 +1640,8 @@
                 behavior: 'smooth'
             });
             updateIndicators(index);
+            currentGiftIndex = index;
+            stopAutoScroll(); // Stop auto-scroll when user interacts
         }
 
         function updateIndicators(activeIndex) {
@@ -1584,14 +1655,19 @@
             });
         }
 
-        // Auto-update indicators on scroll
+        // Auto-update indicators on scroll and handle user interaction
         document.getElementById('giftsContainer').addEventListener('scroll', function() {
             const container = this;
             const giftWidth = container.children[0].offsetWidth;
             const scrollLeft = container.scrollLeft;
             const activeIndex = Math.round(scrollLeft / giftWidth);
             updateIndicators(activeIndex);
+            currentGiftIndex = activeIndex;
         });
+
+        // Stop auto-scroll on user touch/scroll
+        document.getElementById('giftsContainer').addEventListener('touchstart', stopAutoScroll);
+        document.getElementById('giftsContainer').addEventListener('mousedown', stopAutoScroll);
 
         function showToast(message, type) {
             const toast = document.createElement('div');
