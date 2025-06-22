@@ -1359,7 +1359,8 @@
             
             // Update UI with user data
             document.getElementById('memberName').textContent = displayName;
-            document.getElementById('memberDept').textContent = parsedData.Division || 'ไม่ระบุแผนก';
+            // โค้ดที่สมบูรณ์และครอบคลุมทุกกรณี
+            document.getElementById('memberDept').textContent = `${parsedData.Name || ''} ${parsedData.Division || ''}`.trim() || 'ไม่ระบุ';
             document.getElementById('memberBadge').textContent = parsedData.Factory || 'ไม่ระบุโรงงาน';
             
             // Update points
