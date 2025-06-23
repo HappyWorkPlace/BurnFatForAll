@@ -189,7 +189,7 @@
             background: linear-gradient(135deg, #10b981, #059669);
             color: white;
             padding: 3px 10px;
-            border-radius: 10px;
+            border-radius: 5px;
             font-size: 0.65rem;
             font-weight: 600;
             text-transform: uppercase;
@@ -1016,7 +1016,7 @@
                     <div class="gift-slide">
                         <div class="gift-content">
                             <div class="gift-icon-large">
-                                <i class="fas fa-tissue" style="color: #ef4444;"></i>
+                                <i class="fas fa-box-tissue" style="color: #ef4444;"></i>
                             </div>
                             <div class="gift-details">
                                 <div class="gift-name-large">ทิชชู่คุมะ</div>
@@ -1651,7 +1651,7 @@
                         const prevMilestone = i === 0 ? 0 : milestoneValues[i - 1];
                         const currentMilestone = milestoneValues[i];
                         const segmentProgress = (points - prevMilestone) / (currentMilestone - prevMilestone);
-                        progressPercent = ((i + segmentProgress) / milestoneValues.length) * 100 - (15);
+                        progressPercent = ((i + segmentProgress) / milestoneValues.length) * 100;
                         break;
                     }
                 }
