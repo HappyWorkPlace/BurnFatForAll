@@ -255,7 +255,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 5px 0;
+            padding: 5px 5px;
             scroll-snap-align: start;
             background: transparent;
         }
@@ -405,20 +405,25 @@
         }
 
         .milestones {
-            display: flex;
-            justify-content: space-between;
             position: relative;
             padding: 0 10px;
+            height: 60px;
         }
-
+        
         .milestone {
+            position: absolute;
             display: flex;
             flex-direction: column;
             align-items: center;
-            position: relative;
             z-index: 2;
-            flex: 1;
+            transform: translateX(-50%);
         }
+        
+        .milestone:nth-child(1) { left: 20%; }
+        .milestone:nth-child(2) { left: 40%; }
+        .milestone:nth-child(3) { left: 60%; }
+        .milestone:nth-child(4) { left: 80%; }
+        .milestone:nth-child(5) { left: 100%; }
 
         .milestone-dot {
             width: 32px;
@@ -865,7 +870,7 @@
             }
 
             .gift-slide {
-                padding: 10px 0;
+                padding: 10px 5px;
             }
 
             .gift-content {
@@ -1651,7 +1656,9 @@
                         const prevMilestone = i === 0 ? 0 : milestoneValues[i - 1];
                         const currentMilestone = milestoneValues[i];
                         const segmentProgress = (points - prevMilestone) / (currentMilestone - prevMilestone);
-                        progressPercent = ((i + segmentProgress) / milestoneValues.length) * 100;
+                        const baseProgress = (i / milestoneValues.length) * 100;
+                        const segmentWidth = (1 / milestoneValues.length) * 100;
+                        progressPercent = baseProgress + (segmentProgress * segmentWidth);
                         break;
                     }
                 }
