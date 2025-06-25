@@ -6,7 +6,7 @@
     <title>ลงทะเบียนเข้าร่วมโครงการ Healthy Life #2</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
+<style>
         * {
             margin: 0;
             padding: 0;
@@ -156,19 +156,22 @@
 
         .date-input-group {
             display: flex;
-            gap: 5px;
+            gap: 3px;
             align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap;
         }
 
         .date-field {
-            width: 35px;
-            padding: 12px 8px;
+            width: 32px;
+            padding: 10px 6px;
             border: 2px solid #E8F5E8;
             border-radius: 8px;
             text-align: center;
-            font-size: 16px;
+            font-size: 14px;
             background: rgba(249, 253, 249, 0.9);
             transition: all 0.3s ease;
+            flex-shrink: 0;
         }
 
         .date-field:focus {
@@ -181,7 +184,45 @@
         .date-separator {
             color: #4CAF50;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 16px;
+            margin: 0 2px;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 480px) {
+            .date-input-group {
+                gap: 2px;
+                padding: 0 5px;
+            }
+            
+            .date-field {
+                width: 28px;
+                padding: 8px 4px;
+                font-size: 13px;
+            }
+            
+            .date-separator {
+                font-size: 14px;
+                margin: 0 1px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .date-input-group {
+                gap: 1px;
+                padding: 0 10px;
+            }
+            
+            .date-field {
+                width: 26px;
+                padding: 8px 3px;
+                font-size: 12px;
+            }
+            
+            .date-separator {
+                font-size: 13px;
+                margin: 0;
+            }
         }
 
         .submit-btn {
