@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ลงทะเบียนเข้าร่วมโครงการ Healthy Life #2</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+            background: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Falling food animation */
+        .falling-food {
+            position: fixed;
+            top: -50px;
+            width: 40px;
+            height: 40px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            animation: fall linear infinite;
+            opacity: 0.6;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 0.6;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.12),
+                0 4px 16px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            padding: 40px 30px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 120px;
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .header {
+            position: relative;
+            z-index: 2;
+            color: black;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: transparent;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            overflow: hidden;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 1px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            color: grey;
+        }
+
+        .form-section {
+            position: relative;
+            z-index: 2;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .input-label {
+            display: block;
+            color: #2E7D32;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #E8F5E8;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(249, 253, 249, 0.9);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #4CAF50;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .date-input-group {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .date-field {
+            width: 35px;
+            padding: 12px 8px;
+            border: 2px solid #E8F5E8;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 16px;
+            background: rgba(249, 253, 249, 0.9);
+            transition: all 0.3s ease;
+        }
+
+        .date-field:focus {
+            outline: none;
+            border-color: #4CAF50;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .date-separator {
+            color: #4CAF50;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .info-text {
+            color: #666;
+            font-size: 12px;
+            margin-top: 15px;
+            line-height: 1.4;
+        }
+
+        .loading {
+            display: none;
+            color: #4CAF50;
+            margin-top: 10px;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
+
+        /* Custom SweetAlert Styles */
+        .swal-custom-popup {
+            border-radius: 15px !important;
+            font-family: 'Prompt', sans-serif !important;
+        }
+
+        .swal-confirm-btn {
+            border-radius: 10px !important;
+            padding: 12px 24px !important;
+            font-weight: 600 !important;
+            font-size: 14px !important;
+        }
+
+        .swal-cancel-btn {
+            border-radius: 10px !important;
+            padding: 12px 24px !important;
+            font-weight: 600 !important;  
+            font-size: 14px !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/5839a19670212ff1c280dcc98c945503d9004c37/Logo_healthylife2.png" alt="Healthy Life Logo">
+            </div>
+            <div class="title">ลงทะเบียนเข้าร่วมโครงการ</div>
+            <div class="subtitle">กินดี Healthy Life #2</div>
+            <div class="subtitle">Happy Work Place : Happy Body</div>
+        </div>
+
+        <div class="form-section">
+            <div class="input-group">
+                <label class="input-label">รหัสพนักงาน</label>
+                <input type="text" id="empNoInput" class="input-field" placeholder="กรอกรหัสพนักงาน" maxlength="10">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">วัน/เดือน/ปี เข้าทำงาน</label>
+                <div class="date-input-group">
+                    <input type="text" id="date1" class="date-field" maxlength="1" placeholder="D" onkeyup="moveToNext(this, 'date2')">
+                    <input type="text" id="date2" class="date-field" maxlength="1" placeholder="D" onkeyup="moveToNext(this, 'date3')">
+                    <span class="date-separator">/</span>
+                    <input type="text" id="date3" class="date-field" maxlength="1" placeholder="M" onkeyup="moveToNext(this, 'date4')">
+                    <input type="text" id="date4" class="date-field" maxlength="1" placeholder="M" onkeyup="moveToNext(this, 'date5')">
+                    <span class="date-separator">/</span>
+                    <input type="text" id="date5" class="date-field" maxlength="1" placeholder="Y" onkeyup="moveToNext(this, 'date6')">
+                    <input type="text" id="date6" class="date-field" maxlength="1" placeholder="Y" onkeyup="moveToNext(this, 'date7')">
+                    <input type="text" id="date7" class="date-field" maxlength="1" placeholder="Y" onkeyup="moveToNext(this, 'date8')">
+                    <input type="text" id="date8" class="date-field" maxlength="1" placeholder="Y">
+                </div>
+            </div>
+
+            <button class="submit-btn" onclick="checkUserInfo()">
+                ตรวจสอบข้อมูล
+            </button>
+
+            <div class="info-text">
+                กรุณากรอกข้อมูลให้ครบถ้วนเพื่อเข้าร่วมกิจกรรม
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Healthy food images array
+        const healthyFoodImages = [
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy1.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy2.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy3.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy4.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy5.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy6.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy7.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy8.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy9.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy10.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy11.png',
+            'https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy12.png'
+        ];
+
+        // Create falling food animation
+        function createFallingFood() {
+            const food = document.createElement('div');
+            food.className = 'falling-food';
+            
+            // Random image
+            const randomImage = healthyFoodImages[Math.floor(Math.random() * healthyFoodImages.length)];
+            food.style.backgroundImage = `url(${randomImage})`;
+            
+            // Random position
+            food.style.left = Math.random() * window.innerWidth + 'px';
+            
+            // Random animation duration (5-15 seconds)
+            const duration = Math.random() * 10 + 5;
+            food.style.animationDuration = duration + 's';
+            
+            // Random delay
+            food.style.animationDelay = Math.random() * 2 + 's';
+            
+            document.body.appendChild(food);
+            
+            // Remove element after animation
+            setTimeout(() => {
+                if (food.parentNode) {
+                    food.parentNode.removeChild(food);
+                }
+            }, (duration + 2) * 1000);
+        }
+
+        // Start falling food animation
+        function startFallingFoodAnimation() {
+            // Create initial falling foods
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    createFallingFood();
+                }, i * 1000);
+            }
+            
+            // Create new falling food every 2-4 seconds
+            setInterval(() => {
+                if (Math.random() > 0.3) { // 70% chance to create new food
+                    createFallingFood();
+                }
+            }, 2000 + Math.random() * 2000);
+        }
+
+        // Initialize LIFF
+        window.onload = function() {
+            // Start falling food animation
+            startFallingFoodAnimation();
+            
+            liff.init({
+                liffId: 'YOUR_LIFF_ID_HERE' // แทนที่ด้วย LIFF ID จริง
+            }).then(() => {
+                console.log('LIFF initialized successfully');
+                if (!liff.isLoggedIn()) {
+                    liff.login();
+                }
+            }).catch((err) => {
+                console.error('LIFF initialization failed', err);
+            });
+        };
+
+        function moveToNext(current, nextFieldId) {
+            if (current.value.length >= current.maxLength) {
+                document.getElementById(nextFieldId).focus();
+            }
+        }
+
+        function convertToUpper(inputElement) {
+            inputElement.value = inputElement.value.toUpperCase();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const empNoInput = document.getElementById('empNoInput');
+            empNoInput.addEventListener('input', function() {
+                convertToUpper(this);
+            });
+        });
+
+        function getEmpDateInput() {
+            const dateFields = [
+                document.getElementById('date1').value,
+                document.getElementById('date2').value,
+                document.getElementById('date3').value,
+                document.getElementById('date4').value,
+                document.getElementById('date5').value,
+                document.getElementById('date6').value,
+                document.getElementById('date7').value,
+                document.getElementById('date8').value
+            ];
+            const empDate = `${dateFields.slice(0, 2).join('')}/${dateFields.slice(2, 4).join('')}/${dateFields.slice(4).join('')}`;
+            return empDate;
+        }
+
+        function checkUserInfo() {
+            const empNo = document.getElementById('empNoInput').value;
+            const empDate = getEmpDateInput();
+
+            if (!empNo || !empDate || empDate.includes('undefined') || empDate.length < 10) {
+                Swal.fire({
+                    title: 'ข้อมูลไม่ครบถ้วน',
+                    text: 'กรุณากรอกรหัสพนักงานและวันเข้าทำงานให้ครบถ้วน',
+                    icon: 'warning',
+                    confirmButtonColor: '#4CAF50'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: 'กำลังตรวจสอบข้อมูล',
+                text: 'กรุณารอสักครู่...',
+                icon: 'info',
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec?action=checkUserInfo&empNo=${empNo}&empDate=${empDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    Swal.close();
+                    if (data.status === 'found') {
+                        Swal.fire({
+                            title: 'กรุณาตรวจสอบข้อมูลของคุณ',
+                            html: `
+                                <div style="padding: 20px 0;">
+                                    <div style="background: white; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+                                        <div style="background: #f5f5f5; padding: 15px; border-bottom: 1px solid #e0e0e0;">
+                                            <h4 style="margin: 0; color: #333; font-size: 16px; font-weight: 600;">ข้อมูลพนักงาน</h4>
+                                            <p style="margin: 5px 0 0 0; color: #666; font-size: 12px;">โปรดตรวจสอบความถูกต้องของข้อมูล</p>
+                                        </div>
+                                        <div style="padding: 20px;">
+                                            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                                                <span style="color: #666; font-size: 14px;">รหัสพนักงาน</span>
+                                                <span style="color: #333; font-weight: 600; font-size: 14px;">${data.details.empNo}</span>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                                                <span style="color: #666; font-size: 14px;">ชื่อ-นามสกุล</span>
+                                                <span style="color: #333; font-weight: 600; font-size: 14px;">${data.details.name}</span>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                                                <span style="color: #666; font-size: 14px;">ฝ่าย/แผนก</span>
+                                                <span style="color: #333; font-weight: 600; font-size: 14px;">${data.details.division}</span>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                                                <span style="color: #666; font-size: 14px;">โรงงาน</span>
+                                                <span style="color: #333; font-weight: 600; font-size: 14px;">${data.details.factory}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style="text-align: center; margin-top: 20px; color: #4CAF50;">
+                                        <strong style="font-size: 14px;">ข้อมูลถูกต้องหรือไม่?</strong><br>
+                                        <span style="font-size: 12px; color: #666;">กดยืนยันเพื่อสมัครเข้าร่วมกิจกรรม</span>
+                                    </div>
+                                </div>
+                            `,
+                            icon: null,
+                            showCancelButton: true,
+                            cancelButtonText: 'ยกเลิก',
+                            confirmButtonColor: '#4CAF50',
+                            cancelButtonColor: '#dc3545',
+                            confirmButtonText: 'ยืนยันการสมัคร',
+                            width: '400px',
+                            customClass: {
+                                popup: 'swal-custom-popup',
+                                confirmButton: 'swal-confirm-btn',
+                                cancelButton: 'swal-cancel-btn'
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                if (liff.isLoggedIn()) {
+                                    liff.getProfile().then(profile => {
+                                        const uid = profile.userId;
+                                        registerUser(empNo, empDate, uid);
+                                    }).catch(err => {
+                                        console.error('Failed to get user profile:', err);
+                                        Swal.fire({
+                                            title: 'เกิดข้อผิดพลาด',
+                                            text: 'ไม่สามารถดึงข้อมูลโปรไฟล์ LINE ได้',
+                                            icon: 'error',
+                                            confirmButtonColor: '#4CAF50'
+                                        });
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: 'กรุณาเข้าสู่ระบบ LINE',
+                                        text: 'กรุณาเข้าสู่ระบบ LINE ก่อนทำการสมัคร',
+                                        icon: 'warning',
+                                        confirmButtonColor: '#4CAF50'
+                                    });
+                                }
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'ไม่พบข้อมูล',
+                            html: `
+                                <div style="text-align: center;">
+                                    <div style="font-size: 60px; margin-bottom: 20px;">❌</div>
+                                    <p>ไม่พบข้อมูลพนักงานในระบบ</p>
+                                    <p style="color: #666; font-size: 14px; margin-top: 10px;">
+                                        กรุณาตรวจสอบรหัสพนักงานและวันเข้าทำงานอีกครั้ง
+                                    </p>
+                                </div>
+                            `,
+                            icon: 'error',
+                            confirmButtonColor: '#4CAF50'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.close();
+                    Swal.fire({
+                        title: 'เกิดข้อผิดพลาด',
+                        text: 'ไม่สามารถเชื่อมต่อกับระบบได้ กรุณาลองใหม่อีกครั้ง',
+                        icon: 'error',
+                        confirmButtonColor: '#4CAF50'
+                    });
+                });
+        }
+
+        function registerUser(empNo, empDate, uid) {
+            Swal.fire({
+                title: 'กำลังลงทะเบียน',
+                text: 'กรุณารอสักครู่...',
+                icon: 'info',
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        
+            fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=registerUser&empNo=${encodeURIComponent(empNo)}&empDate=${encodeURIComponent(empDate)}&uid=${encodeURIComponent(uid)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                Swal.close();
+                if (data.success) {
+                    Swal.fire({
+                        title: 'สมัครสำเร็จ!',
+                        html: `
+                            <div style="text-align: center;">
+                                <div style="font-size: 60px; margin-bottom: 20px;">🎉</div>
+                                <p style="color: #4CAF50; font-size: 18px; font-weight: 600;">ยินดีต้อนรับเข้าสู่กิจกรรม</p>
+                                <p style="color: #666; margin-top: 10px;">Healthy Life #2</p>
+                            </div>
+                        `,
+                        icon: 'success',
+                        confirmButtonColor: '#4CAF50',
+                        confirmButtonText: 'เริ่มใช้งาน'
+                    }).then(() => {
+                        if (liff.isInClient()) {
+                            // ถ้าอยู่ใน LINE app ให้ปิดหน้าต่าง
+                            liff.closeWindow();
+                        } else {
+                            // ถ้าอยู่ใน browser ให้ redirect กลับหน้าหลัก
+                            window.location.href = 'https://liff.line.me/2004752543-O6bmBeMw?registered=success';
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'เกิดข้อผิดพลาด',
+                        text: data.message || 'ไม่สามารถลงทะเบียนได้ กรุณาลองใหม่อีกครั้ง',
+                        icon: 'error',
+                        confirmButtonColor: '#4CAF50'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.close();
+                Swal.fire({
+                    title: 'เกิดข้อผิดพลาด',
+                    text: 'ไม่สามารถลงทะเบียนได้ กรุณาลองใหม่อีกครั้ง',
+                    icon: 'error',
+                    confirmButtonColor: '#4CAF50'
+                });
+            });
+        }
+    </script>
+</body>
+</html>
