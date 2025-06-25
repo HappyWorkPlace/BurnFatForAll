@@ -528,70 +528,70 @@
                 });
         }
 
-        function registerUser(empNo, empDate, uid) {
+function registerUser(empNo, empDate, uid) {
+    Swal.fire({
+        title: 'กำลังลงทะเบียน',
+        text: 'กรุณารอสักครู่...',
+        icon: 'info',
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `action=registerUser&empNo=${encodeURIComponent(empNo)}&empDate=${encodeURIComponent(empDate)}&uid=${encodeURIComponent(uid)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        Swal.close();
+        if (data.success) {
             Swal.fire({
-                title: 'กำลังลงทะเบียน',
-                text: 'กรุณารอสักครู่...',
-                icon: 'info',
-                showConfirmButton: false,
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
+                title: 'สมัครสำเร็จ!',
+                html: `
+                    <div style="text-align: center;">
+                        <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/card1.png" alt="ยินดีต้อนรับ" style="width: 100px; height: 100px; margin-bottom: 20px;">
+                        <p style="color: #4CAF50; font-size: 18px; font-weight: 600;">ยินดีต้อนรับเข้าสู่กิจกรรม</p>
+                        <p style="color: #666; margin-top: 10px;">Healthy Life #2</p>
+                    </div>
+                `,
+                icon: 'success',
+                confirmButtonColor: '#4CAF50',
+                confirmButtonText: 'เริ่มใช้งาน'
+            }).then(() => {
+                if (liff.isInClient()) {
+                    // ถ้าอยู่ใน LINE app ให้ปิดหน้าต่าง
+                    liff.closeWindow();
+                } else {
+                    // ถ้าอยู่ใน browser ให้ redirect กลับหน้าหลัก
+                    window.location.href = 'https://liff.line.me/2004752543-O6bmBeMw';
                 }
             });
-        
-            fetch(`https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `action=registerUser&empNo=${encodeURIComponent(empNo)}&empDate=${encodeURIComponent(empDate)}&uid=${encodeURIComponent(uid)}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                Swal.close();
-                if (data.success) {
-                    Swal.fire({
-                        title: 'สมัครสำเร็จ!',
-                        html: `
-                            <div style="text-align: center;">
-                                <div style="font-size: 60px; margin-bottom: 20px;">🎉</div>
-                                <p style="color: #4CAF50; font-size: 18px; font-weight: 600;">ยินดีต้อนรับเข้าสู่กิจกรรม</p>
-                                <p style="color: #666; margin-top: 10px;">Healthy Life #2</p>
-                            </div>
-                        `,
-                        icon: 'success',
-                        confirmButtonColor: '#4CAF50',
-                        confirmButtonText: 'เริ่มใช้งาน'
-                    }).then(() => {
-                        if (liff.isInClient()) {
-                            // ถ้าอยู่ใน LINE app ให้ปิดหน้าต่าง
-                            liff.closeWindow();
-                        } else {
-                            // ถ้าอยู่ใน browser ให้ redirect กลับหน้าหลัก
-                            window.location.href = 'https://liff.line.me/2004752543-O6bmBeMw?registered=success';
-                        }
-                    });
-                } else {
-                    Swal.fire({
-                        title: 'เกิดข้อผิดพลาด',
-                        text: data.message || 'ไม่สามารถลงทะเบียนได้ กรุณาลองใหม่อีกครั้ง',
-                        icon: 'error',
-                        confirmButtonColor: '#4CAF50'
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                Swal.close();
-                Swal.fire({
-                    title: 'เกิดข้อผิดพลาด',
-                    text: 'ไม่สามารถลงทะเบียนได้ กรุณาลองใหม่อีกครั้ง',
-                    icon: 'error',
-                    confirmButtonColor: '#4CAF50'
-                });
+        } else {
+            Swal.fire({
+                title: 'เกิดข้อผิดพลาด',
+                text: data.message || 'ไม่สามารถลงทะเบียนได้ กรุณาลองใหม่อีกครั้ง',
+                icon: 'error',
+                confirmButtonColor: '#4CAF50'
             });
         }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.close();
+        Swal.fire({
+            title: 'เกิดข้อผิดพลาด',
+            text: 'ไม่สามารถลงทะเบียนได้ กรุณาลองใหม่อีกครั้ง',
+            icon: 'error',
+            confirmButtonColor: '#4CAF50'
+        });
+    });
+}
     </script>
 </body>
 </html>
