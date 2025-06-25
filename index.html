@@ -1205,18 +1205,34 @@
         function initializeLiff() {
             console.log("Initializing LIFF...");
             
+            // ตรวจสอบว่ามาจากหน้าสมัครสมาชิกหรือไม่
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('registered') === 'success') {
+                // ลบ parameter และแสดงข้อความสำเร็จ
+                window.history.replaceState({}, document.title, window.location.pathname);
+                setTimeout(() => {
+                    Swal.fire({
+                        title: 'ยินดีต้อนรับ!',
+                        text: 'สมัครสมาชิกสำเร็จแล้ว',
+                        icon: 'success',
+                        confirmButtonColor: '#10b981',
+                        timer: 2000
+                    });
+                }, 1000);
+            }
+            
             if (typeof liff === 'undefined') {
                 console.error("LIFF SDK is not defined");
                 handleLiffError('LIFF SDK ไม่พร้อมใช้งาน กรุณาเปิดใน LINE Browser');
                 return;
             }
-
+        
             // Set timeout for LIFF initialization
             const timeoutId = setTimeout(() => {
                 console.error("LIFF initialization timeout");
                 handleLiffError('การเชื่อมต่อ LINE หมดเวลา กรุณาลองใหม่อีกครั้ง');
             }, 10000);
-
+        
             liff.init({
                 liffId: LIFF_ID
             }).then(() => {
@@ -1832,6 +1848,14 @@
             // Initialize gift buttons
             updateGiftButtons();
         });
+        
+        // Show user not found error
+        function showUserNotFoundError(displayName) {
+            hideLoadingScreen();
+            
+            // Redirect ไปหน้าสมัครสมาชิกทันที
+            window.location.href = 'https://happyworkplace.github.io/BurnFatForAll/register';
+        }
     </script>
 </body>
 </html>
