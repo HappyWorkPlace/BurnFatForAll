@@ -1769,6 +1769,9 @@ function getColumnIndexByLevel(level) {
 }
 
 // อัพเดตการแสดงผลปุ่มของรางวัล (เวอร์ชันสุดท้าย)
+// แทนที่ส่วน updateGiftButtons และ redeemGift functions ในโค้ดเดิม
+
+// อัพเดตการแสดงผลปุ่มของรางวัล (เวอร์ชันใหม่ - ไม่ใช้คะแนน)
 function updateGiftButtons(points = userPoints) {
     if (!giftListData || giftListData.length === 0) {
         console.log('Gift data not loaded yet');
@@ -1815,15 +1818,15 @@ function updateGiftButtons(points = userPoints) {
             button.classList.add('btn-outofstock');
             
         } else if (points >= level) {
-            // คะแนนพอ - สามารถแลกได้
-            button.textContent = 'แลกรับ';
+            // คะแนนพอ - สามารถรับได้
+            button.textContent = 'กดรับ';
             button.disabled = false;
             button.classList.add('btn-available');
             button.onclick = () => redeemGift(level);
             
         } else {
             // คะแนนไม่พอ
-            button.textContent = 'แลกรับ';
+            button.textContent = 'กดรับ';
             button.disabled = true;
             button.classList.add('btn-disabled');
         }
@@ -1832,7 +1835,7 @@ function updateGiftButtons(points = userPoints) {
     });
 }
 
-// ฟังก์ชันแลกของรางวัล
+// ฟังก์ชันรับของรางวัล (แก้ไขแล้ว - ไม่ใช้คะแนน)
 function redeemGift(level) {
     // ตรวจสอบสถานะก่อน
     if (isSubmitting) {
@@ -1840,11 +1843,11 @@ function redeemGift(level) {
         return;
     }
 
-    // ตรวจสอบคะแนน
+    // ตรวจสอบคะแนนเพื่อให้มีสิทธิ์รับ
     if (userPoints < level) {
         Swal.fire({
             title: 'คะแนนไม่เพียงพอ',
-            text: `ต้องการ ${level} คะแนน แต่คุณมี ${userPoints} คะแนน`,
+            text: `ต้องมีคะแนนอย่างน้อย ${level} คะแนน เพื่อรับของรางวัลนี้`,
             icon: 'warning',
             confirmButtonColor: '#10b981'
         });
@@ -1863,24 +1866,27 @@ function redeemGift(level) {
         return;
     }
 
-    // แสดง confirmation
+    // แสดง confirmation (แก้ไขแล้ว)
     Swal.fire({
-        title: 'ยืนยันการแลกของรางวัล',
+        title: 'ยืนยันการรับของรางวัล',
         html: `
             <div style="text-align: center;">
-                <p>คุณต้องการแลก <strong>${gift.Gift_Name}</strong></p>
-                <p>ใช้คะแนน: <span style="color: #ef4444; font-weight: bold;">${level} คะแนน</span></p>
-                <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">
-                    คงเหลือหลังแลก: ${userPoints - level} คะแนน
+                <div style="font-size: 48px; margin-bottom: 15px;">🎁</div>
+                <p style="font-size: 18px; font-weight: 600; margin-bottom: 10px;">
+                    คุณต้องการรับ <strong style="color: #10b981;">${gift.Gift_Name}</strong>
+                </p>
+                <p style="font-size: 14px; color: #666; margin-top: 15px;">
+                    คลิก "ยืนยันรับ" เพื่อดำเนินการต่อ
                 </p>
             </div>
         `,
-        icon: 'question',
+        icon: null,
         showCancelButton: true,
         confirmButtonColor: '#10b981',
         cancelButtonColor: '#6b7280',
-        confirmButtonText: 'ยืนยันแลก',
-        cancelButtonText: 'ยกเลิก'
+        confirmButtonText: 'ยืนยันรับ',
+        cancelButtonText: 'ยกเลิก',
+        width: '400px'
     }).then((result) => {
         if (result.isConfirmed) {
             processRedeemGift(level);
@@ -1888,7 +1894,7 @@ function redeemGift(level) {
     });
 }
 
-// ประมวลผลการแลกของรางวัล
+// ประมวลผลการรับของรางวัล (แก้ไขแล้ว)
 function processRedeemGift(level) {
     isSubmitting = true; // ป้องกันการกดซ้ำ
 
@@ -1901,7 +1907,7 @@ function processRedeemGift(level) {
                 <div style="text-align: center;">
                     <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/giftAnimattion.gif" 
                          alt="loading" style="width:250px;height:250px;">
-                    <p style="margin-top: 15px; color: #666;">กรุณารอสักครู่...</p>
+                    <p style="margin-top: 15px; color: #666; font-size: 16px;">กรุณารอสักครู่...</p>
                 </div>
             `,
             showConfirmButton: false,
@@ -1914,26 +1920,26 @@ function processRedeemGift(level) {
                     .then(data => {
                         Swal.close();
                         if (data.success) {
-                            // แลกสำเร็จ
-                            userPoints -= level; // หักคะแนน
-                            updatePointsDisplay(userPoints); // อัพเดต UI คะแนน
+                            // รับสำเร็จ - ไม่หักคะแนน
+                            // userPoints ยังคงเดิม ไม่ต้องลดลง
                             
                             Swal.fire({
-                                title: 'แลกของรางวัลสำเร็จ!',
+                                title: 'รับของรางวัลสำเร็จ!',
                                 html: `
                                     <div style="text-align: center;">
                                         <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemGIF.gif" 
                                              alt="success" style="width:250px;height:250px;">
-                                        <p style="margin-top: 15px; font-size: 16px; color: #10b981;">
-                                            <strong>แลกรับรางวัลเรียบร้อยแล้ว</strong>
+                                        <p style="margin-top: 15px; font-size: 18px; color: #10b981; font-weight: 600;">
+                                            🎉 รับรางวัลเรียบร้อยแล้ว!
                                         </p>
                                         <p style="margin-top: 10px; font-size: 14px; color: #666;">
-                                            คะแนนคงเหลือ: ${userPoints} คะแนน
+                                            ขอบคุณที่เข้าร่วมกิจกรรม Healthy Life #2
                                         </p>
                                     </div>
                                 `,
                                 confirmButtonColor: '#10b981',
-                                confirmButtonText: 'ตรวจสอบรายการ'
+                                confirmButtonText: 'ตรวจสอบรายการ',
+                                width: '400px'
                             }).then(() => {
                                 // Redirect ไปหน้าตรวจสอบรายการ
                                 window.open('https://liff.line.me/2004752543-O6BZm2yN', '_blank');
@@ -1943,7 +1949,7 @@ function processRedeemGift(level) {
                             });
                         } else {
                             Swal.fire({
-                                title: 'ไม่สามารถแลกได้',
+                                title: 'ไม่สามารถรับได้',
                                 text: data.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
                                 icon: 'error',
                                 confirmButtonColor: '#ef4444'
