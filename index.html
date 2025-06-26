@@ -2129,37 +2129,52 @@ function loadHistory() {
     loading.style.display = 'block';
     list.style.display = 'none';
     
-    // ดึง UID จาก LIFF
-    liff.getProfile().then(profile => {
-        const userId = profile.userId;
-        
-        // เรียก API ดึงประวัติ
-        fetch(`${API_URL}?action=getUserRecords&uid=${userId}`)
-            .then(response => response.json())
-            .then(data => {
-                loading.style.display = 'none';
-                list.style.display = 'block';
-                
-                if (data.success && data.records && data.records.length > 0) {
-                    historyData = data.records;
-                    currentPage = 1;
-                    displayHistory();
-                } else {
-                    showEmptyHistory();
-                }
-            })
-            .catch(error => {
-                console.error('Error loading history:', error);
-                loading.style.display = 'none';
-                list.style.display = 'block';
-                showErrorHistory();
-            });
-    }).catch(err => {
-        console.error('Failed to get user profile for history:', err);
+    // ตรวจสอบว่ามี userData หรือไม่
+    if (!userData || !Array.isArray(userData) || userData.length === 0) {
+        console.error('User data not available for history');
         loading.style.display = 'none';
         list.style.display = 'block';
         showErrorHistory();
-    });
+        return;
+    }
+    
+    // ใช้ UID จาก userData ที่มีอยู่แล้ว แทนการเรียก liff.getProfile()
+    const userId = userData[0]; // UID อยู่ใน index 0
+    
+    if (!userId) {
+        console.error('User ID not found in userData');
+        loading.style.display = 'none';
+        list.style.display = 'block';
+        showErrorHistory();
+        return;
+    }
+    
+    // เรียก API ดึงประวัติ
+    fetch(`${API_URL}?action=getUserRecords&uid=${userId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            loading.style.display = 'none';
+            list.style.display = 'block';
+            
+            if (data.success && data.records && data.records.length > 0) {
+                historyData = data.records;
+                currentPage = 1;
+                displayHistory();
+            } else {
+                showEmptyHistory();
+            }
+        })
+        .catch(error => {
+            console.error('Error loading history:', error);
+            loading.style.display = 'none';
+            list.style.display = 'block';
+            showErrorHistory();
+        });
 }
 
 function displayHistory() {
