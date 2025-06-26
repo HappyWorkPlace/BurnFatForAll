@@ -1181,7 +1181,7 @@
         </div>
     </div>
 
-    <script>
+   <script>
         // Global variables
         let userPoints = 0;
         let selectedFood = '';
@@ -1190,6 +1190,10 @@
         let autoScrollInterval = null;
         let currentGiftIndex = 0;
         let userInteracted = false;
+        
+        // เพิ่มตัวแปรสำหรับ validation และป้องกันการกดซ้ำ
+        let validFoodList = []; // รายการอาหารที่ถูกต้องจากฐานข้อมูล
+        let isSubmitting = false; // ป้องกันการกดซ้ำ
 
         // LIFF Configuration
         const LIFF_ID = '2004752543-O6bmBeMw';
@@ -1432,7 +1436,7 @@
         }
 
         // =================
-        // Food System
+        // Food System (ปรับปรุงแล้ว)
         // =================
 
         function loadFoodList() {
@@ -1440,8 +1444,12 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        populateDropdown(data.data);
-                        return data.data;
+                        // เก็บรายการอาหารที่ถูกต้องใน global variable
+                        validFoodList = data.data.filter(food => food && food.trim() !== '' && food !== '-');
+                        console.log('โหลดรายการอาหารสำเร็จ:', validFoodList.length, 'รายการ');
+                        
+                        populateDropdown(validFoodList);
+                        return validFoodList;
                     } else {
                         console.error('Failed to fetch food list:', data.message);
                         throw new Error('Failed to fetch food list');
@@ -1450,10 +1458,8 @@
                 .catch(error => {
                     console.error('Error fetching food list:', error);
                     // Use fallback food list
-                    const fallbackFoods = [
-                        '-',
-                    ];
-                    populateDropdown(fallbackFoods);
+                    validFoodList = [];
+                    populateDropdown(validFoodList);
                     throw error;
                 });
         }
@@ -1472,24 +1478,125 @@
             });
         }
 
+        // ฟังก์ชันตรวจสอบความถูกต้องของอาหาร
+        function validateFood(foodName) {
+            if (!foodName || foodName.trim() === '') {
+                return {
+                    isValid: false,
+                    message: '',
+                    showIcon: false
+                };
+            }
+
+            const trimmedFood = foodName.trim();
+            const isValid = validFoodList.some(food => 
+                food.toLowerCase() === trimmedFood.toLowerCase()
+            );
+
+            return {
+                isValid: isValid,
+                message: isValid ? 'อาหารถูกต้อง ✓' : 'ไม่พบอาหารนี้ในระบบ โปรดเลือกจากรายการที่แนะนำ',
+                showIcon: true
+            };
+        }
+
+        // อัพเดตการแสดงผลสถานะ validation
+        function updateValidationStatus(inputElement, validation) {
+            // หา container สำหรับแสดงสถานะ
+            let statusContainer = inputElement.parentElement.querySelector('.validation-status');
+            if (!statusContainer) {
+                statusContainer = document.createElement('div');
+                statusContainer.className = 'validation-status';
+                statusContainer.style.cssText = `
+                    font-size: 12px;
+                    margin-top: 5px;
+                    transition: all 0.3s ease;
+                    min-height: 16px;
+                `;
+                inputElement.parentElement.appendChild(statusContainer);
+            }
+
+            // อัพเดต CSS class ของ input
+            inputElement.classList.remove('valid-food', 'invalid-food');
+            
+            if (validation.showIcon) {
+                if (validation.isValid) {
+                    inputElement.classList.add('valid-food');
+                    statusContainer.style.color = '#4CAF50';
+                    statusContainer.textContent = validation.message;
+                } else {
+                    inputElement.classList.add('invalid-food');
+                    statusContainer.style.color = '#f44336';
+                    statusContainer.textContent = validation.message;
+                }
+            } else {
+                statusContainer.textContent = '';
+            }
+        }
+
+        // ปรับปรุงฟังก์ชัน updateRecordButton
         function updateRecordButton(food) {
             const button = document.getElementById('recordBtn');
             if (!button) return;
             
-            if (food && food.trim() !== '') {
+            const validation = validateFood(food);
+            
+            if (validation.isValid && !isSubmitting) {
                 button.disabled = false;
                 button.innerHTML = '<i class="fas fa-save"></i> บันทึกการรับประทาน';
+                selectedFood = food.trim();
             } else {
                 button.disabled = true;
-                button.innerHTML = '<i class="fas fa-save"></i> เลือกเมนูก่อน';
+                if (isSubmitting) {
+                    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
+                } else if (food && food.trim() !== '') {
+                    button.innerHTML = '<i class="fas fa-exclamation-triangle"></i> เมนูไม่ถูกต้อง';
+                } else {
+                    button.innerHTML = '<i class="fas fa-save"></i> เลือกเมนูก่อน';
+                }
+                selectedFood = '';
+            }
+
+            // อัพเดต validation status
+            const foodInput = document.getElementById('foodSearch');
+            if (foodInput) {
+                updateValidationStatus(foodInput, validation);
             }
         }
 
+        // ปรับปรุง recordSelection เพื่อป้องกันการกดซ้ำ
         function recordSelection() {
-            if (!userData || !selectedFood) {
-                Swal.fire('Error', 'กรุณาเลือกเมนูอาหาร', 'error');
+            // ตรวจสอบสถานะก่อนบันทึก
+            if (isSubmitting) {
+                console.log('กำลังบันทึกอยู่ กรุณารอ...');
                 return;
             }
+
+            if (!userData || !selectedFood) {
+                Swal.fire({
+                    title: 'กรุณาเลือกเมนูอาหาร',
+                    text: 'กรุณาเลือกเมนูที่ถูกต้องก่อนบันทึก',
+                    icon: 'warning',
+                    confirmButtonColor: '#10b981'
+                });
+                return;
+            }
+
+            // ตรวจสอบ validation อีกครั้ง
+            const validation = validateFood(selectedFood);
+            if (!validation.isValid) {
+                Swal.fire({
+                    title: 'เมนูไม่ถูกต้อง',
+                    text: 'กรุณาเลือกเมนูจากรายการที่แนะนำเท่านั้น',
+                    icon: 'error',
+                    confirmButtonColor: '#10b981'
+                });
+                return;
+            }
+
+            // เริ่มกระบวนการบันทึก
+            isSubmitting = true;
+            updateRecordButton(selectedFood); // อัพเดต UI ปุ่ม
 
             Swal.fire({
                 title: 'วันนี้บันทึกไปรึยังน้า...',
@@ -1507,6 +1614,8 @@
                 })
                 .catch(err => {
                     console.error('Failed to get user profile:', err);
+                    isSubmitting = false; // รีเซ็ตสถานะ
+                    updateRecordButton(selectedFood);
                     Swal.fire('Error', 'Failed to get user profile. Please try again later.', 'error');
                 });
         }
@@ -1519,16 +1628,22 @@
                     if (data.status === 'TRUE') {
                         saveSelection(empNo, factory, selectedFood, uid, name);
                     } else if (data.status === 'FALSE') {
+                        isSubmitting = false; // รีเซ็ตสถานะ
+                        updateRecordButton(selectedFood);
                         Swal.fire({
                             title: 'แย่จัง..',
                             html: `วันนี้คุณบันทึกข้อมูลไปแล้วเมื่อ ${new Date(data.lastTimestamp).toLocaleString()} พรุ่งนี้ค่อยมาใหม่นะ <br><img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_error.png" alt="icon" style="width:100px;height:100px;">`
                         });
                     } else {
+                        isSubmitting = false; // รีเซ็ตสถานะ
+                        updateRecordButton(selectedFood);
                         Swal.fire('Error', 'Failed to check user status.', 'error');
                     }
                 })
                 .catch(error => {
                     console.error('Error checking user column J:', error);
+                    isSubmitting = false; // รีเซ็ตสถานะ
+                    updateRecordButton(selectedFood);
                     Swal.fire('Error', 'Failed to check user status. Please try again later.', 'error');
                 });
         }
@@ -1566,9 +1681,17 @@
                         
                         // Reset form
                         const foodSearch = document.getElementById('foodSearch');
-                        if (foodSearch) foodSearch.value = '';
+                        if (foodSearch) {
+                            foodSearch.value = '';
+                            foodSearch.classList.remove('valid-food', 'invalid-food');
+                        }
                         selectedFood = '';
-                        updateRecordButton('');
+                        
+                        // ล้าง validation status
+                        const statusContainer = document.querySelector('.validation-status');
+                        if (statusContainer) {
+                            statusContainer.textContent = '';
+                        }
                         
                         // Update gift buttons
                         updateGiftButtons(userPoints);
@@ -1579,6 +1702,11 @@
                 .catch(error => {
                     console.error('Error saving data:', error);
                     Swal.fire('Error', `Network error: ${error.message}`, 'error');
+                })
+                .finally(() => {
+                    // รีเซ็ตสถานะ
+                    isSubmitting = false;
+                    updateRecordButton(''); // อัพเดต UI ปุ่มกลับสู่สถานะปกติ
                 });
         }
 
@@ -1627,7 +1755,7 @@
             }
         }
 
-        // Food search functionality
+        // ปรับปรุง Food search functionality เดิม
         document.getElementById('foodSearch').addEventListener('input', function() {
             const value = this.value;
             const dropdown = document.getElementById('foodDropdown');
@@ -1635,13 +1763,24 @@
             if (value.length > 0) {
                 dropdown.style.display = 'block';
                 const items = dropdown.querySelectorAll('.dropdown-item');
+                let hasVisibleItems = false;
+                
                 items.forEach(item => {
-                    if (item.textContent.toLowerCase().includes(value.toLowerCase())) {
+                    const foodName = item.textContent;
+                    if (foodName.toLowerCase().includes(value.toLowerCase())) {
                         item.style.display = 'block';
+                        // เพิ่ม highlight
+                        item.innerHTML = highlightText(foodName, value);
+                        hasVisibleItems = true;
                     } else {
                         item.style.display = 'none';
                     }
                 });
+                
+                // ซ่อน dropdown ถ้าไม่มีรายการที่ตรงกัน
+                if (!hasVisibleItems) {
+                    dropdown.style.display = 'none';
+                }
             } else {
                 dropdown.style.display = 'none';
             }
@@ -1649,13 +1788,19 @@
             updateRecordButton(value);
         });
 
+        // ปรับปรุง dropdown click event เดิม
         document.getElementById('foodDropdown').addEventListener('click', function(e) {
             if (e.target.classList.contains('dropdown-item')) {
                 const searchInput = document.getElementById('foodSearch');
-                searchInput.value = e.target.textContent;
-                selectedFood = e.target.textContent;
+                const selectedText = e.target.textContent;
+                
+                searchInput.value = selectedText;
+                selectedFood = selectedText;
                 this.style.display = 'none';
                 updateRecordButton(selectedFood);
+                
+                // Focus กลับไปที่ input
+                searchInput.focus();
             }
         });
 
@@ -1664,6 +1809,7 @@
                 document.getElementById('foodDropdown').style.display = 'none';
             }
         });
+
         function highlightText(text, keyword) {
             if (!keyword || keyword.trim() === '') return text;
             
@@ -1671,12 +1817,10 @@
             const regex = new RegExp(`(${escapedKeyword})`, 'gi');
             return text.replace(regex, '<span class="highlight">$1</span>');
         }
-        // Record food
+
+        // ปรับปรุง Record food event
         document.getElementById('recordBtn').addEventListener('click', function() {
-            if (selectedFood) {
-                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
-                this.disabled = true;
-                
+            if (selectedFood && !isSubmitting) {
                 recordSelection();
             }
         });
@@ -1840,6 +1984,51 @@
                 from { transform: translate(-50%, -100%); opacity: 0; }
                 to { transform: translate(-50%, 0); opacity: 1; }
             }
+            
+            /* CSS สำหรับ validation states */
+            .valid-food {
+                border-color: #4CAF50 !important;
+                background: rgba(232, 245, 232, 0.8) !important;
+                box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1) !important;
+            }
+            
+            .invalid-food {
+                border-color: #f44336 !important;
+                background: rgba(255, 235, 235, 0.8) !important;
+                box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.1) !important;
+            }
+            
+            .validation-status {
+                font-size: 12px;
+                margin-top: 5px;
+                transition: all 0.3s ease;
+                min-height: 16px;
+            }
+            
+            /* ปรับปรุง highlight */
+            .highlight {
+                background: #fff3cd;
+                color: #856404;
+                font-weight: 600;
+                padding: 1px 2px;
+                border-radius: 2px;
+            }
+            
+            /* ปุ่ม loading state */
+            #recordBtn:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+            
+            #recordBtn.loading {
+                animation: pulse 1.5s infinite;
+            }
+            
+            @keyframes pulse {
+                0% { opacity: 0.6; }
+                50% { opacity: 1; }
+                100% { opacity: 0.6; }
+            }
         `;
         document.head.appendChild(style);
 
@@ -1849,7 +2038,7 @@
             updateGiftButtons();
         });
         
-        // Show user not found error
+        // Show user not found error - redirect to register
         function showUserNotFoundError(displayName) {
             hideLoadingScreen();
             
