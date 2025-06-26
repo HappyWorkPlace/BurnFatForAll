@@ -1979,7 +1979,7 @@ const User = {
             UI.hideLoadingScreen();
         }).catch(error => {
             console.error('Error loading initial data:', error);
-            UI.hideLoadingScreen();
+            UI.showErrorAndHideLoading('ไม่สามารถโหลดข้อมูลได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต');
         });
     },
 
@@ -2749,38 +2749,6 @@ const History = {
                 </div>
             </div>
         `;
-    },
-
-    // เพิ่มฟังก์ชันสำหรับ refresh ข้อมูล
-    async refreshHistory() {
-        const list = document.getElementById('historyList');
-        
-        // แสดง loading overlay
-        const loadingOverlay = document.createElement('div');
-        loadingOverlay.innerHTML = `
-            <div class="history-loading">
-                <div class="spinner"></div>
-                <p>กำลังอัพเดตข้อมูล...</p>
-            </div>
-        `;
-        loadingOverlay.style.position = 'absolute';
-        loadingOverlay.style.top = '0';
-        loadingOverlay.style.left = '0';
-        loadingOverlay.style.right = '0';
-        loadingOverlay.style.bottom = '0';
-        loadingOverlay.style.background = 'rgba(255, 255, 255, 0.9)';
-        loadingOverlay.style.zIndex = '10';
-        loadingOverlay.style.borderRadius = 'var(--radius-lg)';
-        
-        const container = list.parentElement;
-        container.style.position = 'relative';
-        container.appendChild(loadingOverlay);
-        
-        try {
-            await this.loadHistory();
-        } finally {
-            container.removeChild(loadingOverlay);
-        }
     }
 };
 
@@ -2925,9 +2893,8 @@ window.switchTab = Navigation.switchTab.bind(Navigation);
 window.scrollToGift = UI.scrollToGift.bind(UI);
 window.History = History;
 
-// Initialize when DOM is ready
+// Initialize only once when DOM is ready
 document.addEventListener('DOMContentLoaded', App.initialize);
-window.addEventListener('load', App.initialize);
 
     </script>
 </body>
