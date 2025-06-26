@@ -1760,7 +1760,7 @@ const Utils = {
    🌐 API FUNCTIONS
    ================================= */
 const API = {
-    // Base fetch with error handling
+    // Base fetch with better error messages
     async request(params) {
         const url = `${CONFIG.API_URL}?${new URLSearchParams(params)}`;
         
@@ -1772,7 +1772,15 @@ const API = {
             return await response.json();
         } catch (error) {
             console.error('API request failed:', error);
-            throw error;
+            
+            // Provide specific error messages
+            if (error.message.includes('fetch')) {
+                throw new Error('ไม่สามารถเชื่อมต่ออินเทอร์เน็ตได้ กรุณาตรวจสอบการเชื่อมต่อ');
+            } else if (error.message.includes('HTTP error')) {
+                throw new Error(`เซิร์ฟเวอร์มีปัญหา (${response?.status})`);
+            } else {
+                throw new Error('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+            }
         }
     },
 
