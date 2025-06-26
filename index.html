@@ -450,6 +450,8 @@ body {
 .gift-slide {
     flex-shrink: 0;
     width: 100%;
+    min-width: 100%;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -466,21 +468,23 @@ body {
 }
 
 .gift-icon-large {
-    width: 56px;
-    height: 56px;
+    width: 64px;
+    height: 64px;
     border-radius: var(--radius-lg);
     background: rgba(16, 185, 129, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: var(--text-2xl);
+    font-size: var(--text-lg);
     border: 2px solid rgba(16, 185, 129, 0.2);
+    -webkit-line-clamp: 2; 
 }
 
 .gift-icon-large img {
     width: 40px;
     height: 40px;
     object-fit: contain;
+    
 }
 
 .gift-details {
@@ -2286,15 +2290,31 @@ const History = {
         const endIndex = startIndex + CONFIG.RECORDS_PER_PAGE;
         const pageRecords = historyData.slice(startIndex, endIndex);
         
+        // Create header with record count
+        const totalRecords = historyData.length;
+        const headerHTML = `
+            <div class="history-header">
+                <div class="history-title">
+                    <i class="fas fa-clock"></i>
+                    ประวัติการบันทึก
+                </div>
+                <div class="history-count">${totalRecords}</div>
+            </div>
+        `;
+        
         let historyHTML = '';
         
-        pageRecords.forEach(record => {
+        pageRecords.forEach((record, index) => {
             const dateTime = Utils.formatDateTime(record.TimeStamp);
             const menu = record.Menu || 'ไม่ระบุเมนู';
+            const recordNumber = startIndex + index + 1;
             
             historyHTML += `
                 <div class="history-item">
-                    <div class="history-date">${dateTime}</div>
+                    <div class="history-date">
+                        <i class="fas fa-calendar-alt"></i>
+                        ${dateTime} • รายการที่ ${recordNumber}
+                    </div>
                     <div class="history-food">${menu}</div>
                 </div>
             `;
@@ -2303,7 +2323,7 @@ const History = {
         const totalPages = Math.ceil(historyData.length / CONFIG.RECORDS_PER_PAGE);
         const paginationHTML = this.createPagination(currentPage, totalPages);
         
-        list.innerHTML = historyHTML + paginationHTML;
+        list.innerHTML = headerHTML + historyHTML + paginationHTML;
     },
 
     createPagination(current, total) {
@@ -2311,14 +2331,31 @@ const History = {
         
         let html = '<div class="pagination-container">';
         
+        // Previous button
         if (current > 1) {
-            html += `<button class="pagination-btn" onclick="History.changePage(${current - 1})">← ก่อนหน้า</button>`;
+            html += `
+                <button class="pagination-btn" onclick="History.changePage(${current - 1})">
+                    <i class="fas fa-chevron-left"></i>
+                    ก่อนหน้า
+                </button>
+            `;
         }
         
-        html += `<span class="pagination-info">หน้า ${current} จาก ${total}</span>`;
+        // Page info
+        html += `
+            <div class="pagination-info">
+                หน้า ${current} จาก ${total}
+            </div>
+        `;
         
+        // Next button
         if (current < total) {
-            html += `<button class="pagination-btn" onclick="History.changePage(${current + 1})">ถัดไป →</button>`;
+            html += `
+                <button class="pagination-btn" onclick="History.changePage(${current + 1})">
+                    ถัดไป
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            `;
         }
         
         html += '</div>';
@@ -2329,9 +2366,22 @@ const History = {
         currentPage = page;
         this.displayHistory();
         
+        // Smooth scroll to top of history section
         const historySection = document.getElementById('historySection');
         if (historySection) {
-            historySection.scrollTop = 0;
+            historySection.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }
+        
+        // Add visual feedback
+        const paginationContainer = document.querySelector('.pagination-container');
+        if (paginationContainer) {
+            paginationContainer.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                paginationContainer.style.transform = 'scale(1)';
+            }, 150);
         }
     },
 
@@ -2339,10 +2389,14 @@ const History = {
         const list = document.getElementById('historyList');
         list.innerHTML = `
             <div class="empty-history">
-                <div style="text-align: center; padding: 40px 20px; color: #64748b;">
-                    <div style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;">📝</div>
-                    <h3 style="margin-bottom: 10px;">ยังไม่มีประวัติการบันทึก</h3>
-                    <p>เริ่มบันทึกเมนูอาหารของคุณเลย!</p>
+                <div class="empty-state-content">
+                    <div class="icon">📝</div>
+                    <h3>ยังไม่มีประวัติการบันทึก</h3>
+                    <p>เริ่มบันทึกเมนูอาหารสุขภาพของคุณได้เลย!<br>แต่ละครั้งที่บันทึกจะได้รับ 5 คะแนน</p>
+                    <button class="retry-btn" onclick="Navigation.switchTab('record')">
+                        <i class="fas fa-utensils"></i>
+                        เริ่มบันทึก
+                    </button>
                 </div>
             </div>
         `;
@@ -2352,16 +2406,49 @@ const History = {
         const list = document.getElementById('historyList');
         list.innerHTML = `
             <div class="error-history">
-                <div style="text-align: center; padding: 40px 20px; color: #ef4444;">
-                    <div style="font-size: 48px; margin-bottom: 15px;">⚠️</div>
-                    <h3 style="margin-bottom: 10px;">ไม่สามารถโหลดประวัติได้</h3>
-                    <p style="color: #64748b; margin-bottom: 15px;">กรุณาลองใหม่อีกครั้ง</p>
-                    <button onclick="History.loadHistory()" style="padding: 8px 16px; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                <div class="error-state-content">
+                    <div class="icon">⚠️</div>
+                    <h3>ไม่สามารถโหลดประวัติได้</h3>
+                    <p>เกิดข้อผิดพลาดในการเชื่อมต่อ<br>กรุณาตรวจสอบอินเทอร์เน็ตและลองใหม่อีกครั้ง</p>
+                    <button class="retry-btn" onclick="History.loadHistory()">
+                        <i class="fas fa-redo-alt"></i>
                         ลองใหม่
                     </button>
                 </div>
             </div>
         `;
+    },
+
+    // เพิ่มฟังก์ชันสำหรับ refresh ข้อมูล
+    async refreshHistory() {
+        const list = document.getElementById('historyList');
+        
+        // แสดง loading overlay
+        const loadingOverlay = document.createElement('div');
+        loadingOverlay.innerHTML = `
+            <div class="history-loading">
+                <div class="spinner"></div>
+                <p>กำลังอัพเดตข้อมูล...</p>
+            </div>
+        `;
+        loadingOverlay.style.position = 'absolute';
+        loadingOverlay.style.top = '0';
+        loadingOverlay.style.left = '0';
+        loadingOverlay.style.right = '0';
+        loadingOverlay.style.bottom = '0';
+        loadingOverlay.style.background = 'rgba(255, 255, 255, 0.9)';
+        loadingOverlay.style.zIndex = '10';
+        loadingOverlay.style.borderRadius = 'var(--radius-lg)';
+        
+        const container = list.parentElement;
+        container.style.position = 'relative';
+        container.appendChild(loadingOverlay);
+        
+        try {
+            await this.loadHistory();
+        } finally {
+            container.removeChild(loadingOverlay);
+        }
     }
 };
 
