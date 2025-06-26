@@ -1885,22 +1885,103 @@ const LIFF = {
         }
     },
 
-    async getUserProfile() {
-        try {
-            const profile = await liff.getProfile();
-            console.log('Profile obtained:', profile);
-            
-            const { userId: uid, displayName, pictureUrl } = profile;
-            
-            // Update avatar
-            UI.updateUserAvatar(displayName, pictureUrl);
-            
-            // Fetch user data
-            await User.loadUserData(uid, displayName);
-        } catch (error) {
-            console.error('Failed to get user profile:', error);
-            this.handleError('ไม่สามารถดึงข้อมูลโปรไฟล์ LINE ได้');
+    async getUserProfile(retries = 3) {
+        for (let attempt = 1; attempt <= retries; attempt++) {
+            try {
+                console.log(`Getting LINE profile (attempt ${attempt}/${retries})`);
+                
+                const profile = await liff.getProfile();
+                console.log('Profile obtained:', profile);
+                
+                const { userId: uid, displayName, pictureUrl } = profile;
+                
+                // Update avatar
+                UI.updateUserAvatar(displayName, pictureUrl);
+                
+                // Fetch user data
+                await User.loadUserData(uid, displayName);
+                return; // Success, exit retry loop
+                
+            } catch (error) {
+                console.error(`Failed to get user profile (attempt ${attempt}):`, error);
+                
+                if (attempt < retries) {
+                    console.log(`Retrying in ${attempt * 1000}ms...`);
+                    await new Promise(resolve => setTimeout(resolve, attempt * 1000));
+                } else {
+                    // Last attempt failed, try alternative approach
+                    await this.handleProfileError();
+                }
+            }
         }
+    },
+
+    async handleProfileError() {
+        console.log('All profile attempts failed, trying alternative approach...');
+        
+        try {
+            // Try to get basic user info from LIFF context
+            const context = liff.getContext();
+            if (context && context.userId) {
+                console.log('Using LIFF context for user ID');
+                await User.loadUserData(context.userId, 'ผู้ใช้ LINE');
+                return;
+            }
+        } catch (contextError) {
+            console.error('LIFF context also failed:', contextError);
+        }
+
+        // Show user-friendly error with options
+        Swal.fire({
+            title: 'ไม่สามารถเชื่อมต่อ LINE ได้',
+            html: `
+                <p>การเชื่อมต่อกับ LINE มีปัญหา</p>
+                <div style="margin: 15px 0; padding: 10px; background: #f3f4f6; border-radius: 8px; font-size: 0.9rem;">
+                    <strong>วิธีแก้ไข:</strong><br>
+                    1. ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต<br>
+                    2. ปิดแล้วเปิดแอป LINE ใหม่<br>
+                    3. ลองใช้เครือข่ายอื่น (WiFi ↔ Mobile Data)
+                </div>
+            `,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'ลองอีกครั้ง',
+            cancelButtonText: 'ใช้โหมดจำกัด',
+            confirmButtonColor: '#10b981',
+            cancelButtonColor: '#6b7280'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                location.reload();
+            } else {
+                // Enter limited mode
+                this.enterLimitedMode();
+            }
+        });
+    },
+
+    enterLimitedMode() {
+        console.log('Entering limited mode...');
+        
+        // Show limited mode notification
+        UI.showLimitedModeNotification();
+        
+        // Mock user data for limited functionality
+        const limitedUserData = {
+            Name: 'ผู้ใช้ LINE',
+            Division: 'โหมดจำกัด',
+            Factory: 'OFFLINE',
+            Point: 0
+        };
+        
+        UI.updateUserInfo('ผู้ใช้ LINE', limitedUserData);
+        UI.updatePointsDisplay(0);
+        
+        // Load only food data (which works)
+        Food.loadFoodList().then(() => {
+            UI.hideLoadingScreen();
+        }).catch(() => {
+            UI.showErrorAndHideLoading('ไม่สามารถโหลดข้อมูลได้');
+        });
     },
 
     handleError(message) {
@@ -2018,6 +2099,9 @@ const Food = {
             console.error('Error fetching food list:', error);
             validFoodList = [];
             this.populateDropdown(validFoodList);
+            
+            // แสดง error message ใน UI
+            UI.showFoodLoadError();
             throw error;
         }
     },
@@ -2095,13 +2179,52 @@ const Food = {
         });
 
         try {
-            const profile = await liff.getProfile();
-            const uid = profile.userId;
+            // Try to get LINE profile with retry
+            let uid = null;
+            let attempts = 0;
+            const maxAttempts = 3;
+
+            while (attempts < maxAttempts && !uid) {
+                try {
+                    const profile = await liff.getProfile();
+                    uid = profile.userId;
+                    break;
+                } catch (profileError) {
+                    attempts++;
+                    console.warn(`Profile attempt ${attempts} failed:`, profileError);
+                    
+                    if (attempts < maxAttempts) {
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                    }
+                }
+            }
+
+            if (!uid) {
+                throw new Error('Cannot get LINE profile after multiple attempts');
+            }
+
             await this.checkAndSave(uid, userData[1], userData[4], selectedFood, userData[2]);
+            
         } catch (error) {
-            console.error('Failed to get user profile:', error);
+            console.error('Failed to record selection:', error);
             this.resetSubmitting();
-            Swal.fire('Error', 'Failed to get user profile. Please try again later.', 'error');
+            Swal.fire({
+                title: 'ไม่สามารถบันทึกได้',
+                html: `
+                    <p>เกิดข้อผิดพลาดในการเชื่อมต่อ LINE</p>
+                    <div style="margin-top: 15px; padding: 10px; background: #f3f4f6; border-radius: 8px; font-size: 0.9rem;">
+                        <strong>แนะนำ:</strong><br>
+                        1. ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต<br>
+                        2. ปิดแล้วเปิดแอป LINE ใหม่<br>
+                        3. ลองบันทึกใหม่อีกครั้ง
+                    </div>
+                `,
+                icon: 'error',
+                confirmButtonText: 'รีเฟรชหน้า',
+                confirmButtonColor: '#10b981'
+            }).then(() => {
+                location.reload();
+            });
         }
     },
 
@@ -2192,28 +2315,44 @@ const Food = {
 const Gift = {
     async loadGiftData() {
         try {
-            const [gifts, userGiftData] = await Promise.all([
-                API.getGiftList(),
-                liff.getProfile().then(profile => API.getUserDataForGifts(profile.userId))
-            ]);
-
+            console.log('Loading gift data...');
+            const gifts = await API.getGiftList();
             giftListData = gifts.success ? gifts.gifts : [];
             
-            // Merge gift data if needed
-            if (userGiftData && userGiftData.success && Array.isArray(userGiftData.data)) {
-                userGiftData.data.forEach((value, index) => {
-                    if (userData && index < userData.length) {
-                        userData[index] = value;
-                    }
-                });
+            // Try to get user gift data with fallback
+            try {
+                const profile = await liff.getProfile();
+                const userGiftData = await API.getUserDataForGifts(profile.userId);
+                
+                if (userGiftData && userGiftData.success && Array.isArray(userGiftData.data)) {
+                    userGiftData.data.forEach((value, index) => {
+                        if (userData && index < userData.length) {
+                            userData[index] = value;
+                        }
+                    });
+                }
+            } catch (profileError) {
+                console.warn('Could not get user gift data, using existing user data:', profileError);
+                // Continue with existing userData
             }
             
             console.log('Gift data loaded:', giftListData);
             this.updateGiftButtons(userPoints);
         } catch (error) {
             console.error('Error loading gift data:', error);
-            giftListData = [];
+            
+            // Use fallback gift data structure
+            giftListData = [
+                { Level: 30, Gift_Name: 'ทิชชู่คุมะ', Balance: '?' },
+                { Level: 60, Gift_Name: 'ร่มยาวคละสี', Balance: '?' },
+                { Level: 90, Gift_Name: 'กล่องอาหาร Superlock', Balance: '?' },
+                { Level: 120, Gift_Name: 'กระเป๋าผ้ากินดีHealthyLife', Balance: '?' },
+                { Level: 150, Gift_Name: 'แก้วLocknlock', Balance: '?' }
+            ];
+            
+            console.log('Using fallback gift data');
             this.updateGiftButtons(userPoints);
+            UI.showGiftLoadError();
         }
     },
 
@@ -2235,7 +2374,7 @@ const Gift = {
 
             // Update balance display
             if (balanceElement && gift) {
-                balanceElement.textContent = gift.Balance || 0;
+                balanceElement.textContent = gift.Balance || '?';
             }
 
             // Get user status for this gift
@@ -2282,6 +2421,22 @@ const Gift = {
     async redeemGift(level) {
         if (isSubmitting) {
             console.log('กำลังประมวลผลอยู่ กรุณารอ...');
+            return;
+        }
+
+        // Check if we have LINE profile access
+        try {
+            await liff.getProfile();
+        } catch (error) {
+            Swal.fire({
+                title: 'ไม่สามารถแลกรับได้',
+                text: 'ต้องการการเชื่อมต่อ LINE เพื่อแลกรับของรางวัล',
+                icon: 'warning',
+                confirmButtonColor: '#10b981',
+                confirmButtonText: 'รีเฟรชหน้า'
+            }).then(() => {
+                location.reload();
+            });
             return;
         }
 
@@ -2527,6 +2682,159 @@ const UI = {
             confirmButtonText: 'รับทราบ',
             confirmButtonColor: '#ef4444'
         });
+    },
+
+    // แสดง error เมื่อโหลด food list ไม่ได้
+    showFoodLoadError() {
+        const searchContainer = document.querySelector('.search-container');
+        if (searchContainer) {
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'food-load-error';
+            errorMsg.style.cssText = `
+                background: #fef2f2;
+                color: #dc2626;
+                padding: 12px;
+                border-radius: 8px;
+                margin-top: 8px;
+                font-size: 14px;
+                text-align: center;
+                border: 1px solid #fecaca;
+            `;
+            errorMsg.innerHTML = `
+                <i class="fas fa-exclamation-triangle"></i>
+                ไม่สามารถโหลดรายการอาหารได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต
+            `;
+            
+            // ลบ error message เก่าถ้ามี
+            const existingError = searchContainer.querySelector('.food-load-error');
+            if (existingError) existingError.remove();
+            
+            searchContainer.appendChild(errorMsg);
+        }
+    },
+
+    // แสดง error เมื่อโหลด gift data ไม่ได้
+    showGiftLoadError() {
+        const carousel = document.querySelector('.gifts-carousel');
+        if (carousel) {
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'gift-load-error';
+            errorMsg.style.cssText = `
+                background: #fefce8;
+                color: #ca8a04;
+                padding: 12px;
+                border-radius: 8px;
+                margin-top: 8px;
+                font-size: 14px;
+                text-align: center;
+                border: 1px solid #fde047;
+            `;
+            errorMsg.innerHTML = `
+                <i class="fas fa-exclamation-triangle"></i>
+                ไม่สามารถโหลดข้อมูลของรางวัลได้ อาจมีปัญหาการเชื่อมต่อ
+            `;
+            
+            // ลบ error message เก่าถ้ามี
+            const existingError = carousel.querySelector('.gift-load-error');
+            if (existingError) existingError.remove();
+            
+            carousel.appendChild(errorMsg);
+        }
+    },
+
+    // แสดงการแจ้งเตือนโหมดจำกัด
+    showLimitedModeNotification() {
+        const notification = document.createElement('div');
+        notification.className = 'limited-mode-notification';
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fbbf24;
+            color: #92400e;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+            animation: slideInDown 0.3s ease;
+        `;
+        notification.innerHTML = `
+            <i class="fas fa-exclamation-triangle"></i>
+            โหมดจำกัด - บางฟีเจอร์อาจไม่สามารถใช้งานได้
+        `;
+
+        document.body.appendChild(notification);
+
+        // ลบการแจ้งเตือนหลังจาก 5 วินาที
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.style.animation = 'slideOutUp 0.3s ease';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }
+        }, 5000);
+
+        // เพิ่ม keyframes สำหรับ animation
+        if (!document.querySelector('#limited-mode-styles')) {
+            const style = document.createElement('style');
+            style.id = 'limited-mode-styles';
+            style.textContent = `
+                @keyframes slideInDown {
+                    from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+                    to { transform: translateX(-50%) translateY(0); opacity: 1; }
+                }
+                @keyframes slideOutUp {
+                    from { transform: translateX(-50%) translateY(0); opacity: 1; }
+                    to { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    },
+
+    // แสดงสถานะการเชื่อมต่อ
+    showConnectionStatus(isConnected) {
+        const statusBar = document.querySelector('.connection-status-bar');
+        
+        if (!statusBar) {
+            const bar = document.createElement('div');
+            bar.className = 'connection-status-bar';
+            bar.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                padding: 8px 16px;
+                text-align: center;
+                font-size: 12px;
+                font-weight: 600;
+                z-index: 9999;
+                transition: all 0.3s ease;
+            `;
+            document.body.appendChild(bar);
+        }
+
+        const bar = document.querySelector('.connection-status-bar');
+        
+        if (isConnected) {
+            bar.style.background = '#10b981';
+            bar.style.color = 'white';
+            bar.textContent = '🟢 เชื่อมต่อสำเร็จ';
+            
+            // ซ่อนหลังจาก 2 วินาที
+            setTimeout(() => {
+                bar.style.transform = 'translateY(-100%)';
+            }, 2000);
+        } else {
+            bar.style.background = '#ef4444';
+            bar.style.color = 'white';
+            bar.style.transform = 'translateY(0)';
+            bar.textContent = '🔴 การเชื่อมต่อมีปัญหา - ตรวจสอบอินเทอร์เน็ต';
+        }
     },
 
     // Carousel functions
@@ -2903,6 +3211,34 @@ window.History = History;
 
 // Initialize only once when DOM is ready
 document.addEventListener('DOMContentLoaded', App.initialize);
+
+// Network monitoring
+window.addEventListener('online', () => {
+    console.log('Network connected');
+    UI.showConnectionStatus(true);
+    
+    // พยายาม reload gift data ถ้ายังไม่ได้
+    if (!giftListData || giftListData.length === 0) {
+        console.log('Attempting to reload gift data...');
+        Gift.loadGiftData();
+    }
+});
+
+window.addEventListener('offline', () => {
+    console.log('Network disconnected');
+    UI.showConnectionStatus(false);
+});
+
+// Monitor LIFF ready state
+if (typeof liff !== 'undefined') {
+    liff.ready.then(() => {
+        console.log('LIFF is ready');
+        UI.showConnectionStatus(true);
+    }).catch((error) => {
+        console.error('LIFF ready failed:', error);
+        UI.showConnectionStatus(false);
+    });
+}
 
     </script>
 </body>
