@@ -920,6 +920,7 @@
 
             .carousel-indicators {
                 margin-top: 12px;
+                margin-bottom:12px;
             }
 
             .indicator-dot {
@@ -1057,7 +1058,7 @@
         </div>
 
         <!-- Gift Level 60 -->
-        <div class="gift-slide">
+        <div class="">
             <div class="gift-content">
                 <div class="gift-icon-large">
                     <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/32eb73075e8460c39473dc919d86ab725f9509e8/picture/umbrella.png" 
@@ -1076,7 +1077,7 @@
         </div>
 
         <!-- Gift Level 90 -->
-        <div class="gift-slide">
+        <div class="">
             <div class="gift-content">
                 <div class="gift-icon-large">
                     <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/3c0d58a21a12b84403f0cf191bcf88fac2a54034/picture/45.png"
@@ -1835,7 +1836,7 @@ function updateGiftButtons(points = userPoints) {
     });
 }
 
-// ฟังก์ชันรับของรางวัล (แก้ไขแล้ว - ไม่ใช้คะแนน)
+// ฟังก์ชันรับของรางวัล
 function redeemGift(level) {
     // ตรวจสอบสถานะก่อน
     if (isSubmitting) {
@@ -1894,7 +1895,7 @@ function redeemGift(level) {
     });
 }
 
-// ประมวลผลการรับของรางวัล (แก้ไขแล้ว)
+// ประมวลผลการรับของรางวัล
 function processRedeemGift(level) {
     isSubmitting = true; // ป้องกันการกดซ้ำ
 
@@ -1933,7 +1934,7 @@ function processRedeemGift(level) {
                                             🎉 รับรางวัลเรียบร้อยแล้ว!
                                         </p>
                                         <p style="margin-top: 10px; font-size: 14px; color: #666;">
-                                            ขอบคุณที่เข้าร่วมกิจกรรม Healthy Life #2
+                                            ขอบคุณที่เข้าร่วมกิจกรรมกินดี Healthy Life #2
                                         </p>
                                     </div>
                                 `,
