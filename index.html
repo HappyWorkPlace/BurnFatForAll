@@ -1824,7 +1824,7 @@
                 recordSelection();
             }
         });
-
+        
         // Fixed progress calculation
         function updatePointsDisplay(points) {
             document.getElementById('pointsValue').textContent = points;
@@ -1914,6 +1914,366 @@
                 }
             });
         }
+        // =================
+        // Gift Redeem System (เพิ่มในส่วนท้ายของ script เดิม)
+        // =================
+        
+        // ตัวแปรสำหรับระบบของรางวัล
+        let giftListData = [];
+        let userGiftStatus = {};
+        
+        // ฟังก์ชันดึงข้อมูลผู้ใช้สำหรับของรางวัล (ใช้ API เก่า)
+        function fetchUserDataForGifts(uid) {
+            return fetch(`${API_URL}?action=getUserData&uid=${uid}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        return data.data;
+                    } else {
+                        throw new Error('Error fetching user data for gifts');
+                    }
+                });
+        }
+        
+        // ฟังก์ชันดึงรายการของรางวัล
+        function fetchGiftList() {
+            return fetch(`${API_URL}?action=getGiftList`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        return data.gifts;
+                    } else {
+                        throw new Error('Error fetching gift list');
+                    }
+                });
+        }
+        
+        // แมป level ใหม่กับ column index (ปรับให้ตรงกับระบบใหม่)
+        function getColumnIndexByLevel(level) {
+            switch (level) {
+                case 30:
+                    return 6; // Column G
+                case 60:
+                    return 7; // Column H
+                case 90:
+                    return 8; // Column I
+                case 120:
+                    return 9; // Column J
+                case 150:
+                    return 10; // Column K
+                default:
+                    return null;
+            }
+        }
+        
+        // อัพเดตการแสดงผลปุ่มของรางวัล (ปรับปรุงจากเดิม)
+        function updateGiftButtons(points = userPoints) {
+            if (!giftListData || giftListData.length === 0) {
+                console.log('Gift data not loaded yet');
+                return;
+            }
+        
+            const requiredPoints = [30, 60, 90, 120, 150];
+            const buttons = document.querySelectorAll('.gift-button-large');
+            
+            buttons.forEach((button, index) => {
+                const level = requiredPoints[index];
+                const gift = giftListData.find(g => g.Level === level);
+                
+                if (!gift) {
+                    // ถ้าไม่พบข้อมูลของรางวัล
+                    button.disabled = true;
+                    button.textContent = 'ไม่พบข้อมูล';
+                    button.className = 'gift-button-large disabled';
+                    return;
+                }
+        
+                // หา element ที่เกี่ยวข้อง
+                const balanceElement = document.getElementById(`gift${level}-balance`);
+                const redeemedImage = document.getElementById(`gift${level}-redeemed`);
+                const outOfStockImage = document.getElementById(`gift${level}-outofstock`);
+                
+                // อัพเดต balance
+                if (balanceElement) {
+                    balanceElement.textContent = gift.Balance || 0;
+                }
+        
+                // ดึงสถานะของ user สำหรับของรางวัลนี้
+                const columnIndex = getColumnIndexByLevel(level);
+                const userStatus = userData && columnIndex !== null ? userData[columnIndex] : null;
+        
+                // รีเซ็ต style
+                if (redeemedImage) redeemedImage.style.display = 'none';
+                if (outOfStockImage) outOfStockImage.style.display = 'none';
+                button.style.display = 'block';
+        
+                // อัพเดตสถานะตาม user status
+                if (userStatus === 'R') {
+                    // รับไปแล้ว
+                    button.style.display = 'none';
+                    if (redeemedImage) redeemedImage.style.display = 'block';
+                } else if (userStatus === 'O' || gift.Balance <= 0) {
+                    // ของหมด
+                    button.style.display = 'none';
+                    if (outOfStockImage) outOfStockImage.style.display = 'block';
+                } else if (userStatus === 'Y' && points >= level) {
+                    // สามารถรับได้
+                    button.disabled = false;
+                    button.textContent = 'แลกรับ';
+                    button.className = 'gift-button-large enabled';
+                    button.onclick = () => redeemGift(level);
+                } else if (points >= level) {
+                    // คะแนนพอแต่ยังไม่ถึงเวลา
+                    button.disabled = false;
+                    button.textContent = 'แลกรับ';
+                    button.className = 'gift-button-large enabled';
+                    button.onclick = () => redeemGift(level);
+                } else {
+                    // คะแนนไม่พอ
+                    button.disabled = true;
+                    button.textContent = 'คะแนนไม่พอ';
+                    button.className = 'gift-button-large disabled';
+                }
+            });
+        }
+        
+        // ฟังก์ชันแลกของรางวัล (ปรับปรุงจากเดิม)
+        function redeemGift(level) {
+            // ตรวจสอบสถานะก่อน
+            if (isSubmitting) {
+                console.log('กำลังประมวลผลอยู่ กรุณารอ...');
+                return;
+            }
+        
+            // ตรวจสอบคะแนน
+            if (userPoints < level) {
+                Swal.fire({
+                    title: 'คะแนนไม่เพียงพอ',
+                    text: `ต้องการ ${level} คะแนน แต่คุณมี ${userPoints} คะแนน`,
+                    icon: 'warning',
+                    confirmButtonColor: '#10b981'
+                });
+                return;
+            }
+        
+            // ตรวจสอบ balance
+            const gift = giftListData.find(g => g.Level === level);
+            if (!gift || gift.Balance <= 0) {
+                Swal.fire({
+                    title: 'ของรางวัลหมดแล้ว',
+                    text: 'ขออภัย ของรางวัลนี้หมดแล้ว',
+                    icon: 'error',
+                    confirmButtonColor: '#10b981'
+                });
+                return;
+            }
+        
+            // แสดง confirmation
+            Swal.fire({
+                title: 'ยืนยันการแลกของรางวัล',
+                html: `
+                    <div style="text-align: center;">
+                        <p>คุณต้องการแลก <strong>${gift.Gift_Name}</strong></p>
+                        <p>ใช้คะแนน: <span style="color: #ef4444; font-weight: bold;">${level} คะแนน</span></p>
+                        <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">
+                            คงเหลือหลังแลก: ${userPoints - level} คะแนน
+                        </p>
+                    </div>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'ยืนยันแลก',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    processRedeemGift(level);
+                }
+            });
+        }
+        
+        // ประมวลผลการแลกของรางวัล
+        function processRedeemGift(level) {
+            isSubmitting = true; // ป้องกันการกดซ้ำ
+        
+            liff.getProfile().then(profile => {
+                const uid = profile.userId;
+                
+                Swal.fire({
+                    title: 'กำลังจองของรางวัล',
+                    html: `
+                        <div style="text-align: center;">
+                            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/giftAnimattion.gif" 
+                                 alt="loading" style="width:250px;height:250px;">
+                            <p style="margin-top: 15px; color: #666;">กรุณารอสักครู่...</p>
+                        </div>
+                    `,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                        
+                        fetch(`${API_URL}?action=redeemGift&uid=${uid}&level=${level}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                Swal.close();
+                                if (data.success) {
+                                    // แลกสำเร็จ
+                                    userPoints -= level; // หักคะแนน
+                                    updatePointsDisplay(userPoints); // อัพเดต UI คะแนน
+                                    
+                                    Swal.fire({
+                                        title: 'แลกของรางวัลสำเร็จ!',
+                                        html: `
+                                            <div style="text-align: center;">
+                                                <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemGIF.gif" 
+                                                     alt="success" style="width:250px;height:250px;">
+                                                <p style="margin-top: 15px; font-size: 16px; color: #10b981;">
+                                                    <strong>แลกรับรางวัลเรียบร้อยแล้ว</strong>
+                                                </p>
+                                                <p style="margin-top: 10px; font-size: 14px; color: #666;">
+                                                    คะแนนคงเหลือ: ${userPoints} คะแนน
+                                                </p>
+                                            </div>
+                                        `,
+                                        confirmButtonColor: '#10b981',
+                                        confirmButtonText: 'ตรวจสอบรายการ'
+                                    }).then(() => {
+                                        // Redirect ไปหน้าตรวจสอบรายการ
+                                        window.open('https://liff.line.me/2004752543-O6BZm2yN', '_blank');
+                                        
+                                        // โหลดข้อมูลใหม่
+                                        loadGiftData();
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: 'ไม่สามารถแลกได้',
+                                        text: data.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
+                                        icon: 'error',
+                                        confirmButtonColor: '#ef4444'
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error redeeming gift:', error);
+                                Swal.close();
+                                Swal.fire({
+                                    title: 'เกิดข้อผิดพลาด',
+                                    text: 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง',
+                                    icon: 'error',
+                                    confirmButtonColor: '#ef4444'
+                                });
+                            })
+                            .finally(() => {
+                                isSubmitting = false; // รีเซ็ตสถานะ
+                            });
+                    }
+                });
+            }).catch(err => {
+                console.error('Failed to get user profile:', err);
+                isSubmitting = false;
+                Swal.fire({
+                    title: 'เกิดข้อผิดพลาด',
+                    text: 'ไม่สามารถดึงข้อมูลโปรไฟล์ได้',
+                    icon: 'error',
+                    confirmButtonColor: '#ef4444'
+                });
+            });
+        }
+        
+        // โหลดข้อมูลของรางวัล
+        function loadGiftData() {
+            Promise.all([
+                fetchGiftList(),
+                liff.getProfile().then(profile => fetchUserDataForGifts(profile.userId))
+            ])
+            .then(([gifts, userGiftData]) => {
+                giftListData = gifts;
+                // อัพเดต userData ด้วยข้อมูลของรางวัล (ถ้าต้องการ)
+                if (userGiftData && Array.isArray(userGiftData)) {
+                    // Merge ข้อมูลของรางวัลเข้าไปใน userData
+                    userGiftData.forEach((value, index) => {
+                        if (userData && index < userData.length) {
+                            userData[index] = value;
+                        }
+                    });
+                }
+                
+                console.log('Gift data loaded:', giftListData);
+                updateGiftButtons(userPoints);
+            })
+            .catch(error => {
+                console.error('Error loading gift data:', error);
+                // ใช้ข้อมูล fallback
+                giftListData = [];
+                updateGiftButtons(userPoints);
+            });
+        }
+        
+        // ปรับปรุงฟังก์ชัน displayUserData เดิม เพื่อโหลดข้อมูลของรางวัลด้วย
+        const originalDisplayUserData = displayUserData;
+        displayUserData = function(userDataResponse, displayName) {
+            // เรียกฟังก์ชันเดิม
+            originalDisplayUserData(userDataResponse, displayName);
+            
+            // โหลดข้อมูลของรางวัลเพิ่มเติม
+            setTimeout(() => {
+                loadGiftData();
+            }, 1000);
+        };
+        
+        // เพิ่ม CSS สำหรับปุ่มของรางวัล
+        const giftStyle = document.createElement('style');
+        giftStyle.textContent = `
+            .gift-button-large.enabled {
+                background: linear-gradient(135deg, #10b981, #059669) !important;
+                color: white !important;
+                border: none !important;
+                cursor: pointer !important;
+                transition: all 0.3s ease !important;
+            }
+            
+            .gift-button-large.enabled:hover {
+                transform: translateY(-2px) !important;
+                box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3) !important;
+            }
+            
+            .gift-button-large.disabled {
+                background: #d1d5db !important;
+                color: #6b7280 !important;
+                border: none !important;
+                cursor: not-allowed !important;
+            }
+            
+            .gift-button-large:disabled {
+                opacity: 0.6 !important;
+            }
+            
+            /* สำหรับ balance display */
+            [id$="-balance"] {
+                font-weight: bold;
+                color: #059669;
+            }
+            
+            /* สำหรับรูป redeemed/out of stock */
+            [id$="-redeemed"], [id$="-outofstock"] {
+                display: none;
+                max-width: 100%;
+                height: auto;
+            }
+        `;
+        document.head.appendChild(giftStyle);
 
         // Carousel functionality
         function scrollToGift(index) {
@@ -2031,7 +2391,7 @@
             }
         `;
         document.head.appendChild(style);
-
+        
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize gift buttons
