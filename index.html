@@ -2115,6 +2115,13 @@ function updatePointsDisplay(points) {
     updateGiftButtons(points);
 }
 
+// แทนที่ฟังก์ชัน loadHistory() เดิมด้วยโค้ดนี้
+
+// ตัวแปรสำหรับ pagination
+let historyData = [];
+let currentPage = 1;
+let recordsPerPage = 10;
+
 function loadHistory() {
     const loading = document.getElementById('historyLoading');
     const list = document.getElementById('historyList');
@@ -2122,28 +2129,239 @@ function loadHistory() {
     loading.style.display = 'block';
     list.style.display = 'none';
     
-    // Simulate loading history
-    setTimeout(() => {
+    // ดึง UID จาก LIFF
+    liff.getProfile().then(profile => {
+        const userId = profile.userId;
+        
+        // เรียก API ดึงประวัติ
+        fetch(`${API_URL}?action=getUserRecords&uid=${userId}`)
+            .then(response => response.json())
+            .then(data => {
+                loading.style.display = 'none';
+                list.style.display = 'block';
+                
+                if (data.success && data.records && data.records.length > 0) {
+                    historyData = data.records;
+                    currentPage = 1;
+                    displayHistory();
+                } else {
+                    showEmptyHistory();
+                }
+            })
+            .catch(error => {
+                console.error('Error loading history:', error);
+                loading.style.display = 'none';
+                list.style.display = 'block';
+                showErrorHistory();
+            });
+    }).catch(err => {
+        console.error('Failed to get user profile for history:', err);
         loading.style.display = 'none';
         list.style.display = 'block';
+        showErrorHistory();
+    });
+}
+
+function displayHistory() {
+    const list = document.getElementById('historyList');
+    
+    // คำนวณรายการที่จะแสดงในหน้านี้
+    const startIndex = (currentPage - 1) * recordsPerPage;
+    const endIndex = startIndex + recordsPerPage;
+    const pageRecords = historyData.slice(startIndex, endIndex);
+    
+    // สร้าง HTML สำหรับรายการ
+    let historyHTML = '';
+    
+    pageRecords.forEach(record => {
+        const dateTime = formatDateTime(record.TimeStamp);
+        const menu = record.Menu || 'ไม่ระบุเมนู';
         
-        // You can replace this with actual API call to load history
-        list.innerHTML = `
+        historyHTML += `
             <div class="history-item">
-                <div class="history-date">วันนี้ - 12:30</div>
-                <div class="history-food">ข้าวผัดผักรวม</div>
-            </div>
-            <div class="history-item">
-                <div class="history-date">เมื่อวาน - 12:15</div>
-                <div class="history-food">แกงเขียวหวานไก่</div>
-            </div>
-            <div class="history-item">
-                <div class="history-date">2 วันที่แล้ว - 12:45</div>
-                <div class="history-food">สลัดผักรวม</div>
+                <div class="history-date">${dateTime}</div>
+                <div class="history-food">${menu}</div>
             </div>
         `;
-    }, 1000);
+    });
+    
+    // สร้าง pagination
+    const totalPages = Math.ceil(historyData.length / recordsPerPage);
+    const paginationHTML = createPagination(currentPage, totalPages);
+    
+    // แสดงผล
+    list.innerHTML = historyHTML + paginationHTML;
 }
+
+function formatDateTime(timestamp) {
+    if (!timestamp) return 'ไม่ระบุเวลา';
+    
+    try {
+        const date = new Date(timestamp);
+        
+        // แสดงแบบง่ายๆ วันที่ เวลา
+        const dateStr = date.toLocaleDateString('th-TH', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        });
+        
+        const timeStr = date.toLocaleTimeString('th-TH', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        return `${dateStr} ${timeStr}`;
+    } catch (error) {
+        console.error('Error formatting date:', error);
+        return 'เวลาไม่ถูกต้อง';
+    }
+}
+
+function createPagination(current, total) {
+    if (total <= 1) return '';
+    
+    let paginationHTML = '<div class="pagination-container">';
+    
+    // ปุ่ม Previous
+    if (current > 1) {
+        paginationHTML += `
+            <button class="pagination-btn" onclick="changePage(${current - 1})">
+                ← ก่อนหน้า
+            </button>
+        `;
+    }
+    
+    // แสดงหน้าปัจจุบัน
+    paginationHTML += `
+        <span class="pagination-info">
+            หน้า ${current} จาก ${total}
+        </span>
+    `;
+    
+    // ปุ่ม Next
+    if (current < total) {
+        paginationHTML += `
+            <button class="pagination-btn" onclick="changePage(${current + 1})">
+                ถัดไป →
+            </button>
+        `;
+    }
+    
+    paginationHTML += '</div>';
+    return paginationHTML;
+}
+
+function changePage(page) {
+    currentPage = page;
+    displayHistory();
+    
+    // เลื่อนกลับไปด้านบน
+    const historySection = document.getElementById('historySection');
+    if (historySection) {
+        historySection.scrollTop = 0;
+    }
+}
+
+function showEmptyHistory() {
+    const list = document.getElementById('historyList');
+    list.innerHTML = `
+        <div class="empty-history">
+            <div style="text-align: center; padding: 40px 20px; color: #64748b;">
+                <div style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;">📝</div>
+                <h3 style="margin-bottom: 10px;">ยังไม่มีประวัติการบันทึก</h3>
+                <p>เริ่มบันทึกเมนูอาหารของคุณเลย!</p>
+            </div>
+        </div>
+    `;
+}
+
+function showErrorHistory() {
+    const list = document.getElementById('historyList');
+    list.innerHTML = `
+        <div class="error-history">
+            <div style="text-align: center; padding: 40px 20px; color: #ef4444;">
+                <div style="font-size: 48px; margin-bottom: 15px;">⚠️</div>
+                <h3 style="margin-bottom: 10px;">ไม่สามารถโหลดประวัติได้</h3>
+                <p style="color: #64748b; margin-bottom: 15px;">กรุณาลองใหม่อีกครั้ง</p>
+                <button onclick="loadHistory()" style="padding: 8px 16px; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                    ลองใหม่
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+// เพิ่ม CSS สำหรับ pagination (เรียบง่าย)
+const historyStyle = document.createElement('style');
+historyStyle.textContent = `
+    .history-header {
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .pagination-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        padding: 15px 0;
+        border-top: 1px solid #f1f5f9;
+    }
+    
+    .pagination-btn {
+        padding: 8px 16px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        color: #374151;
+        transition: all 0.2s ease;
+    }
+    
+    .pagination-btn:hover {
+        background: #e2e8f0;
+        border-color: #cbd5e1;
+    }
+    
+    .pagination-btn:active {
+        transform: scale(0.98);
+    }
+    
+    .pagination-info {
+        font-size: 14px;
+        color: #64748b;
+        font-weight: 500;
+    }
+    
+    .empty-history, .error-history {
+        min-height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Responsive */
+    @media (max-width: 480px) {
+        .pagination-container {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .pagination-btn {
+            padding: 10px 20px;
+            font-size: 13px;
+        }
+        
+        .pagination-info {
+            order: -1;
+            margin-bottom: 5px;
+        }
+    }
+`;
+document.head.appendChild(historyStyle);
 
 // Carousel functionality
 function scrollToGift(index) {
