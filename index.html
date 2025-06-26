@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NMB HappyWorkPlace - กินดี Healthy Life#2</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+<!--     <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -1759,46 +1759,29 @@ const Utils = {
 /* =================================
    🌐 API FUNCTIONS
    ================================= */
-// เปลี่ยน API.request() ใน API object - บรรทัด ~130
 const API = {
-    // Base fetch with retry mechanism
-    async request(params, retries = 3) {
+    // Base fetch with error handling
+    async request(params) {
         const url = `${CONFIG.API_URL}?${new URLSearchParams(params)}`;
         
-        for (let attempt = 1; attempt <= retries; attempt++) {
-            try {
-                console.log(`API Request attempt ${attempt}/${retries}:`, params.action);
-                
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                console.log(`API Request successful on attempt ${attempt}:`, params.action);
-                return data;
-                
-            } catch (error) {
-                console.error(`API request failed (attempt ${attempt}/${retries}):`, error);
-                
-                // ถ้าไม่ใช่ครั้งสุดท้าย ให้รอแล้วลองใหม่
-                if (attempt < retries) {
-                    const delay = attempt * 1000; // เพิ่ม delay ทีละ 1 วินาที
-                    console.log(`Retrying in ${delay}ms...`);
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                } else {
-                    // ครั้งสุดท้ายแล้ว throw error
-                    throw error;
-                }
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
+            return await response.json();
+        } catch (error) {
+            console.error('API request failed:', error);
+            throw error;
         }
     },
 
-    // Keep all other methods the same, but they'll now use the retry mechanism
+    // Get user data
     async getUserData(uid) {
         return this.request({ action: 'getUserData2', uid });
     },
 
+    // Get food list
     async getFoodList() {
         return this.request({ 
             action: 'getFoodList', 
@@ -1807,10 +1790,12 @@ const API = {
         });
     },
 
+    // Check if user already recorded today
     async checkUserColumnJ(uid) {
         return this.request({ action: 'checkUserColumnJ', uid });
     },
 
+    // Save food record
     async saveRedeemData(empNo, factory, code, name) {
         return this.request({ 
             action: 'saveRedeemData',
@@ -1821,18 +1806,22 @@ const API = {
         });
     },
 
+    // Get gift list
     async getGiftList() {
         return this.request({ action: 'getGiftList' });
     },
 
+    // Get user data for gifts (legacy API)
     async getUserDataForGifts(uid) {
         return this.request({ action: 'getUserData', uid });
     },
 
+    // Redeem gift
     async redeemGift(uid, level) {
         return this.request({ action: 'redeemGift', uid, level });
     },
 
+    // Get user records history
     async getUserRecords(uid) {
         return this.request({ action: 'getUserRecords', uid });
     }
@@ -1982,23 +1971,16 @@ const User = {
         UI.updatePointsDisplay(userPoints);
         
         // Load data
-        try {
-            // เรียกทีละตัว มี delay ระหว่างการเรียก
-            console.log('Loading food list...');
-            await Food.loadFoodList();
-            
-            // หน่วงเวลา 500ms ก่อนเรียก API ถัดไป
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
-            console.log('Loading gift data...');
-            await Gift.loadGiftData();
-            
+        Promise.all([
+            Food.loadFoodList(),
+            Gift.loadGiftData()
+        ]).then(() => {
             UI.startAutoScroll();
             UI.hideLoadingScreen();
-        } catch (error) {
+        }).catch(error => {
             console.error('Error loading initial data:', error);
             UI.hideLoadingScreen();
-        }
+        });
     },
 
     redirectToRegister() {
@@ -2202,18 +2184,11 @@ const Food = {
 const Gift = {
     async loadGiftData() {
         try {
-            // เรียก Gift List ก่อน
-            console.log('Fetching gift list...');
-            const gifts = await API.getGiftList();
-            
-            // หน่วงเวลา 300ms
-            await new Promise(resolve => setTimeout(resolve, 300));
-            
-            // จากนั้นค่อยเรียก User Gift Data
-            console.log('Fetching user gift data...');
-            const profile = await liff.getProfile();
-            const userGiftData = await API.getUserDataForGifts(profile.userId);
-        
+            const [gifts, userGiftData] = await Promise.all([
+                API.getGiftList(),
+                liff.getProfile().then(profile => API.getUserDataForGifts(profile.userId))
+            ]);
+
             giftListData = gifts.success ? gifts.gifts : [];
             
             // Merge gift data if needed
