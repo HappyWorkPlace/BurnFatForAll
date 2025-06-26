@@ -427,6 +427,8 @@ body {
     -webkit-overflow-scrolling: touch;
     scroll-snap-type: x mandatory;
     gap: 0;
+    /* ป้องกันการแสดงหลาย items */
+    flex-wrap: nowrap;
 }
 
 .gifts-container::-webkit-scrollbar {
@@ -449,15 +451,15 @@ body {
 
 .gift-slide {
     flex-shrink: 0;
-    width: 100%;
-    min-width: 100%;
-    flex-shrink: 0;
+    width: 100%; /* แต่ละ slide เต็มความกว้าง */
+    min-width: 100%; /* บังคับให้เต็มความกว้าง */
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--space-md) var(--space-sm);
+    padding: var(--space-lg) var(--space-md);
     scroll-snap-align: start;
     background: transparent;
+    box-sizing: border-box;
 }
 
 .gift-content {
@@ -465,6 +467,7 @@ body {
     align-items: center;
     gap: var(--space-lg);
     flex: 1;
+    max-width: calc(100% - 90px); /* เว้นที่สำหรับปุ่ม */
 }
 
 .gift-icon-large {
@@ -475,28 +478,34 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: var(--text-lg);
+    font-size: var(--text-2xl);
     border: 2px solid rgba(16, 185, 129, 0.2);
-    -webkit-line-clamp: 2; 
+    flex-shrink: 0;
 }
 
 .gift-icon-large img {
-    width: 40px;
-    height: 40px;
+    width: 48px;
+    height: 48px;
     object-fit: contain;
-    
 }
 
 .gift-details {
     flex: 1;
+    min-width: 0; /* ป้องกัน overflow */
 }
 
 .gift-name-large {
     font-weight: var(--font-semibold);
-    font-size: var(--text-base);
+    font-size: var(--text-lg);
     color: var(--secondary-800);
     margin-bottom: var(--space-sm);
     line-height: 1.3;
+    /* ป้องกันข้อความยาวเกินไป */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 
 .gift-points-large {
@@ -513,6 +522,7 @@ body {
 
 .gift-action {
     flex-shrink: 0;
+    margin-left: var(--space-md);
 }
 
 /* Carousel Indicators */
@@ -809,10 +819,64 @@ body {
     background: var(--white);
     padding: var(--space-lg) var(--space-xl);
     border-radius: var(--radius-lg);
-    margin-bottom: var(--space-md);
+    margin-bottom: var(--space-lg);
     border: 1px solid var(--secondary-100);
     box-shadow: var(--shadow-sm);
     border-left: 4px solid var(--primary-500);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.history-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-left-color: var(--primary-600);
+}
+
+.history-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(5, 150, 105, 0.02));
+    border-radius: 0 0 0 60px;
+}
+
+.history-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-md);
+    border-bottom: 2px solid var(--secondary-100);
+}
+
+.history-title {
+    font-size: var(--text-xl);
+    font-weight: var(--font-semibold);
+    color: var(--secondary-800);
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.history-title i {
+    color: var(--primary-500);
+    font-size: var(--text-2xl);
+}
+
+.history-count {
+    background: var(--gradient-primary);
+    color: var(--white);
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    min-width: 24px;
+    text-align: center;
 }
 
 .history-date {
@@ -820,12 +884,253 @@ body {
     color: var(--secondary-500);
     margin-bottom: var(--space-sm);
     font-weight: var(--font-medium);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.history-date i {
+    color: var(--primary-500);
+    font-size: var(--text-sm);
 }
 
 .history-food {
-    font-weight: var(--font-medium);
+    font-weight: var(--font-semibold);
     color: var(--secondary-800);
     font-size: var(--text-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.history-food::before {
+    content: '🍽️';
+    font-size: var(--text-xl);
+}
+
+/* Pagination Styles */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-lg);
+    margin-top: var(--space-2xl);
+    padding: var(--space-xl) 0;
+    border-top: 1px solid var(--secondary-100);
+    background: linear-gradient(135deg, var(--secondary-50), var(--white));
+    border-radius: var(--radius-lg);
+    position: relative;
+}
+
+.pagination-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.02), rgba(5, 150, 105, 0.01));
+    border-radius: var(--radius-lg);
+    z-index: -1;
+}
+
+.pagination-btn {
+    padding: var(--space-md) var(--space-xl);
+    background: var(--gradient-primary);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    font-family: 'Prompt', sans-serif;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    min-width: 120px;
+    justify-content: center;
+}
+
+.pagination-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+}
+
+.pagination-btn:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+}
+
+.pagination-btn i {
+    font-size: var(--text-sm);
+}
+
+.pagination-info {
+    font-size: var(--text-base);
+    color: var(--secondary-600);
+    font-weight: var(--font-semibold);
+    background: var(--white);
+    padding: var(--space-md) var(--space-xl);
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--secondary-100);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    min-width: 140px;
+    justify-content: center;
+}
+
+.pagination-info::before {
+    content: '📄';
+    font-size: var(--text-lg);
+}
+
+/* Empty & Error States */
+.empty-history, .error-history {
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--secondary-50), var(--white));
+    border-radius: var(--radius-xl);
+    margin: var(--space-xl) 0;
+    border: 1px solid var(--secondary-100);
+}
+
+.empty-state-content, .error-state-content {
+    text-align: center;
+    padding: var(--space-4xl) var(--space-xl);
+    color: var(--secondary-500);
+    max-width: 320px;
+}
+
+.empty-state-content .icon, .error-state-content .icon {
+    font-size: 4rem;
+    margin-bottom: var(--space-xl);
+    opacity: 0.6;
+    display: block;
+    animation: float 3s ease-in-out infinite;
+}
+
+.empty-state-content h3, .error-state-content h3 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-semibold);
+    color: var(--secondary-700);
+    margin-bottom: var(--space-md);
+}
+
+.empty-state-content p, .error-state-content p {
+    font-size: var(--text-base);
+    color: var(--secondary-500);
+    margin-bottom: var(--space-lg);
+    line-height: 1.6;
+}
+
+.retry-btn {
+    padding: var(--space-md) var(--space-xl);
+    background: var(--gradient-primary);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    font-family: 'Prompt', sans-serif;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.retry-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.retry-btn i {
+    font-size: var(--text-sm);
+}
+
+/* Loading Animation */
+.history-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4xl);
+    background: linear-gradient(135deg, var(--secondary-50), var(--white));
+    border-radius: var(--radius-xl);
+    margin: var(--space-xl) 0;
+    border: 1px solid var(--secondary-100);
+}
+
+.history-loading .spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--secondary-100);
+    border-top: 4px solid var(--primary-500);
+    border-radius: var(--radius-full);
+    animation: spin 1s linear infinite;
+    margin-bottom: var(--space-xl);
+}
+
+.history-loading p {
+    font-size: var(--text-lg);
+    color: var(--secondary-600);
+    font-weight: var(--font-medium);
+}
+
+/* Animations */
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .pagination-container {
+        flex-direction: column;
+        gap: var(--space-md);
+        padding: var(--space-lg);
+    }
+    
+    .pagination-btn {
+        width: 100%;
+        max-width: 200px;
+        padding: var(--space-lg) var(--space-xl);
+        font-size: var(--text-lg);
+    }
+    
+    .pagination-info {
+        order: -1;
+        margin-bottom: var(--space-sm);
+        width: 100%;
+        max-width: 200px;
+    }
+    
+    .history-item {
+        padding: var(--space-lg) var(--space-md);
+        margin-bottom: var(--space-md);
+    }
+    
+    .history-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-md);
+    }
+    
+    .history-title {
+        font-size: var(--text-lg);
+    }
+    
+    .history-food {
+        font-size: var(--text-base);
+    }
 }
 
 /* =================================
@@ -964,10 +1269,31 @@ body {
         font-size: var(--text-2xl);
     }
     
+    .gift-slide {
+        padding: var(--space-xl) var(--space-lg);
+    }
+    
+    .gift-content {
+        gap: var(--space-2xl);
+    }
+    
     .gift-icon-large {
-        width: 64px;
-        height: 64px;
+        width: 80px;
+        height: 80px;
         font-size: var(--text-3xl);
+    }
+    
+    .gift-icon-large img {
+        width: 56px;
+        height: 56px;
+    }
+    
+    .gift-name-large {
+        font-size: var(--text-xl);
+    }
+    
+    .gift-points-large {
+        font-size: var(--text-lg);
     }
     
     .gift-button-large {
@@ -981,6 +1307,15 @@ body {
         width: 32px;
         height: 32px;
         font-size: var(--text-base);
+    }
+    
+    .carousel-indicators {
+        margin: var(--space-xl) 0;
+    }
+    
+    .indicator-dot {
+        width: 8px;
+        height: 8px;
     }
 }
 
@@ -1157,8 +1492,7 @@ body {
                         <div class="gift-content">
                             <div class="gift-icon-large">
                                 <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/3c0d58a21a12b84403f0cf191bcf88fac2a54034/picture/15.png"
-                                     alt="ทิชชู่คุมะ" 
-                                     style="width: 40px; height: 40px; object-fit: contain;">
+                                     alt="ทิชชู่คุมะ">
                             </div>
                             <div class="gift-details">
                                 <div class="gift-name-large">ทิชชู่คุมะ</div>
@@ -1170,14 +1504,13 @@ body {
                             <button class="gift-button-large" id="gift30" disabled>แลกรับ</button>
                         </div>
                     </div>
-            
+
                     <!-- Gift Level 60 -->
-                    <div class="">
+                    <div class="gift-slide">
                         <div class="gift-content">
                             <div class="gift-icon-large">
                                 <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/32eb73075e8460c39473dc919d86ab725f9509e8/picture/umbrella.png" 
-                                     alt="ร่มยาวคละสี" 
-                                     style="width: 40px; height: 40px; object-fit: contain;">
+                                     alt="ร่มยาวคละสี">
                             </div>
                             <div class="gift-details">
                                 <div class="gift-name-large">ร่มยาวคละสี</div>
@@ -1189,14 +1522,13 @@ body {
                             <button class="gift-button-large" id="gift60" disabled>แลกรับ</button>
                         </div>
                     </div>
-            
+
                     <!-- Gift Level 90 -->
-                    <div class="">
+                    <div class="gift-slide">
                         <div class="gift-content">
                             <div class="gift-icon-large">
                                 <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/3c0d58a21a12b84403f0cf191bcf88fac2a54034/picture/45.png"
-                                     alt="กล่องอาหาร"
-                                     style="width: 40px; height: 40px; object-fit: contain;">
+                                     alt="กล่องอาหาร">
                             </div>
                             <div class="gift-details">
                                 <div class="gift-name-large">กล่องอาหาร Superlock</div>
@@ -1208,14 +1540,13 @@ body {
                             <button class="gift-button-large" id="gift90" disabled>แลกรับ</button>
                         </div>
                     </div>
-            
+
                     <!-- Gift Level 120 -->
                     <div class="gift-slide">
                         <div class="gift-content">
                             <div class="gift-icon-large">
                                 <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/3c0d58a21a12b84403f0cf191bcf88fac2a54034/picture/bag-reward.png"
-                                     alt="กระเป๋ากินดี" 
-                                     style="width: 40px; height: 40px; object-fit: contain;">
+                                     alt="กระเป๋ากินดี">
                             </div>
                             <div class="gift-details">
                                 <div class="gift-name-large">กระเป๋าผ้ากินดีHealthyLife</div>
@@ -1227,14 +1558,13 @@ body {
                             <button class="gift-button-large" id="gift120" disabled>แลกรับ</button>
                         </div>
                     </div>
-            
+
                     <!-- Gift Level 150 -->
                     <div class="gift-slide">
                         <div class="gift-content">
                             <div class="gift-icon-large">
                                 <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/3c0d58a21a12b84403f0cf191bcf88fac2a54034/picture/75.png"
-                                     alt="แก้ว Locknlock" 
-                                     style="width: 40px; height: 40px; object-fit: contain;">
+                                     alt="แก้ว Locknlock">
                             </div>
                             <div class="gift-details">
                                 <div class="gift-name-large">แก้วLocknlock</div>
@@ -1256,6 +1586,7 @@ body {
                     <div class="indicator-dot" onclick="scrollToGift(4)"></div>
                 </div>
             </div>
+        </div>
 
         <!-- Navigation -->
         <div class="nav-container">
@@ -1299,6 +1630,7 @@ body {
             </div>
         </div>
     </div>
+
     <script>
 /* =================================
    ⚙️ CONSTANTS & CONFIGURATION
@@ -1308,7 +1640,7 @@ const CONFIG = {
     API_URL: 'https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec',
     GIFT_LEVELS: [30, 60, 90, 120, 150],
     MILESTONE_VALUES: [30, 60, 90, 120, 150],
-    RECORDS_PER_PAGE: 10,
+    RECORDS_PER_PAGE: 5,
     AUTO_SCROLL_INTERVAL: 5000,
     INIT_TIMEOUT: 10000
 };
@@ -2029,7 +2361,7 @@ const Gift = {
                                 🎉 รับรางวัลเรียบร้อยแล้ว!
                             </p>
                             <p style="margin-top: 10px; font-size: 14px; color: #666;">
-                                ขอบคุณที่เข้าร่วมกิจกรรม กินดี Healthy Life #2
+                                ขอบคุณที่เข้าร่วมกิจกรรมกินดี Healthy Life #2
                             </p>
                         </div>
                     `,
