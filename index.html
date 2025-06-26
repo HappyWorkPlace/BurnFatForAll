@@ -1148,100 +1148,7 @@ body {
             <!-- Gifts Carousel -->
             <div class="gifts-carousel">
                 <div class="gifts-container" id="giftsContainer">
-                    <!-- Gift Level 30 -->
-                    <div class="gift-slide">
-                        <div class="gift-content">
-                            <div class="gift-icon-large">
-                                <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/3c0d58a21a12b84403f0cf191bcf88fac2a54034/picture/15.png"
-                                     alt="ทิชชู่คุมะ" 
-                                     style="width: 40px; height: 40px; object-fit: contain;">
-                            </div>
-                            <div class="gift-details">
-                                <div class="gift-name-large">ทิชชู่คุมะ</div>
-                                <div class="gift-points-large">30 คะแนน</div>
-                                <div class="gift-stock-large">คงเหลือ <span id="gift30-balance">25</span> ชิ้น</div>
-                            </div>
-                        </div>
-                        <div class="gift-action">
-                            <button class="gift-button-large" id="gift30" disabled>แลกรับ</button>
-                        </div>
-                    </div>
-            
-                    <!-- Gift Level 60 -->
-                    <div class="">
-                        <div class="gift-content">
-                            <div class="gift-icon-large">
-                                <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/32eb73075e8460c39473dc919d86ab725f9509e8/picture/umbrella.png" 
-                                     alt="ร่มยาวคละสี" 
-                                     style="width: 40px; height: 40px; object-fit: contain;">
-                            </div>
-                            <div class="gift-details">
-                                <div class="gift-name-large">ร่มยาวคละสี</div>
-                                <div class="gift-points-large">60 คะแนน</div>
-                                <div class="gift-stock-large">คงเหลือ <span id="gift60-balance">15</span> ชิ้น</div>
-                            </div>
-                        </div>
-                        <div class="gift-action">
-                            <button class="gift-button-large" id="gift60" disabled>แลกรับ</button>
-                        </div>
-                    </div>
-            
-                    <!-- Gift Level 90 -->
-                    <div class="">
-                        <div class="gift-content">
-                            <div class="gift-icon-large">
-                                <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/3c0d58a21a12b84403f0cf191bcf88fac2a54034/picture/45.png"
-                                     alt="กล่องอาหาร"
-                                     style="width: 40px; height: 40px; object-fit: contain;">
-                            </div>
-                            <div class="gift-details">
-                                <div class="gift-name-large">กล่องอาหาร Superlock</div>
-                                <div class="gift-points-large">90 คะแนน</div>
-                                <div class="gift-stock-large">คงเหลือ <span id="gift90-balance">8</span> ชิ้น</div>
-                            </div>
-                        </div>
-                        <div class="gift-action">
-                            <button class="gift-button-large" id="gift90" disabled>แลกรับ</button>
-                        </div>
-                    </div>
-            
-                    <!-- Gift Level 120 -->
-                    <div class="gift-slide">
-                        <div class="gift-content">
-                            <div class="gift-icon-large">
-                                <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/3c0d58a21a12b84403f0cf191bcf88fac2a54034/picture/bag-reward.png"
-                                     alt="กระเป๋ากินดี" 
-                                     style="width: 40px; height: 40px; object-fit: contain;">
-                            </div>
-                            <div class="gift-details">
-                                <div class="gift-name-large">กระเป๋าผ้ากินดีHealthyLife</div>
-                                <div class="gift-points-large">120 คะแนน</div>
-                                <div class="gift-stock-large">คงเหลือ <span id="gift120-balance">5</span> ชิ้น</div>
-                            </div>
-                        </div>
-                        <div class="gift-action">
-                            <button class="gift-button-large" id="gift120" disabled>แลกรับ</button>
-                        </div>
-                    </div>
-            
-                    <!-- Gift Level 150 -->
-                    <div class="gift-slide">
-                        <div class="gift-content">
-                            <div class="gift-icon-large">
-                                <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/3c0d58a21a12b84403f0cf191bcf88fac2a54034/picture/75.png"
-                                     alt="แก้ว Locknlock" 
-                                     style="width: 40px; height: 40px; object-fit: contain;">
-                            </div>
-                            <div class="gift-details">
-                                <div class="gift-name-large">แก้วLocknlock</div>
-                                <div class="gift-points-large">150 คะแนน</div>
-                                <div class="gift-stock-large">คงเหลือ <span id="gift150-balance">2</span> ชิ้น</div>
-                            </div>
-                        </div>
-                        <div class="gift-action">
-                            <button class="gift-button-large" id="gift150" disabled>แลกรับ</button>
-                        </div>
-                    </div>
+                    <!-- Gift slides here -->
                 </div>
                 
                 <div class="carousel-indicators">
@@ -1252,6 +1159,7 @@ body {
                     <div class="indicator-dot" onclick="scrollToGift(4)"></div>
                 </div>
             </div>
+        </div>
 
         <!-- Navigation -->
         <div class="nav-container">
@@ -1295,6 +1203,7 @@ body {
             </div>
         </div>
     </div>
+
     <script>
 /* =================================
    ⚙️ CONSTANTS & CONFIGURATION
@@ -1380,7 +1289,10 @@ const Utils = {
     highlightText(text, keyword) {
         if (!keyword || keyword.trim() === '') return text;
         
-        const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\');
+        const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\    <script>
+        // JavaScript code remains the same for now
+        // Will organize this in the next step
+    </script>');
         const regex = new RegExp(`(${escapedKeyword})`, 'gi');
         return text.replace(regex, '<span class="highlight">$1</span>');
     },
@@ -2025,7 +1937,7 @@ const Gift = {
                                 🎉 รับรางวัลเรียบร้อยแล้ว!
                             </p>
                             <p style="margin-top: 10px; font-size: 14px; color: #666;">
-                                ขอบคุณที่เข้าร่วมกิจกรรม กินดี Healthy Life #2
+                                ขอบคุณที่เข้าร่วมกิจกรรมกินดี Healthy Life #2
                             </p>
                         </div>
                     `,
