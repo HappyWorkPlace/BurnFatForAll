@@ -1632,519 +1632,490 @@ body {
     </div>
 
     <script>
-/* =================================
-   ⚙️ CONSTANTS & CONFIGURATION
-   ================================= */
-const CONFIG = {
-    LIFF_ID: '2004752543-O6bmBeMw',
-    API_URL: 'https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec',
-    GIFT_LEVELS: [30, 60, 90, 120, 150],
-    MILESTONE_VALUES: [30, 60, 90, 120, 150],
-    RECORDS_PER_PAGE: 5,
-    AUTO_SCROLL_INTERVAL: 5000,
-    INIT_TIMEOUT: 10000
-};
 
-const GIFT_COLUMN_MAP = {
-    30: 6,   // Column G
-    60: 7,   // Column H  
-    90: 8,   // Column I
-    120: 9,  // Column J
-    150: 10  // Column K
-};
-
-const MESSAGES = {
-    LOADING: 'กำลังโหลด...',
-    LIFF_ERROR: 'การเชื่อมต่อ LINE ล้มเหลว กรุณาเปิดแอปใน LINE',
-    NETWORK_ERROR: 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้',
-    FOOD_REQUIRED: 'กรุณาเลือกเมนูอาหาร',
-    ALREADY_RECORDED: 'วันนี้คุณบันทึกข้อมูลไปแล้ว พรุ่งนี้ค่อยมาใหม่นะ',
-    INSUFFICIENT_POINTS: 'คะแนนไม่เพียงพอ',
-    OUT_OF_STOCK: 'ของรางวัลหมดแล้ว',
-    SUCCESS_RECORD: 'บันทึกข้อมูลแล้ว +5 คะแนน',
-    SUCCESS_REDEEM: 'รับรางวัลเรียบร้อยแล้ว!'
-};
-
-/* =================================
-   🌐 GLOBAL VARIABLES
-   ================================= */
+// Global variables
 let userPoints = 0;
 let selectedFood = '';
 let currentUserData = null;
 let userData = null;
-let validFoodList = [];
-let giftListData = [];
-let userGiftStatus = {};
-
-// UI State
 let autoScrollInterval = null;
 let currentGiftIndex = 0;
 let userInteracted = false;
-let isSubmitting = false;
 
-// History Pagination
-let historyData = [];
-let currentPage = 1;
+// เพิ่มตัวแปรสำหรับ validation และป้องกันการกดซ้ำ
+let validFoodList = []; // รายการอาหารที่ถูกต้องจากฐานข้อมูล
+let isSubmitting = false; // ป้องกันการกดซ้ำ
 
-/* =================================
-   🔧 UTILITY FUNCTIONS
-   ================================= */
-const Utils = {
-    // Date formatting
-    formatDateTime(timestamp) {
-        if (!timestamp) return 'ไม่ระบุเวลา';
-        
-        try {
-            const date = new Date(timestamp);
-            const dateStr = date.toLocaleDateString('th-TH', {
-                year: 'numeric',
-                month: '2-digit', 
-                day: '2-digit'
+// ตัวแปรสำหรับระบบของรางวัล
+let giftListData = [];
+let userGiftStatus = {};
+
+// LIFF Configuration
+const LIFF_ID = '2004752543-O6bmBeMw';
+const API_URL = 'https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec';
+
+// Initialize LIFF when page loads
+window.onload = function() {
+    console.log("Window loaded, initializing app");
+    initializeLiff();
+};
+
+// Initialize LIFF
+function initializeLiff() {
+    console.log("Initializing LIFF...");
+    
+    // ตรวจสอบว่ามาจากหน้าสมัครสมาชิกหรือไม่
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('registered') === 'success') {
+        // ลบ parameter และแสดงข้อความสำเร็จ
+        window.history.replaceState({}, document.title, window.location.pathname);
+        setTimeout(() => {
+            Swal.fire({
+                title: 'ยินดีต้อนรับ!',
+                text: 'สมัครสมาชิกสำเร็จแล้ว',
+                icon: 'success',
+                confirmButtonColor: '#10b981',
+                timer: 2000
             });
-            const timeStr = date.toLocaleTimeString('th-TH', {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-            return `${dateStr} ${timeStr}`;
-        } catch (error) {
-            console.error('Error formatting date:', error);
-            return 'เวลาไม่ถูกต้อง';
-        }
-    },
-
-    // Text highlighting
-    highlightText(text, keyword) {
-        if (!keyword || keyword.trim() === '') return text;
-        
-        const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\');
-        const regex = new RegExp(`(${escapedKeyword})`, 'gi');
-        return text.replace(regex, '<span class="highlight">$1</span>');
-    },
-
-    // Check URL parameters
-    getUrlParams() {
-        return new URLSearchParams(window.location.search);
-    },
-
-    // Show loading state
-    showLoading(element, message = MESSAGES.LOADING) {
-        if (element) {
-            element.innerHTML = `
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <p>${message}</p>
-                </div>
-            `;
-        }
-    },
-
-    // Progress calculation
-    calculateProgress(points) {
-        if (points > 150) return 100;
-        
-        for (let i = 0; i < CONFIG.MILESTONE_VALUES.length; i++) {
-            if (points <= CONFIG.MILESTONE_VALUES[i]) {
-                const prevMilestone = i === 0 ? 0 : CONFIG.MILESTONE_VALUES[i - 1];
-                const currentMilestone = CONFIG.MILESTONE_VALUES[i];
-                const segmentProgress = (points - prevMilestone) / (currentMilestone - prevMilestone);
-                const baseProgress = (i / CONFIG.MILESTONE_VALUES.length) * 100;
-                const segmentWidth = (1 / CONFIG.MILESTONE_VALUES.length) * 100;
-                return baseProgress + (segmentProgress * segmentWidth);
-            }
-        }
-        return 0;
+        }, 1000);
     }
-};
-
-/* =================================
-   🌐 API FUNCTIONS
-   ================================= */
-const API = {
-    // Base fetch with better error messages
-    async request(params) {
-        const url = `${CONFIG.API_URL}?${new URLSearchParams(params)}`;
-        
-        try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.json();
-        } catch (error) {
-            console.error('API request failed:', error);
-            
-            // Provide specific error messages
-            if (error.message.includes('fetch')) {
-                throw new Error('ไม่สามารถเชื่อมต่ออินเทอร์เน็ตได้ กรุณาตรวจสอบการเชื่อมต่อ');
-            } else if (error.message.includes('HTTP error')) {
-                throw new Error(`เซิร์ฟเวอร์มีปัญหา (${response?.status})`);
-            } else {
-                throw new Error('เกิดข้อผิดพลาดในการเชื่อมต่อ');
-            }
-        }
-    },
-
-    // Get user data
-    async getUserData(uid) {
-        return this.request({ action: 'getUserData2', uid });
-    },
-
-    // Get food list
-    async getFoodList() {
-        return this.request({ 
-            action: 'getFoodList', 
-            sheetName: 'MENU', 
-            column: 'A' 
-        });
-    },
-
-    // Check if user already recorded today
-    async checkUserColumnJ(uid) {
-        return this.request({ action: 'checkUserColumnJ', uid });
-    },
-
-    // Save food record
-    async saveRedeemData(empNo, factory, code, name) {
-        return this.request({ 
-            action: 'saveRedeemData',
-            empNo: encodeURIComponent(empNo),
-            factory: encodeURIComponent(factory), 
-            code: encodeURIComponent(code),
-            name: encodeURIComponent(name)
-        });
-    },
-
-    // Get gift list
-    async getGiftList() {
-        return this.request({ action: 'getGiftList' });
-    },
-
-    // Get user data for gifts (legacy API)
-    async getUserDataForGifts(uid) {
-        return this.request({ action: 'getUserData', uid });
-    },
-
-    // Redeem gift
-    async redeemGift(uid, level) {
-        return this.request({ action: 'redeemGift', uid, level });
-    },
-
-    // Get user records history
-    async getUserRecords(uid) {
-        return this.request({ action: 'getUserRecords', uid });
+    
+    if (typeof liff === 'undefined') {
+        console.error("LIFF SDK is not defined");
+        handleLiffError('LIFF SDK ไม่พร้อมใช้งาน กรุณาเปิดใน LINE Browser');
+        return;
     }
-};
 
-/* =================================
-   📱 LIFF & AUTHENTICATION
-   ================================= */
-const LIFF = {
-    async initialize() {
-        console.log('Initializing LIFF...');
+    // Set timeout for LIFF initialization
+    const timeoutId = setTimeout(() => {
+        console.error("LIFF initialization timeout");
+        handleLiffError('การเชื่อมต่อ LINE หมดเวลา กรุณาลองใหม่อีกครั้ง');
+    }, 10000);
+
+    liff.init({
+        liffId: LIFF_ID
+    }).then(() => {
+        clearTimeout(timeoutId);
+        console.log("LIFF initialized successfully");
         
-        // Check for registration success
-        const urlParams = Utils.getUrlParams();
-        if (urlParams.get('registered') === 'success') {
-            window.history.replaceState({}, document.title, window.location.pathname);
-            setTimeout(() => {
-                Swal.fire({
-                    title: 'ยินดีต้อนรับ!',
-                    text: 'สมัครสมาชิกสำเร็จแล้ว',
-                    icon: 'success',
-                    confirmButtonColor: '#10b981',
-                    timer: 2000
-                });
-            }, 1000);
-        }
-        
-        if (typeof liff === 'undefined') {
-            throw new Error('LIFF SDK is not defined');
-        }
-
-        // Set initialization timeout
-        const timeoutPromise = new Promise((_, reject) => {
-            setTimeout(() => reject(new Error('LIFF initialization timeout')), CONFIG.INIT_TIMEOUT);
-        });
-
-        const liffPromise = liff.init({ liffId: CONFIG.LIFF_ID });
-
-        try {
-            await Promise.race([liffPromise, timeoutPromise]);
-            console.log('LIFF initialized successfully');
-            
-            if (liff.isLoggedIn()) {
-                console.log('User is logged in, getting profile');
-                await this.getUserProfile();
-            } else {
-                console.log('User is not logged in, redirecting to login');
-                liff.login();
-            }
-        } catch (error) {
-            console.error('LIFF Initialization failed:', error);
-            this.handleError(MESSAGES.LIFF_ERROR);
-        }
-    },
-
-    async getUserProfile() {
-        try {
-            const profile = await liff.getProfile();
-            console.log('Profile obtained:', profile);
-            
-            const { userId: uid, displayName, pictureUrl } = profile;
-            
-            // Update avatar
-            UI.updateUserAvatar(displayName, pictureUrl);
-            
-            // Fetch user data
-            await User.loadUserData(uid, displayName);
-        } catch (error) {
-            console.error('Failed to get user profile:', error);
-            this.handleError('ไม่สามารถดึงข้อมูลโปรไฟล์ LINE ได้');
-        }
-    },
-
-    handleError(message) {
-        UI.hideLoadingScreen();
-        
-        Swal.fire({
-            title: 'ไม่สามารถเชื่อมต่อ LINE ได้',
-            html: `
-                <p>${message}</p>
-                <div style="margin-top: 15px; padding: 10px; background: #f3f4f6; border-radius: 8px; font-size: 0.85rem;">
-                    <strong>วิธีแก้ไข:</strong><br>
-                    1. เปิดแอปใน LINE Browser<br>
-                    2. ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต<br>
-                    3. ลองปิดแล้วเปิดใหม่
-                </div>
-            `,
-            icon: 'warning',
-            confirmButtonText: 'ลองใหม่',
-            confirmButtonColor: '#10b981'
-        }).then(() => {
-            location.reload();
-        });
-    }
-};
-
-/* =================================
-   👤 USER MANAGEMENT
-   ================================= */
-const User = {
-    async loadUserData(uid, displayName) {
-        console.log('Fetching user data for UID:', uid);
-        
-        try {
-            const response = await API.getUserData(uid);
-            console.log('User data:', response);
-            
-            if (response.error) {
-                // User not found - redirect to register
-                this.redirectToRegister();
-            } else {
-                // User found - display data
-                this.displayUserData(response.data, displayName);
-            }
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-            UI.showErrorAndHideLoading('ไม่สามารถดึงข้อมูลผู้ใช้ได้');
-        }
-    },
-
-    displayUserData(userDataResponse, displayName) {
-        console.log('Displaying user data:', userDataResponse);
-        
-        currentUserData = userDataResponse;
-        userData = userDataResponse;
-        
-        // Parse userData - handle array or object
-        let parsedData = {};
-        if (Array.isArray(userDataResponse)) {
-            parsedData = {
-                Name: userDataResponse[2] || displayName,
-                Division: userDataResponse[3] || 'ไม่ระบุแผนก',
-                Factory: userDataResponse[4] || 'ไม่ระบุโรงงาน', 
-                Point: userDataResponse[5] || 0
-            };
+        if (liff.isLoggedIn()) {
+            console.log("User is logged in, getting profile");
+            getUserProfile();
         } else {
-            parsedData = userDataResponse;
+            console.log("User is not logged in, redirecting to login");
+            liff.login();
         }
-        
-        console.log('Parsed user data:', parsedData);
-        
-        // Update UI
-        UI.updateUserInfo(displayName, parsedData);
-        
-        // Update points
-        userPoints = parseInt(parsedData.Point) || 0;
-        UI.updatePointsDisplay(userPoints);
-        
-        // Load data
-        Promise.all([
-            Food.loadFoodList(),
-            Gift.loadGiftData()
-        ]).then(() => {
-            UI.startAutoScroll();
-            UI.hideLoadingScreen();
-        }).catch(error => {
-            console.error('Error loading initial data:', error);
-            UI.showErrorAndHideLoading('ไม่สามารถโหลดข้อมูลได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต');
-        });
-    },
+    }).catch(err => {
+        clearTimeout(timeoutId);
+        console.error('LIFF Initialization failed:', err);
+        handleLiffError('การเชื่อมต่อ LINE ล้มเหลว กรุณาเปิดแอปใน LINE');
+    });
+}
 
-    redirectToRegister() {
-        UI.hideLoadingScreen();
-        window.location.href = 'https://happyworkplace.github.io/BurnFatForAll/register';
+// Handle LIFF errors
+function handleLiffError(message) {
+    hideLoadingScreen();
+    
+    Swal.fire({
+        title: 'ไม่สามารถเชื่อมต่อ LINE ได้',
+        html: `
+            <p>${message}</p>
+            <div style="margin-top: 15px; padding: 10px; background: #f3f4f6; border-radius: 8px; font-size: 0.85rem;">
+                <strong>วิธีแก้ไข:</strong><br>
+                1. เปิดแอปใน LINE Browser<br>
+                2. ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต<br>
+                3. ลองปิดแล้วเปิดใหม่
+            </div>
+        `,
+        icon: 'warning',
+        confirmButtonText: 'ลองใหม่',
+        confirmButtonColor: '#10b981'
+    }).then(() => {
+        location.reload();
+    });
+}
+
+// Get user profile from LINE
+function getUserProfile() {
+    liff.getProfile().then(profile => {
+        console.log("Profile obtained: ", profile);
+        const uid = profile.userId;
+        const displayName = profile.displayName;
+        const pictureUrl = profile.pictureUrl;
+        
+        // Update avatar with LINE profile picture
+        updateUserAvatar(displayName, pictureUrl);
+        
+        // Fetch user data from Google Sheets
+        getUserData(uid, displayName);
+    }).catch(err => {
+        console.error('Failed to get user profile:', err);
+        showErrorAndHideLoading('ไม่สามารถดึงข้อมูลโปรไฟล์ LINE ได้');
+    });
+}
+
+// Update user avatar
+function updateUserAvatar(displayName, pictureUrl) {
+    const profileAvatar = document.getElementById('profileAvatar');
+    
+    if (pictureUrl) {
+        // Use LINE profile picture
+        profileAvatar.innerHTML = `<img src="${pictureUrl}" alt="${displayName}" class="profile-image">`;
+    } else {
+        // Use initials as fallback
+        const initials = displayName.substring(0, 2).toUpperCase();
+        profileAvatar.innerHTML = initials;
     }
-};
+}
 
-/* =================================
-   🍽️ FOOD SYSTEM
-   ================================= */
-const Food = {
-    async loadFoodList() {
-        try {
-            const response = await API.getFoodList();
-            if (response.success) {
-                validFoodList = response.data.filter(food => 
-                    food && food.trim() !== '' && food !== '-'
-                );
+// Fetch user data from Google Sheets
+function getUserData(uid, displayName) {
+    console.log("Fetching user data for UID:", uid);
+    
+    fetch(`${API_URL}?action=getUserData2&uid=${uid}`)
+        .then(response => {
+            console.log("User data response received");
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("User data:", data);
+            if (data.error) {
+                // User not found in database
+                showUserNotFoundError(displayName);
+            } else {
+                // User found, display data
+                displayUserData(data.data, displayName);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user data:', error);
+            showErrorAndHideLoading('ไม่สามารถดึงข้อมูลผู้ใช้ได้');
+        });
+}
+
+// Display user data
+function displayUserData(userDataResponse, displayName) {
+    console.log("Displaying user data:", userDataResponse);
+    
+    currentUserData = userDataResponse;
+    userData = userDataResponse; // Set global userData
+    
+    // Parse userData - check if it's an array or object
+    let parsedData = {};
+    if (Array.isArray(userDataResponse)) {
+        // If userData is an array, map it to object structure
+        // Array structure: [UID, EmpNo, Name, Division, Factory, Point, ...]
+        parsedData = {
+            Name: userDataResponse[2] || displayName,
+            Division: userDataResponse[3] || 'ไม่ระบุแผนก', 
+            Factory: userDataResponse[4] || 'ไม่ระบุโรงงาน',
+            Point: userDataResponse[5] || 0
+        };
+    } else {
+        // If userData is already an object
+        parsedData = userDataResponse;
+    }
+    
+    console.log("Parsed user data:", parsedData);
+    
+    // Update UI with user data
+    document.getElementById('memberName').textContent = displayName;
+    const deptText = parsedData.Name && parsedData.Division 
+        ? `${parsedData.Name}<br>${parsedData.Division}` 
+        : (parsedData.Name || parsedData.Division || 'ไม่ระบุ');
+    document.getElementById('memberDept').innerHTML = deptText;
+    document.getElementById('memberBadge').textContent = parsedData.Factory || 'ไม่ระบุโรงงาน';
+    
+    // Update points
+    userPoints = parseInt(parsedData.Point) || 0;
+    updatePointsDisplay(userPoints);
+    
+    // Load food list
+    loadFoodList();
+    
+    // โหลดข้อมูลของรางวัลหลังจากโหลด user data เสร็จ
+    setTimeout(() => {
+        loadGiftData();
+    }, 1000);
+    
+    // Start auto-scroll for carousel
+    startAutoScroll();
+    
+    // Hide loading screen
+    hideLoadingScreen();
+}
+
+// Show user not found error - redirect to register
+function showUserNotFoundError(displayName) {
+    hideLoadingScreen();
+    
+    // Redirect ไปหน้าสมัครสมาชิกทันที
+    window.location.href = 'https://happyworkplace.github.io/BurnFatForAll/register';
+}
+
+// Show error and hide loading
+function showErrorAndHideLoading(message) {
+    hideLoadingScreen();
+    
+    Swal.fire({
+        title: 'เกิดข้อผิดพลาด',
+        text: message,
+        icon: 'error',
+        confirmButtonText: 'รับทราบ',
+        confirmButtonColor: '#ef4444'
+    });
+}
+
+// Hide loading screen
+function hideLoadingScreen() {
+    const loadingScreen = document.getElementById('loadingScreen');
+    if (loadingScreen) {
+        loadingScreen.style.opacity = '0';
+        setTimeout(() => {
+            loadingScreen.style.display = 'none';
+        }, 300);
+    }
+}
+
+// =================
+// Food System
+// =================
+
+function loadFoodList() {
+    return fetch(`${API_URL}?action=getFoodList&sheetName=MENU&column=A`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // เก็บรายการอาหารที่ถูกต้องใน global variable
+                validFoodList = data.data.filter(food => food && food.trim() !== '' && food !== '-');
                 console.log('โหลดรายการอาหารสำเร็จ:', validFoodList.length, 'รายการ');
-                this.populateDropdown(validFoodList);
+                
+                populateDropdown(validFoodList);
                 return validFoodList;
             } else {
+                console.error('Failed to fetch food list:', data.message);
                 throw new Error('Failed to fetch food list');
             }
-        } catch (error) {
+        })
+        .catch(error => {
             console.error('Error fetching food list:', error);
+            // Use fallback food list
             validFoodList = [];
-            this.populateDropdown(validFoodList);
+            populateDropdown(validFoodList);
             throw error;
-        }
-    },
-
-    populateDropdown(foodList) {
-        const dropdownList = document.getElementById('foodDropdown');
-        if (!dropdownList) return;
-        
-        dropdownList.innerHTML = '';
-        
-        foodList.forEach(food => {
-            const item = document.createElement('div');
-            item.className = 'dropdown-item';
-            item.textContent = food;
-            dropdownList.appendChild(item);
         });
-    },
+}
 
-    validateFood(foodName) {
-        if (!foodName || foodName.trim() === '') {
-            return {
-                isValid: false,
-                message: '',
-                showIcon: false
-            };
-        }
+function populateDropdown(foodList) {
+    const dropdownList = document.getElementById('foodDropdown');
+    if (!dropdownList) return;
+    
+    dropdownList.innerHTML = '';
+    
+    foodList.forEach(food => {
+        const item = document.createElement('div');
+        item.className = 'dropdown-item';
+        item.textContent = food;
+        dropdownList.appendChild(item);
+    });
+}
 
-        const trimmedFood = foodName.trim();
-        const isValid = validFoodList.some(food => 
-            food.toLowerCase() === trimmedFood.toLowerCase()
-        );
-
+// ฟังก์ชันตรวจสอบความถูกต้องของอาหาร
+function validateFood(foodName) {
+    if (!foodName || foodName.trim() === '') {
         return {
-            isValid,
-            message: isValid ? 'อาหารถูกต้อง ✓' : 'ไม่พบอาหารนี้ในระบบ โปรดเลือกจากรายการที่แนะนำ',
-            showIcon: true
+            isValid: false,
+            message: '',
+            showIcon: false
         };
-    },
+    }
 
-    async recordSelection() {
+    const trimmedFood = foodName.trim();
+    const isValid = validFoodList.some(food => 
+        food.toLowerCase() === trimmedFood.toLowerCase()
+    );
+
+    return {
+        isValid: isValid,
+        message: isValid ? 'อาหารถูกต้อง ✓' : 'ไม่พบอาหารนี้ในระบบ โปรดเลือกจากรายการที่แนะนำ',
+        showIcon: true
+    };
+}
+
+// อัพเดตการแสดงผลสถานะ validation
+function updateValidationStatus(inputElement, validation) {
+    // หา container สำหรับแสดงสถานะ
+    let statusContainer = inputElement.parentElement.querySelector('.validation-status');
+    if (!statusContainer) {
+        statusContainer = document.createElement('div');
+        statusContainer.className = 'validation-status';
+        statusContainer.style.cssText = `
+            font-size: 12px;
+            margin-top: 5px;
+            transition: all 0.3s ease;
+            min-height: 16px;
+        `;
+        inputElement.parentElement.appendChild(statusContainer);
+    }
+
+    // อัพเดต CSS class ของ input
+    inputElement.classList.remove('valid-food', 'invalid-food');
+    
+    if (validation.showIcon) {
+        if (validation.isValid) {
+            inputElement.classList.add('valid-food');
+            statusContainer.style.color = '#4CAF50';
+            statusContainer.textContent = validation.message;
+        } else {
+            inputElement.classList.add('invalid-food');
+            statusContainer.style.color = '#f44336';
+            statusContainer.textContent = validation.message;
+        }
+    } else {
+        statusContainer.textContent = '';
+    }
+}
+
+// ปรับปรุงฟังก์ชัน updateRecordButton
+function updateRecordButton(food) {
+    const button = document.getElementById('recordBtn');
+    if (!button) return;
+    
+    const validation = validateFood(food);
+    
+    if (validation.isValid && !isSubmitting) {
+        button.disabled = false;
+        button.innerHTML = '<i class="fas fa-save"></i> บันทึกการรับประทาน';
+        selectedFood = food.trim();
+    } else {
+        button.disabled = true;
         if (isSubmitting) {
-            console.log('กำลังบันทึกอยู่ กรุณารอ...');
-            return;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
+        } else if (food && food.trim() !== '') {
+            button.innerHTML = '<i class="fas fa-exclamation-triangle"></i> เมนูไม่ถูกต้อง';
+        } else {
+            button.innerHTML = '<i class="fas fa-save"></i> เลือกเมนูก่อน';
         }
+        selectedFood = '';
+    }
 
-        if (!userData || !selectedFood) {
-            Swal.fire({
-                title: 'กรุณาเลือกเมนูอาหาร',
-                text: 'กรุณาเลือกเมนูที่ถูกต้องก่อนบันทึก',
-                icon: 'warning',
-                confirmButtonColor: '#10b981'
-            });
-            return;
-        }
+    // อัพเดต validation status
+    const foodInput = document.getElementById('foodSearch');
+    if (foodInput) {
+        updateValidationStatus(foodInput, validation);
+    }
+}
 
-        const validation = this.validateFood(selectedFood);
-        if (!validation.isValid) {
-            Swal.fire({
-                title: 'เมนูไม่ถูกต้อง',
-                text: 'กรุณาเลือกเมนูจากรายการที่แนะนำเท่านั้น',
-                icon: 'error',
-                confirmButtonColor: '#10b981'
-            });
-            return;
-        }
+// ปรับปรุง recordSelection เพื่อป้องกันการกดซ้ำ
+function recordSelection() {
+    // ตรวจสอบสถานะก่อนบันทึก
+    if (isSubmitting) {
+        console.log('กำลังบันทึกอยู่ กรุณารอ...');
+        return;
+    }
 
-        isSubmitting = true;
-        UI.updateRecordButton(selectedFood);
-
+    if (!userData || !selectedFood) {
         Swal.fire({
-            title: 'วันนี้บันทึกไปรึยังน้า...',
-            text: 'ตรวจสอบสักครู่..',
-            allowOutsideClick: false,
-            didOpen: () => Swal.showLoading()
+            title: 'กรุณาเลือกเมนูอาหาร',
+            text: 'กรุณาเลือกเมนูที่ถูกต้องก่อนบันทึก',
+            icon: 'warning',
+            confirmButtonColor: '#10b981'
         });
+        return;
+    }
 
-        try {
-            const profile = await liff.getProfile();
-            const uid = profile.userId;
-            await this.checkAndSave(uid, userData[1], userData[4], selectedFood, userData[2]);
-        } catch (error) {
-            console.error('Failed to get user profile:', error);
-            this.resetSubmitting();
-            Swal.fire('Error', 'Failed to get user profile. Please try again later.', 'error');
+    // ตรวจสอบ validation อีกครั้ง
+    const validation = validateFood(selectedFood);
+    if (!validation.isValid) {
+        Swal.fire({
+            title: 'เมนูไม่ถูกต้อง',
+            text: 'กรุณาเลือกเมนูจากรายการที่แนะนำเท่านั้น',
+            icon: 'error',
+            confirmButtonColor: '#10b981'
+        });
+        return;
+    }
+
+    // เริ่มกระบวนการบันทึก
+    isSubmitting = true;
+    updateRecordButton(selectedFood); // อัพเดต UI ปุ่ม
+
+    Swal.fire({
+        title: 'วันนี้บันทึกไปรึยังน้า...',
+        text: 'ตรวจสอบสักครู่..',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
         }
-    },
+    });
 
-    async checkAndSave(uid, empNo, factory, selectedFood, name) {
-        try {
-            const response = await API.checkUserColumnJ(uid);
+    liff.getProfile()
+        .then(profile => {
+            const uid = profile.userId;
+            checkUserColumnJ(uid, userData[1], userData[4], selectedFood, userData[2]);
+        })
+        .catch(err => {
+            console.error('Failed to get user profile:', err);
+            isSubmitting = false; // รีเซ็ตสถานะ
+            updateRecordButton(selectedFood);
+            Swal.fire('Error', 'Failed to get user profile. Please try again later.', 'error');
+        });
+}
+
+function checkUserColumnJ(uid, empNo, factory, selectedFood, name) {
+    fetch(`${API_URL}?action=checkUserColumnJ&uid=${uid}`)
+        .then(response => response.json())
+        .then(data => {
             Swal.close();
-            
-            if (response.status === 'TRUE') {
-                await this.saveSelection(empNo, factory, selectedFood, uid, name);
-            } else if (response.status === 'FALSE') {
-                this.resetSubmitting();
+            if (data.status === 'TRUE') {
+                saveSelection(empNo, factory, selectedFood, uid, name);
+            } else if (data.status === 'FALSE') {
+                isSubmitting = false; // รีเซ็ตสถานะ
+                updateRecordButton(selectedFood);
                 Swal.fire({
                     title: 'แย่จัง..',
-                    html: `วันนี้คุณบันทึกข้อมูลไปแล้วเมื่อ ${new Date(response.lastTimestamp).toLocaleString()} พรุ่งนี้ค่อยมาใหม่นะ <br><img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_error.png" alt="icon" style="width:100px;height:100px;">`
+                    html: `วันนี้คุณบันทึกข้อมูลไปแล้วเมื่อ ${new Date(data.lastTimestamp).toLocaleString()} พรุ่งนี้ค่อยมาใหม่นะ <br><img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_error.png" alt="icon" style="width:100px;height:100px;">`
                 });
             } else {
-                this.resetSubmitting();
+                isSubmitting = false; // รีเซ็ตสถานะ
+                updateRecordButton(selectedFood);
                 Swal.fire('Error', 'Failed to check user status.', 'error');
             }
-        } catch (error) {
-            console.error('Error checking user status:', error);
-            this.resetSubmitting();
+        })
+        .catch(error => {
+            console.error('Error checking user column J:', error);
+            isSubmitting = false; // รีเซ็ตสถานะ
+            updateRecordButton(selectedFood);
             Swal.fire('Error', 'Failed to check user status. Please try again later.', 'error');
-        }
-    },
-
-    async saveSelection(empNo, factory, selectedFood, uid, name) {
-        Swal.fire({
-            title: 'กำลังบันทึกข้อมูล',
-            text: 'รอสักครู่..',
-            allowOutsideClick: false,
-            didOpen: () => Swal.showLoading()
         });
+}
 
-        try {
-            const response = await API.saveRedeemData(empNo, factory, selectedFood, name);
+function saveSelection(empNo, factory, selectedFood, uid, name) {
+    Swal.fire({
+        title: 'กำลังบันทึกข้อมูล',
+        text: 'รอสักครู่..',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    fetch(`${API_URL}?action=saveRedeemData&empNo=${encodeURIComponent(empNo)}&factory=${encodeURIComponent(factory)}&code=${encodeURIComponent(selectedFood)}&name=${encodeURIComponent(name)}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
             Swal.close();
-            
-            if (response.success) {
+            if (data.success) {
                 // Add points and update UI
                 userPoints += 5;
-                UI.updatePointsDisplay(userPoints);
+                updatePointsDisplay(userPoints);
                 
                 Swal.fire({
                     title: 'สำเร็จ!',
@@ -2153,757 +2124,933 @@ const Food = {
                     confirmButtonText: 'ตกลง'
                 });
                 
-                this.resetForm();
-                Gift.updateGiftButtons(userPoints);
+                // Reset form
+                const foodSearch = document.getElementById('foodSearch');
+                if (foodSearch) {
+                    foodSearch.value = '';
+                    foodSearch.classList.remove('valid-food', 'invalid-food');
+                }
+                selectedFood = '';
+                
+                // ล้าง validation status
+                const statusContainer = document.querySelector('.validation-status');
+                if (statusContainer) {
+                    statusContainer.textContent = '';
+                }
+                
+                // Update gift buttons
+                updateGiftButtons(userPoints);
             } else {
-                Swal.fire('Error', response.message || 'Failed to save data.', 'error');
+                Swal.fire('Error', data.message || 'Failed to save data.', 'error');
             }
-        } catch (error) {
+        })
+        .catch(error => {
             console.error('Error saving data:', error);
             Swal.fire('Error', `Network error: ${error.message}`, 'error');
-        } finally {
-            this.resetSubmitting();
-        }
-    },
+        })
+        .finally(() => {
+            // รีเซ็ตสถานะ
+            isSubmitting = false;
+            updateRecordButton(''); // อัพเดต UI ปุ่มกลับสู่สถานะปกติ
+        });
+}
 
-    resetForm() {
-        const foodSearch = document.getElementById('foodSearch');
-        if (foodSearch) {
-            foodSearch.value = '';
-            foodSearch.classList.remove('valid-food', 'invalid-food');
-        }
-        selectedFood = '';
-        
-        const statusContainer = document.querySelector('.validation-status');
-        if (statusContainer) {
-            statusContainer.textContent = '';
-        }
-    },
+// =================
+// Gift Redeem System
+// =================
 
-    resetSubmitting() {
-        isSubmitting = false;
-        UI.updateRecordButton('');
-    }
-};
-
-/* =================================
-   🎁 GIFT/REWARD SYSTEM
-   ================================= */
-const Gift = {
-    async loadGiftData() {
-        try {
-            const [gifts, userGiftData] = await Promise.all([
-                API.getGiftList(),
-                liff.getProfile().then(profile => API.getUserDataForGifts(profile.userId))
-            ]);
-
-            giftListData = gifts.success ? gifts.gifts : [];
-            
-            // Merge gift data if needed
-            if (userGiftData && userGiftData.success && Array.isArray(userGiftData.data)) {
-                userGiftData.data.forEach((value, index) => {
-                    if (userData && index < userData.length) {
-                        userData[index] = value;
-                    }
-                });
+// ฟังก์ชันดึงข้อมูลผู้ใช้สำหรับของรางวัล (ใช้ API เก่า)
+function fetchUserDataForGifts(uid) {
+    return fetch(`${API_URL}?action=getUserData&uid=${uid}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
-            
-            console.log('Gift data loaded:', giftListData);
-            this.updateGiftButtons(userPoints);
-        } catch (error) {
-            console.error('Error loading gift data:', error);
-            giftListData = [];
-            this.updateGiftButtons(userPoints);
-        }
-    },
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                return data.data;
+            } else {
+                throw new Error('Error fetching user data for gifts');
+            }
+        });
+}
 
-    updateGiftButtons(points = userPoints) {
-        if (!giftListData || giftListData.length === 0) {
-            console.log('Gift data not loaded yet');
+// ฟังก์ชันดึงรายการของรางวัล
+function fetchGiftList() {
+    return fetch(`${API_URL}?action=getGiftList`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                return data.gifts;
+            } else {
+                throw new Error('Error fetching gift list');
+            }
+        });
+}
+
+// แมป level ใหม่กับ column index (ปรับให้ตรงกับระบบใหม่)
+function getColumnIndexByLevel(level) {
+    switch (level) {
+        case 30:
+            return 6; // Column G
+        case 60:
+            return 7; // Column H
+        case 90:
+            return 8; // Column I
+        case 120:
+            return 9; // Column J
+        case 150:
+            return 10; // Column K
+        default:
+            return null;
+    }
+}
+
+// อัพเดตการแสดงผลปุ่มของรางวัล (เวอร์ชันสุดท้าย)
+// แทนที่ส่วน updateGiftButtons และ redeemGift functions ในโค้ดเดิม
+
+// อัพเดตการแสดงผลปุ่มของรางวัล (เวอร์ชันใหม่ - ไม่ใช้คะแนน)
+function updateGiftButtons(points = userPoints) {
+    if (!giftListData || giftListData.length === 0) {
+        console.log('Gift data not loaded yet');
+        return;
+    }
+
+    const requiredPoints = [30, 60, 90, 120, 150];
+    
+    requiredPoints.forEach(level => {
+        const gift = giftListData.find(g => g.Level === level);
+        const button = document.getElementById(`gift${level}`);
+        const balanceElement = document.getElementById(`gift${level}-balance`);
+        
+        if (!button) {
+            console.log(`Button gift${level} not found`);
             return;
         }
 
-        CONFIG.GIFT_LEVELS.forEach(level => {
-            const gift = giftListData.find(g => g.Level === level);
-            const button = document.getElementById(`gift${level}`);
-            const balanceElement = document.getElementById(`gift${level}-balance`);
-            
-            if (!button) {
-                console.log(`Button gift${level} not found`);
-                return;
-            }
+        // อัพเดต balance
+        if (balanceElement && gift) {
+            balanceElement.textContent = gift.Balance || 0;
+        }
 
-            // Update balance display
-            if (balanceElement && gift) {
-                balanceElement.textContent = gift.Balance || 0;
-            }
+        // ดึงสถานะของ user สำหรับของรางวัลนี้
+        const columnIndex = getColumnIndexByLevel(level);
+        const userStatus = userData && columnIndex !== null ? userData[columnIndex] : null;
+        const giftBalance = gift ? gift.Balance : 0;
 
-            // Get user status for this gift
-            const columnIndex = GIFT_COLUMN_MAP[level];
-            const userStatus = userData && columnIndex !== null ? userData[columnIndex] : null;
-            const giftBalance = gift ? gift.Balance : 0;
+        // รีเซ็ต style และ event
+        button.onclick = null;
+        button.classList.remove('btn-available', 'btn-disabled', 'btn-redeemed', 'btn-outofstock');
 
-            // Reset button
-            button.onclick = null;
-            button.classList.remove('btn-available', 'btn-disabled', 'btn-redeemed', 'btn-outofstock');
-
-            // Update button based on status
-            this.setButtonState(button, userStatus, points, level, giftBalance);
-
-            console.log(`Gift ${level}: status=${userStatus}, points=${points}, balance=${giftBalance}`);
-        });
-    },
-
-    setButtonState(button, userStatus, points, level, giftBalance) {
+        // ตรวจสอบสถานะและอัพเดตปุ่ม
         if (userStatus === 'R') {
-            // Already redeemed
+            // รับไปแล้ว
             button.textContent = 'รับแล้ว';
             button.disabled = true;
             button.classList.add('btn-redeemed');
+            
         } else if (userStatus === 'O' || giftBalance <= 0) {
-            // Out of stock
+            // ของหมด
             button.textContent = 'ของหมด';
             button.disabled = true;
             button.classList.add('btn-outofstock');
+            
         } else if (points >= level) {
-            // Can redeem
+            // คะแนนพอ - สามารถรับได้
             button.textContent = 'กดรับ';
             button.disabled = false;
             button.classList.add('btn-available');
-            button.onclick = () => this.redeemGift(level);
+            button.onclick = () => redeemGift(level);
+            
         } else {
-            // Insufficient points
+            // คะแนนไม่พอ
             button.textContent = 'กดรับ';
             button.disabled = true;
             button.classList.add('btn-disabled');
         }
-    },
 
-    async redeemGift(level) {
-        if (isSubmitting) {
-            console.log('กำลังประมวลผลอยู่ กรุณารอ...');
-            return;
-        }
+        console.log(`Gift ${level}: status=${userStatus}, points=${points}, balance=${giftBalance}, class=${button.className}`);
+    });
+}
 
-        if (userPoints < level) {
-            Swal.fire({
-                title: 'คะแนนไม่เพียงพอ',
-                text: `ต้องมีคะแนนอย่างน้อย ${level} คะแนน เพื่อรับของรางวัลนี้`,
-                icon: 'warning',
-                confirmButtonColor: '#10b981'
-            });
-            return;
-        }
-
-        const gift = giftListData.find(g => g.Level === level);
-        if (!gift || gift.Balance <= 0) {
-            Swal.fire({
-                title: 'ของรางวัลหมดแล้ว',
-                text: 'ขออภัย ของรางวัลนี้หมดแล้ว',
-                icon: 'error',
-                confirmButtonColor: '#10b981'
-            });
-            return;
-        }
-
-        // Show confirmation
-        const result = await Swal.fire({
-            title: 'ยืนยันการรับของรางวัล',
-            html: `
-                <div style="text-align: center;">
-                    <div style="font-size: 48px; margin-bottom: 15px;">🎁</div>
-                    <p style="font-size: 18px; font-weight: 600; margin-bottom: 10px;">
-                        คุณต้องการรับ <strong style="color: #10b981;">${gift.Gift_Name}</strong>
-                    </p>
-                    <p style="font-size: 14px; color: #666; margin-top: 15px;">
-                        คลิก "ยืนยันรับ" เพื่อดำเนินการต่อ
-                    </p>
-                </div>
-            `,
-            icon: null,
-            showCancelButton: true,
-            confirmButtonColor: '#10b981',
-            cancelButtonColor: '#6b7280',
-            confirmButtonText: 'ยืนยันรับ',
-            cancelButtonText: 'ยกเลิก',
-            width: '400px'
-        });
-
-        if (result.isConfirmed) {
-            await this.processRedeemGift(level);
-        }
-    },
-
-    async processRedeemGift(level) {
-        isSubmitting = true;
-
-        try {
-            const profile = await liff.getProfile();
-            const uid = profile.userId;
-            
-            Swal.fire({
-                title: 'กำลังจองของรางวัล',
-                html: `
-                    <div style="text-align: center;">
-                        <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/giftAnimattion.gif" 
-                             alt="loading" style="width:250px;height:250px;">
-                        <p style="margin-top: 15px; color: #666; font-size: 16px;">กรุณารอสักครู่...</p>
-                    </div>
-                `,
-                showConfirmButton: false,
-                allowOutsideClick: false,
-                didOpen: () => Swal.showLoading()
-            });
-
-            const response = await API.redeemGift(uid, level);
-            Swal.close();
-            
-            if (response.success) {
-                await Swal.fire({
-                    title: 'รับของรางวัลสำเร็จ!',
-                    html: `
-                        <div style="text-align: center;">
-                            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemGIF.gif" 
-                                 alt="success" style="width:250px;height:250px;">
-                            <p style="margin-top: 15px; font-size: 18px; color: #10b981; font-weight: 600;">
-                                🎉 รับรางวัลเรียบร้อยแล้ว!
-                            </p>
-                            <p style="margin-top: 10px; font-size: 14px; color: #666;">
-                                ขอบคุณที่เข้าร่วมกิจกรรมกินดี Healthy Life #2
-                            </p>
-                        </div>
-                    `,
-                    confirmButtonColor: '#10b981',
-                    confirmButtonText: 'ตรวจสอบรายการ',
-                    width: '400px'
-                });
-
-                // Redirect to check orders
-                window.open('https://liff.line.me/2004752543-O6BZm2yN', '_blank');
-                
-                // Reload gift data
-                this.loadGiftData();
-            } else {
-                Swal.fire({
-                    title: 'ไม่สามารถรับได้',
-                    text: response.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
-                    icon: 'error',
-                    confirmButtonColor: '#ef4444'
-                });
-            }
-        } catch (error) {
-            console.error('Error redeeming gift:', error);
-            Swal.close();
-            Swal.fire({
-                title: 'เกิดข้อผิดพลาด',
-                text: 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง',
-                icon: 'error',
-                confirmButtonColor: '#ef4444'
-            });
-        } finally {
-            isSubmitting = false;
-        }
+// ฟังก์ชันรับของรางวัล
+function redeemGift(level) {
+    // ตรวจสอบสถานะก่อน
+    if (isSubmitting) {
+        console.log('กำลังประมวลผลอยู่ กรุณารอ...');
+        return;
     }
-};
 
-/* =================================
-   🎨 UI FUNCTIONS
-   ================================= */
-const UI = {
-    updateUserAvatar(displayName, pictureUrl) {
-        const profileAvatar = document.getElementById('profileAvatar');
-        
-        if (pictureUrl) {
-            profileAvatar.innerHTML = `<img src="${pictureUrl}" alt="${displayName}" class="profile-image">`;
-        } else {
-            const initials = displayName.substring(0, 2).toUpperCase();
-            profileAvatar.innerHTML = initials;
-        }
-    },
-
-    updateUserInfo(displayName, parsedData) {
-        document.getElementById('memberName').textContent = displayName;
-        const deptText = parsedData.Name && parsedData.Division 
-            ? `${parsedData.Name}<br>${parsedData.Division}` 
-            : (parsedData.Name || parsedData.Division || 'ไม่ระบุ');
-        document.getElementById('memberDept').innerHTML = deptText;
-        document.getElementById('memberBadge').textContent = parsedData.Factory || 'ไม่ระบุโรงงาน';
-    },
-
-    updatePointsDisplay(points) {
-        document.getElementById('pointsValue').textContent = points;
-        
-        const progressPercent = Utils.calculateProgress(points);
-        document.getElementById('progressFill').style.width = progressPercent + '%';
-        
-        // Update milestone states
-        const milestones = document.querySelectorAll('.milestone');
-        milestones.forEach((milestone, index) => {
-            const milestoneValue = CONFIG.MILESTONE_VALUES[index];
-            milestone.classList.remove('achieved', 'current');
-            
-            if (points >= milestoneValue) {
-                milestone.classList.add('achieved');
-            } else if (index === 0 && points >= 0 && points < milestoneValue) {
-                milestone.classList.add('current');
-            } else if (index > 0 && points >= CONFIG.MILESTONE_VALUES[index - 1] && points < milestoneValue) {
-                milestone.classList.add('current');
-            }
+    // ตรวจสอบคะแนนเพื่อให้มีสิทธิ์รับ
+    if (userPoints < level) {
+        Swal.fire({
+            title: 'คะแนนไม่เพียงพอ',
+            text: `ต้องมีคะแนนอย่างน้อย ${level} คะแนน เพื่อรับของรางวัลนี้`,
+            icon: 'warning',
+            confirmButtonColor: '#10b981'
         });
+        return;
+    }
 
-        Gift.updateGiftButtons(points);
-    },
+    // ตรวจสอบ balance
+    const gift = giftListData.find(g => g.Level === level);
+    if (!gift || gift.Balance <= 0) {
+        Swal.fire({
+            title: 'ของรางวัลหมดแล้ว',
+            text: 'ขออภัย ของรางวัลนี้หมดแล้ว',
+            icon: 'error',
+            confirmButtonColor: '#10b981'
+        });
+        return;
+    }
 
-    updateValidationStatus(inputElement, validation) {
-        let statusContainer = inputElement.parentElement.querySelector('.validation-status');
-        if (!statusContainer) {
-            statusContainer = document.createElement('div');
-            statusContainer.className = 'validation-status';
-            inputElement.parentElement.appendChild(statusContainer);
+    // แสดง confirmation (แก้ไขแล้ว)
+    Swal.fire({
+        title: 'ยืนยันการรับของรางวัล',
+        html: `
+            <div style="text-align: center;">
+                <div style="font-size: 48px; margin-bottom: 15px;">🎁</div>
+                <p style="font-size: 18px; font-weight: 600; margin-bottom: 10px;">
+                    คุณต้องการรับ <strong style="color: #10b981;">${gift.Gift_Name}</strong>
+                </p>
+                <p style="font-size: 14px; color: #666; margin-top: 15px;">
+                    คลิก "ยืนยันรับ" เพื่อดำเนินการต่อ
+                </p>
+            </div>
+        `,
+        icon: null,
+        showCancelButton: true,
+        confirmButtonColor: '#10b981',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'ยืนยันรับ',
+        cancelButtonText: 'ยกเลิก',
+        width: '400px'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            processRedeemGift(level);
         }
+    });
+}
 
-        inputElement.classList.remove('valid-food', 'invalid-food');
-        
-        if (validation.showIcon) {
-            if (validation.isValid) {
-                inputElement.classList.add('valid-food');
-                statusContainer.style.color = '#4CAF50';
-                statusContainer.textContent = validation.message;
-            } else {
-                inputElement.classList.add('invalid-food');
-                statusContainer.style.color = '#f44336';
-                statusContainer.textContent = validation.message;
-            }
-        } else {
-            statusContainer.textContent = '';
-        }
-    },
+// ประมวลผลการรับของรางวัล
+function processRedeemGift(level) {
+    isSubmitting = true; // ป้องกันการกดซ้ำ
 
-    updateRecordButton(food) {
-        const button = document.getElementById('recordBtn');
-        if (!button) return;
-        
-        const validation = Food.validateFood(food);
-        
-        if (validation.isValid && !isSubmitting) {
-            button.disabled = false;
-            button.innerHTML = '<i class="fas fa-save"></i> บันทึกการรับประทาน';
-            selectedFood = food.trim();
-        } else {
-            button.disabled = true;
-            if (isSubmitting) {
-                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
-            } else if (food && food.trim() !== '') {
-                button.innerHTML = '<i class="fas fa-exclamation-triangle"></i> เมนูไม่ถูกต้อง';
-            } else {
-                button.innerHTML = '<i class="fas fa-save"></i> เลือกเมนูก่อน';
-            }
-            selectedFood = '';
-        }
-
-        const foodInput = document.getElementById('foodSearch');
-        if (foodInput) {
-            this.updateValidationStatus(foodInput, validation);
-        }
-    },
-
-    hideLoadingScreen() {
-        const loadingScreen = document.getElementById('loadingScreen');
-        if (loadingScreen) {
-            loadingScreen.style.opacity = '0';
-            setTimeout(() => {
-                loadingScreen.style.display = 'none';
-            }, 300);
-        }
-    },
-
-    showErrorAndHideLoading(message) {
-        this.hideLoadingScreen();
+    liff.getProfile().then(profile => {
+        const uid = profile.userId;
         
         Swal.fire({
+            title: 'กำลังจองของรางวัล',
+            html: `
+                <div style="text-align: center;">
+                    <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/giftAnimattion.gif" 
+                         alt="loading" style="width:250px;height:250px;">
+                    <p style="margin-top: 15px; color: #666; font-size: 16px;">กรุณารอสักครู่...</p>
+                </div>
+            `,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+                
+                fetch(`${API_URL}?action=redeemGift&uid=${uid}&level=${level}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        Swal.close();
+                        if (data.success) {
+                            // รับสำเร็จ - ไม่หักคะแนน
+                            // userPoints ยังคงเดิม ไม่ต้องลดลง
+                            
+                            Swal.fire({
+                                title: 'รับของรางวัลสำเร็จ!',
+                                html: `
+                                    <div style="text-align: center;">
+                                        <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/redeemGIF.gif" 
+                                             alt="success" style="width:250px;height:250px;">
+                                        <p style="margin-top: 15px; font-size: 18px; color: #10b981; font-weight: 600;">
+                                            🎉 รับรางวัลเรียบร้อยแล้ว!
+                                        </p>
+                                        <p style="margin-top: 10px; font-size: 14px; color: #666;">
+                                            ขอบคุณที่เข้าร่วมกิจกรรมกินดี Healthy Life #2
+                                        </p>
+                                    </div>
+                                `,
+                                confirmButtonColor: '#10b981',
+                                confirmButtonText: 'ตรวจสอบรายการ',
+                                width: '400px'
+                            }).then(() => {
+                                // Redirect ไปหน้าตรวจสอบรายการ
+                                window.open('https://liff.line.me/2004752543-O6BZm2yN', '_blank');
+                                
+                                // โหลดข้อมูลใหม่
+                                loadGiftData();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'ไม่สามารถรับได้',
+                                text: data.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
+                                icon: 'error',
+                                confirmButtonColor: '#ef4444'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error redeeming gift:', error);
+                        Swal.close();
+                        Swal.fire({
+                            title: 'เกิดข้อผิดพลาด',
+                            text: 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง',
+                            icon: 'error',
+                            confirmButtonColor: '#ef4444'
+                        });
+                    })
+                    .finally(() => {
+                        isSubmitting = false; // รีเซ็ตสถานะ
+                    });
+            }
+        });
+    }).catch(err => {
+        console.error('Failed to get user profile:', err);
+        isSubmitting = false;
+        Swal.fire({
             title: 'เกิดข้อผิดพลาด',
-            text: message,
+            text: 'ไม่สามารถดึงข้อมูลโปรไฟล์ได้',
             icon: 'error',
-            confirmButtonText: 'รับทราบ',
             confirmButtonColor: '#ef4444'
         });
-    },
+    });
+}
 
-    // Carousel functions
-    startAutoScroll() {
-        const totalGifts = 5;
-        
-        autoScrollInterval = setInterval(() => {
-            if (!userInteracted) {
-                currentGiftIndex = (currentGiftIndex + 1) % totalGifts;
-                this.scrollToGift(currentGiftIndex);
-            }
-        }, CONFIG.AUTO_SCROLL_INTERVAL);
-    },
-
-    stopAutoScroll() {
-        if (autoScrollInterval) {
-            clearInterval(autoScrollInterval);
-            userInteracted = true;
-            setTimeout(() => {
-                userInteracted = false;
-                this.startAutoScroll();
-            }, 10000);
+// โหลดข้อมูลของรางวัล
+function loadGiftData() {
+    Promise.all([
+        fetchGiftList(),
+        liff.getProfile().then(profile => fetchUserDataForGifts(profile.userId))
+    ])
+    .then(([gifts, userGiftData]) => {
+        giftListData = gifts;
+        // อัพเดต userData ด้วยข้อมูลของรางวัล (ถ้าต้องการ)
+        if (userGiftData && Array.isArray(userGiftData)) {
+            // Merge ข้อมูลของรางวัลเข้าไปใน userData
+            userGiftData.forEach((value, index) => {
+                if (userData && index < userData.length) {
+                    userData[index] = value;
+                }
+            });
         }
-    },
-
-    scrollToGift(index) {
-        const container = document.getElementById('giftsContainer');
-        if (!container || !container.children[0]) return;
         
-        const giftWidth = container.children[0].offsetWidth;
-        container.scrollTo({
-            left: giftWidth * index,
-            behavior: 'smooth'
-        });
-        this.updateIndicators(index);
-        currentGiftIndex = index;
-        this.stopAutoScroll();
-    },
+        console.log('Gift data loaded:', giftListData);
+        updateGiftButtons(userPoints);
+    })
+    .catch(error => {
+        console.error('Error loading gift data:', error);
+        // ใช้ข้อมูล fallback
+        giftListData = [];
+        updateGiftButtons(userPoints);
+    });
+}
 
-    updateIndicators(activeIndex) {
-        const indicators = document.querySelectorAll('.indicator-dot');
-        indicators.forEach((indicator, index) => {
-            indicator.classList.toggle('active', index === activeIndex);
-        });
+// =================
+// UI Functions
+// =================
+
+// Auto-scroll functionality
+function startAutoScroll() {
+    const totalGifts = 5;
+    
+    autoScrollInterval = setInterval(() => {
+        if (!userInteracted) {
+            currentGiftIndex = (currentGiftIndex + 1) % totalGifts;
+            scrollToGift(currentGiftIndex);
+        }
+    }, 5000);
+}
+
+function stopAutoScroll() {
+    if (autoScrollInterval) {
+        clearInterval(autoScrollInterval);
+        userInteracted = true;
+        // Resume auto-scroll after 10 seconds of no interaction
+        setTimeout(() => {
+            userInteracted = false;
+            startAutoScroll();
+        }, 10000);
     }
-};
+}
 
-/* =================================
-   📋 HISTORY MANAGEMENT
-   ================================= */
-const History = {
-    async loadHistory() {
-        const loading = document.getElementById('historyLoading');
-        const list = document.getElementById('historyList');
-        
-        loading.style.display = 'block';
-        list.style.display = 'none';
-        
-        if (!userData || !Array.isArray(userData) || userData.length === 0) {
-            console.error('User data not available for history');
-            loading.style.display = 'none';
-            list.style.display = 'block';
-            this.showErrorHistory();
-            return;
+// Tab switching
+function switchTab(tabName) {
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    event.target.closest('.nav-tab').classList.add('active');
+
+    document.querySelectorAll('.section').forEach(section => {
+        section.classList.remove('active');
+    });
+    
+    const targetSection = document.getElementById(tabName + 'Section');
+    if (targetSection) {
+        targetSection.classList.add('active');
+    }
+
+    if (tabName === 'history') {
+        loadHistory();
+    }
+}
+
+function highlightText(text, keyword) {
+    if (!keyword || keyword.trim() === '') return text;
+    
+    const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escapedKeyword})`, 'gi');
+    return text.replace(regex, '<span class="highlight">$1</span>');
+}
+
+// Fixed progress calculation
+function updatePointsDisplay(points) {
+    document.getElementById('pointsValue').textContent = points;
+    
+    const milestoneValues = [30, 60, 90, 120, 150];
+    let progressPercent = 0;
+    
+    // Calculate progress based on milestone segments
+    if (points > 150) {
+        progressPercent = 100;
+    } else {
+        for (let i = 0; i < milestoneValues.length; i++) {
+            if (points <= milestoneValues[i]) {
+                const prevMilestone = i === 0 ? 0 : milestoneValues[i - 1];
+                const currentMilestone = milestoneValues[i];
+                const segmentProgress = (points - prevMilestone) / (currentMilestone - prevMilestone);
+                const baseProgress = (i / milestoneValues.length) * 100;
+                const segmentWidth = (1 / milestoneValues.length) * 100;
+                progressPercent = baseProgress + (segmentProgress * segmentWidth);
+                break;
+            }
         }
+    }
+    
+    document.getElementById('progressFill').style.width = progressPercent + '%';
+    
+    // Update milestone states
+    const milestones = document.querySelectorAll('.milestone');
+    
+    milestones.forEach((milestone, index) => {
+        const milestoneValue = milestoneValues[index];
+        milestone.classList.remove('achieved', 'current');
         
-        const userId = userData[0];
-        
-        if (!userId) {
-            console.error('User ID not found in userData');
-            loading.style.display = 'none';
-            list.style.display = 'block';
-            this.showErrorHistory();
-            return;
+        if (points >= milestoneValue) {
+            milestone.classList.add('achieved');
+        } else if (index === 0 && points >= 0 && points < milestoneValue) {
+            milestone.classList.add('current');
+        } else if (index > 0 && points >= milestoneValues[index - 1] && points < milestoneValue) {
+            milestone.classList.add('current');
         }
-        
-        try {
-            const response = await API.getUserRecords(userId);
+    });
+
+    updateGiftButtons(points);
+}
+
+// แทนที่ฟังก์ชัน loadHistory() เดิมด้วยโค้ดนี้
+
+// ตัวแปรสำหรับ pagination
+let historyData = [];
+let currentPage = 1;
+let recordsPerPage = 10;
+
+function loadHistory() {
+    const loading = document.getElementById('historyLoading');
+    const list = document.getElementById('historyList');
+    
+    loading.style.display = 'block';
+    list.style.display = 'none';
+    
+    // ตรวจสอบว่ามี userData หรือไม่
+    if (!userData || !Array.isArray(userData) || userData.length === 0) {
+        console.error('User data not available for history');
+        loading.style.display = 'none';
+        list.style.display = 'block';
+        showErrorHistory();
+        return;
+    }
+    
+    // ใช้ UID จาก userData ที่มีอยู่แล้ว แทนการเรียก liff.getProfile()
+    const userId = userData[0]; // UID อยู่ใน index 0
+    
+    if (!userId) {
+        console.error('User ID not found in userData');
+        loading.style.display = 'none';
+        list.style.display = 'block';
+        showErrorHistory();
+        return;
+    }
+    
+    // เรียก API ดึงประวัติ
+    fetch(`${API_URL}?action=getUserRecords&uid=${userId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
             loading.style.display = 'none';
             list.style.display = 'block';
             
-            if (response.success && response.records && response.records.length > 0) {
-                historyData = response.records;
+            if (data.success && data.records && data.records.length > 0) {
+                historyData = data.records;
                 currentPage = 1;
-                this.displayHistory();
+                displayHistory();
             } else {
-                this.showEmptyHistory();
+                showEmptyHistory();
             }
-        } catch (error) {
+        })
+        .catch(error => {
             console.error('Error loading history:', error);
             loading.style.display = 'none';
             list.style.display = 'block';
-            this.showErrorHistory();
-        }
-    },
+            showErrorHistory();
+        });
+}
 
-    displayHistory() {
-        const list = document.getElementById('historyList');
+function displayHistory() {
+    const list = document.getElementById('historyList');
+    
+    // คำนวณรายการที่จะแสดงในหน้านี้
+    const startIndex = (currentPage - 1) * recordsPerPage;
+    const endIndex = startIndex + recordsPerPage;
+    const pageRecords = historyData.slice(startIndex, endIndex);
+    
+    // สร้าง HTML สำหรับรายการ
+    let historyHTML = '';
+    
+    pageRecords.forEach(record => {
+        const dateTime = formatDateTime(record.TimeStamp);
+        const menu = record.Menu || 'ไม่ระบุเมนู';
         
-        const startIndex = (currentPage - 1) * CONFIG.RECORDS_PER_PAGE;
-        const endIndex = startIndex + CONFIG.RECORDS_PER_PAGE;
-        const pageRecords = historyData.slice(startIndex, endIndex);
-        
-        // Create header with record count
-        const totalRecords = historyData.length;
-        const headerHTML = `
-            <div class="history-header">
-                <div class="history-title">
-                    <i class="fas fa-clock"></i>
-                    ประวัติการบันทึก
-                </div>
-                <div class="history-count">${totalRecords}</div>
+        historyHTML += `
+            <div class="history-item">
+                <div class="history-date">${dateTime}</div>
+                <div class="history-food">${menu}</div>
             </div>
         `;
+    });
+    
+    // สร้าง pagination
+    const totalPages = Math.ceil(historyData.length / recordsPerPage);
+    const paginationHTML = createPagination(currentPage, totalPages);
+    
+    // แสดงผล
+    list.innerHTML = historyHTML + paginationHTML;
+}
+
+function formatDateTime(timestamp) {
+    if (!timestamp) return 'ไม่ระบุเวลา';
+    
+    try {
+        const date = new Date(timestamp);
         
-        let historyHTML = '';
-        
-        pageRecords.forEach((record, index) => {
-            const dateTime = Utils.formatDateTime(record.TimeStamp);
-            const menu = record.Menu || 'ไม่ระบุเมนู';
-            const recordNumber = startIndex + index + 1;
-            
-            historyHTML += `
-                <div class="history-item">
-                    <div class="history-date">
-                        <i class="fas fa-calendar-alt"></i>
-                        ${dateTime} • รายการที่ ${recordNumber}
-                    </div>
-                    <div class="history-food">${menu}</div>
-                </div>
-            `;
+        // แสดงแบบง่ายๆ วันที่ เวลา
+        const dateStr = date.toLocaleDateString('th-TH', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
         });
         
-        const totalPages = Math.ceil(historyData.length / CONFIG.RECORDS_PER_PAGE);
-        const paginationHTML = this.createPagination(currentPage, totalPages);
+        const timeStr = date.toLocaleTimeString('th-TH', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
         
-        list.innerHTML = headerHTML + historyHTML + paginationHTML;
-    },
+        return `${dateStr} ${timeStr}`;
+    } catch (error) {
+        console.error('Error formatting date:', error);
+        return 'เวลาไม่ถูกต้อง';
+    }
+}
 
-    createPagination(current, total) {
-        if (total <= 1) return '';
-        
-        let html = '<div class="pagination-container">';
-        
-        // Previous button
-        if (current > 1) {
-            html += `
-                <button class="pagination-btn" onclick="History.changePage(${current - 1})">
-                    <i class="fas fa-chevron-left"></i>
-                    ก่อนหน้า
-                </button>
-            `;
-        }
-        
-        // Page info
-        html += `
-            <div class="pagination-info">
-                หน้า ${current} จาก ${total}
-            </div>
-        `;
-        
-        // Next button
-        if (current < total) {
-            html += `
-                <button class="pagination-btn" onclick="History.changePage(${current + 1})">
-                    ถัดไป
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            `;
-        }
-        
-        html += '</div>';
-        return html;
-    },
-
-    changePage(page) {
-        currentPage = page;
-        this.displayHistory();
-        
-        // Smooth scroll to top of history section
-        const historySection = document.getElementById('historySection');
-        if (historySection) {
-            historySection.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
-            });
-        }
-        
-        // Add visual feedback
-        const paginationContainer = document.querySelector('.pagination-container');
-        if (paginationContainer) {
-            paginationContainer.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                paginationContainer.style.transform = 'scale(1)';
-            }, 150);
-        }
-    },
-
-    showEmptyHistory() {
-        const list = document.getElementById('historyList');
-        list.innerHTML = `
-            <div class="empty-history">
-                <div class="empty-state-content">
-                    <div class="icon">📝</div>
-                    <h3>ยังไม่มีประวัติการบันทึก</h3>
-                    <p>เริ่มบันทึกเมนูอาหารสุขภาพของคุณได้เลย!<br>แต่ละครั้งที่บันทึกจะได้รับ 5 คะแนน</p>
-                    <button class="retry-btn" onclick="Navigation.switchTab('record')">
-                        <i class="fas fa-utensils"></i>
-                        เริ่มบันทึก
-                    </button>
-                </div>
-            </div>
-        `;
-    },
-
-    showErrorHistory() {
-        const list = document.getElementById('historyList');
-        list.innerHTML = `
-            <div class="error-history">
-                <div class="error-state-content">
-                    <div class="icon">⚠️</div>
-                    <h3>ไม่สามารถโหลดประวัติได้</h3>
-                    <p>เกิดข้อผิดพลาดในการเชื่อมต่อ<br>กรุณาตรวจสอบอินเทอร์เน็ตและลองใหม่อีกครั้ง</p>
-                    <button class="retry-btn" onclick="History.loadHistory()">
-                        <i class="fas fa-redo-alt"></i>
-                        ลองใหม่
-                    </button>
-                </div>
-            </div>
+function createPagination(current, total) {
+    if (total <= 1) return '';
+    
+    let paginationHTML = '<div class="pagination-container">';
+    
+    // ปุ่ม Previous
+    if (current > 1) {
+        paginationHTML += `
+            <button class="pagination-btn" onclick="changePage(${current - 1})">
+                ← ก่อนหน้า
+            </button>
         `;
     }
-};
+    
+    // แสดงหน้าปัจจุบัน
+    paginationHTML += `
+        <span class="pagination-info">
+            หน้า ${current} จาก ${total}
+        </span>
+    `;
+    
+    // ปุ่ม Next
+    if (current < total) {
+        paginationHTML += `
+            <button class="pagination-btn" onclick="changePage(${current + 1})">
+                ถัดไป →
+            </button>
+        `;
+    }
+    
+    paginationHTML += '</div>';
+    return paginationHTML;
+}
 
-/* =================================
-   🎛️ EVENT LISTENERS & NAVIGATION
-   ================================= */
-const Navigation = {
-    switchTab(tabName) {
-        // Update nav tabs
-        document.querySelectorAll('.nav-tab').forEach(tab => {
-            tab.classList.remove('active');
-        });
-        event.target.closest('.nav-tab').classList.add('active');
+function changePage(page) {
+    currentPage = page;
+    displayHistory();
+    
+    // เลื่อนกลับไปด้านบน
+    const historySection = document.getElementById('historySection');
+    if (historySection) {
+        historySection.scrollTop = 0;
+    }
+}
 
-        // Update sections
-        document.querySelectorAll('.section').forEach(section => {
-            section.classList.remove('active');
-        });
+function showEmptyHistory() {
+    const list = document.getElementById('historyList');
+    list.innerHTML = `
+        <div class="empty-history">
+            <div style="text-align: center; padding: 40px 20px; color: #64748b;">
+                <div style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;">📝</div>
+                <h3 style="margin-bottom: 10px;">ยังไม่มีประวัติการบันทึก</h3>
+                <p>เริ่มบันทึกเมนูอาหารของคุณเลย!</p>
+            </div>
+        </div>
+    `;
+}
+
+function showErrorHistory() {
+    const list = document.getElementById('historyList');
+    list.innerHTML = `
+        <div class="error-history">
+            <div style="text-align: center; padding: 40px 20px; color: #ef4444;">
+                <div style="font-size: 48px; margin-bottom: 15px;">⚠️</div>
+                <h3 style="margin-bottom: 10px;">ไม่สามารถโหลดประวัติได้</h3>
+                <p style="color: #64748b; margin-bottom: 15px;">กรุณาลองใหม่อีกครั้ง</p>
+                <button onclick="loadHistory()" style="padding: 8px 16px; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                    ลองใหม่
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+// เพิ่ม CSS สำหรับ pagination (เรียบง่าย)
+const historyStyle = document.createElement('style');
+historyStyle.textContent = `
+    .history-header {
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .pagination-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        padding: 15px 0;
+        border-top: 1px solid #f1f5f9;
+    }
+    
+    .pagination-btn {
+        padding: 8px 16px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        color: #374151;
+        transition: all 0.2s ease;
+    }
+    
+    .pagination-btn:hover {
+        background: #e2e8f0;
+        border-color: #cbd5e1;
+    }
+    
+    .pagination-btn:active {
+        transform: scale(0.98);
+    }
+    
+    .pagination-info {
+        font-size: 14px;
+        color: #64748b;
+        font-weight: 500;
+    }
+    
+    .empty-history, .error-history {
+        min-height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Responsive */
+    @media (max-width: 480px) {
+        .pagination-container {
+            flex-direction: column;
+            gap: 10px;
+        }
         
-        const targetSection = document.getElementById(tabName + 'Section');
-        if (targetSection) {
-            targetSection.classList.add('active');
+        .pagination-btn {
+            padding: 10px 20px;
+            font-size: 13px;
         }
-
-        if (tabName === 'history') {
-            History.loadHistory();
+        
+        .pagination-info {
+            order: -1;
+            margin-bottom: 5px;
         }
-    },
+    }
+`;
+document.head.appendChild(historyStyle);
 
-    setupEventListeners() {
-        // Food search
-        const foodSearch = document.getElementById('foodSearch');
-        if (foodSearch) {
-            foodSearch.addEventListener('input', function() {
-                const value = this.value;
-                const dropdown = document.getElementById('foodDropdown');
-                
-                if (value.length > 0) {
-                    dropdown.style.display = 'block';
-                    const items = dropdown.querySelectorAll('.dropdown-item');
-                    let hasVisibleItems = false;
-                    
-                    items.forEach(item => {
-                        const foodName = item.textContent;
-                        if (foodName.toLowerCase().includes(value.toLowerCase())) {
-                            item.style.display = 'block';
-                            item.innerHTML = Utils.highlightText(foodName, value);
-                            hasVisibleItems = true;
-                        } else {
-                            item.style.display = 'none';
-                        }
-                    });
-                    
-                    if (!hasVisibleItems) {
-                        dropdown.style.display = 'none';
-                    }
-                } else {
-                    dropdown.style.display = 'none';
-                }
+// Carousel functionality
+function scrollToGift(index) {
+    const container = document.getElementById('giftsContainer');
+    const giftWidth = container.children[0].offsetWidth;
+    container.scrollTo({
+        left: giftWidth * index,
+        behavior: 'smooth'
+    });
+    updateIndicators(index);
+    currentGiftIndex = index;
+    stopAutoScroll();
+}
 
-                UI.updateRecordButton(value);
-            });
+function updateIndicators(activeIndex) {
+    const indicators = document.querySelectorAll('.indicator-dot');
+    indicators.forEach((indicator, index) => {
+        if (index === activeIndex) {
+            indicator.classList.add('active');
+        } else {
+            indicator.classList.remove('active');
         }
+    });
+}
 
-        // Dropdown selection
-        const foodDropdown = document.getElementById('foodDropdown');
-        if (foodDropdown) {
-            foodDropdown.addEventListener('click', function(e) {
-                if (e.target.classList.contains('dropdown-item')) {
-                    const searchInput = document.getElementById('foodSearch');
-                    const selectedText = e.target.textContent;
-                    
-                    searchInput.value = selectedText;
-                    selectedFood = selectedText;
-                    this.style.display = 'none';
-                    UI.updateRecordButton(selectedFood);
-                    searchInput.focus();
-                }
-            });
-        }
+// =================
+// Event Listeners
+// =================
 
-        // Click outside dropdown
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.search-container')) {
-                document.getElementById('foodDropdown').style.display = 'none';
+// Food search functionality
+document.getElementById('foodSearch').addEventListener('input', function() {
+    const value = this.value;
+    const dropdown = document.getElementById('foodDropdown');
+    
+    if (value.length > 0) {
+        dropdown.style.display = 'block';
+        const items = dropdown.querySelectorAll('.dropdown-item');
+        let hasVisibleItems = false;
+        
+        items.forEach(item => {
+            const foodName = item.textContent;
+            if (foodName.toLowerCase().includes(value.toLowerCase())) {
+                item.style.display = 'block';
+                // เพิ่ม highlight
+                item.innerHTML = highlightText(foodName, value);
+                hasVisibleItems = true;
+            } else {
+                item.style.display = 'none';
             }
         });
-
-        // Record button
-        const recordBtn = document.getElementById('recordBtn');
-        if (recordBtn) {
-            recordBtn.addEventListener('click', function() {
-                if (selectedFood && !isSubmitting) {
-                    Food.recordSelection();
-                }
-            });
-        }
-
-        // Carousel scroll handling
-        const giftsContainer = document.getElementById('giftsContainer');
-        if (giftsContainer) {
-            giftsContainer.addEventListener('scroll', function() {
-                const container = this;
-                const giftWidth = container.children[0]?.offsetWidth || 0;
-                const scrollLeft = container.scrollLeft;
-                const activeIndex = Math.round(scrollLeft / giftWidth);
-                UI.updateIndicators(activeIndex);
-                currentGiftIndex = activeIndex;
-            });
-
-            // Stop auto-scroll on user interaction
-            giftsContainer.addEventListener('touchstart', UI.stopAutoScroll);
-            giftsContainer.addEventListener('mousedown', UI.stopAutoScroll);
-        }
-    }
-};
-
-/* =================================
-   🚀 INITIALIZATION
-   ================================= */
-const App = {
-    async initialize() {
-        console.log('App initializing...');
         
-        try {
-            // Setup event listeners
-            Navigation.setupEventListeners();
-            
-            // Initialize LIFF
-            await LIFF.initialize();
-            
-            console.log('App initialized successfully');
-        } catch (error) {
-            console.error('App initialization failed:', error);
-            UI.showErrorAndHideLoading('ไม่สามารถเริ่มต้นแอปได้');
+        // ซ่อน dropdown ถ้าไม่มีรายการที่ตรงกัน
+        if (!hasVisibleItems) {
+            dropdown.style.display = 'none';
+        }
+    } else {
+        dropdown.style.display = 'none';
+    }
+
+    updateRecordButton(value);
+});
+
+// dropdown click event
+document.getElementById('foodDropdown').addEventListener('click', function(e) {
+    if (e.target.classList.contains('dropdown-item')) {
+        const searchInput = document.getElementById('foodSearch');
+        const selectedText = e.target.textContent;
+        
+        searchInput.value = selectedText;
+        selectedFood = selectedText;
+        this.style.display = 'none';
+        updateRecordButton(selectedFood);
+        
+        // Focus กลับไปที่ input
+        searchInput.focus();
+    }
+});
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.search-container')) {
+        document.getElementById('foodDropdown').style.display = 'none';
+    }
+});
+
+// Record food event
+document.getElementById('recordBtn').addEventListener('click', function() {
+    if (selectedFood && !isSubmitting) {
+        recordSelection();
+    }
+});
+
+// Auto-update indicators on scroll and handle user interaction
+document.getElementById('giftsContainer').addEventListener('scroll', function() {
+    const container = this;
+    const giftWidth = container.children[0].offsetWidth;
+    const scrollLeft = container.scrollLeft;
+    const activeIndex = Math.round(scrollLeft / giftWidth);
+    updateIndicators(activeIndex);
+    currentGiftIndex = activeIndex;
+});
+
+// Stop auto-scroll on user touch/scroll
+document.getElementById('giftsContainer').addEventListener('touchstart', stopAutoScroll);
+document.getElementById('giftsContainer').addEventListener('mousedown', stopAutoScroll);
+
+// =================
+// CSS Styles
+// =================
+
+// Add animation styles
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideDown {
+        from { transform: translate(-50%, -100%); opacity: 0; }
+        to { transform: translate(-50%, 0); opacity: 1; }
+    }
+    
+    /* CSS สำหรับ validation states */
+    .valid-food {
+        border-color: #4CAF50 !important;
+        background: rgba(232, 245, 232, 0.8) !important;
+        box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1) !important;
+    }
+    
+    .invalid-food {
+        border-color: #f44336 !important;
+        background: rgba(255, 235, 235, 0.8) !important;
+        box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.1) !important;
+    }
+    
+    .validation-status {
+        font-size: 12px;
+        margin-top: 5px;
+        transition: all 0.3s ease;
+        min-height: 16px;
+    }
+    
+    /* ปุ่ม loading state */
+    #recordBtn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+    
+    #recordBtn.loading {
+        animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+        0% { opacity: 0.6; }
+        50% { opacity: 1; }
+        100% { opacity: 0.6; }
+    }
+    
+    /* ปุ่มพร้อมแลก - สีเขียว */
+    .gift-button-large.btn-available {
+        background: linear-gradient(135deg, #10b981, #059669) !important;
+        color: white !important;
+        border: none !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+        font-weight: 600 !important;
+    }
+    
+    .gift-button-large.btn-available:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3) !important;
+        background: linear-gradient(135deg, #059669, #047857) !important;
+    }
+    
+    .gift-button-large.btn-available:active {
+        transform: translateY(0) !important;
+    }
+    
+    /* ปุ่มไม่พร้อมแลก - สีเทา */
+    .gift-button-large.btn-disabled {
+        background: #9ca3af !important;
+        color: #6b7280 !important;
+        border: none !important;
+        cursor: not-allowed !important;
+        font-weight: 500 !important;
+        opacity: 0.8 !important;
+    }
+    
+    /* ปุ่มรับแล้ว - สีเทาเข้ม */
+    .gift-button-large.btn-redeemed {
+        background: #6b7280 !important;
+        color: #f3f4f6 !important;
+        border: none !important;
+        cursor: not-allowed !important;
+        font-weight: 500 !important;
+        opacity: 0.9 !important;
+    }
+    
+    /* ปุ่มของหมด - สีแดงอ่อน */
+    .gift-button-large.btn-outofstock {
+        background: #ef4444 !important;
+        color: white !important;
+        border: none !important;
+        cursor: not-allowed !important;
+        font-weight: 500 !important;
+        opacity: 0.8 !important;
+    }
+    
+    /* สำหรับ balance display */
+    [id$="-balance"] {
+        font-weight: bold !important;
+        color: #059669 !important;
+    }
+    
+    /* Responsive */
+    @media (max-width: 480px) {
+        .gift-button-large {
+            font-size: 12px !important;
+            padding: 10px 16px !important;
+            min-width: 70px !important;
+            height: 40px !important;
         }
     }
-};
+`;
+document.head.appendChild(style);
 
-// Global functions for HTML onclick handlers
-window.switchTab = Navigation.switchTab.bind(Navigation);
-window.scrollToGift = UI.scrollToGift.bind(UI);
-window.History = History;
+// =================
+// Initialize App
+// =================
 
-// Initialize only once when DOM is ready
-document.addEventListener('DOMContentLoaded', App.initialize);
-
+// Initialize app
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize gift buttons
+    updateGiftButtons();
+});
     </script>
 </body>
 </html>
