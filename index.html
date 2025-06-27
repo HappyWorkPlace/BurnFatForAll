@@ -682,23 +682,23 @@ body {
     display: flex;
     background: var(--secondary-50);
     border-radius: var(--radius-lg);
-    padding: var(--space-sm);
+    padding: var(--space-xs);
     border: 1px solid var(--secondary-200);
 }
 
 .nav-tab {
     flex: 1;
-    padding: var(--space-md) var(--space-sm);
+    padding: var(--space-sm) var(--space-xs);
     text-align: center;
     border-radius: var(--radius-md);
-    font-size: var(--text-base);
+    font-size: var(--text-sm);
     font-weight: var(--font-medium);
     cursor: pointer;
     transition: all 0.2s ease;
     background: transparent;
     border: none;
     color: var(--secondary-500);
-    min-height: 52px;
+    min-height: 40px;
 }
 
 .nav-tab.active {
@@ -710,10 +710,9 @@ body {
 
 .nav-tab i {
     display: block;
-    font-size: var(--text-xl);
-    margin-bottom: var(--space-xs);
+    font-size: var(--text-lg);
+    margin-bottom: 2px;
 }
-
 /* =================================
    📝 FORM COMPONENTS
    ================================= */
@@ -1659,9 +1658,9 @@ const MESSAGES = {
     NETWORK_ERROR: 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้',
     FOOD_REQUIRED: 'กรุณาเลือกเมนูอาหาร',
     ALREADY_RECORDED: 'วันนี้คุณบันทึกข้อมูลไปแล้ว พรุ่งนี้ค่อยมาใหม่นะ',
-    INSUFFICIENT_POINTS: 'คะแนนไม่เพียงพอ',
+    INSUFFICIENT_POINTS: 'คะแนนไม่พอ',
     OUT_OF_STOCK: 'ของรางวัลหมดแล้ว',
-    SUCCESS_RECORD: 'บันทึกข้อมูลแล้ว +5 คะแนน',
+    SUCCESS_RECORD: 'บันทึกข้อมูลแล้ว +1 คะแนน',
     SUCCESS_REDEEM: 'รับรางวัลเรียบร้อยแล้ว!'
 };
 
@@ -2565,7 +2564,6 @@ const UI = {
         });
     }
 };
-
 /* =================================
    📋 HISTORY MANAGEMENT
    ================================= */
@@ -2601,7 +2599,8 @@ const History = {
             list.style.display = 'block';
             
             if (response.success && response.records && response.records.length > 0) {
-                historyData = response.records;
+                // เรียงลำดับจากล่าสุดมาแรกสุด
+                historyData = response.records.reverse();
                 currentPage = 1;
                 this.displayHistory();
             } else {
@@ -2630,7 +2629,6 @@ const History = {
                     <i class="fas fa-clock"></i>
                     ประวัติการบันทึก
                 </div>
-                <div class="history-count">${totalRecords}</div>
             </div>
         `;
         
@@ -2639,6 +2637,7 @@ const History = {
         pageRecords.forEach((record, index) => {
             const dateTime = Utils.formatDateTime(record.TimeStamp);
             const menu = record.Menu || 'ไม่ระบุเมนู';
+            // คำนวณหมายเลขรายการจากล่าสุดมาแรกสุด
             const recordNumber = startIndex + index + 1;
             
             historyHTML += `
@@ -2724,7 +2723,7 @@ const History = {
                 <div class="empty-state-content">
                     <div class="icon">📝</div>
                     <h3>ยังไม่มีประวัติการบันทึก</h3>
-                    <p>เริ่มบันทึกเมนูอาหารสุขภาพของคุณได้เลย!<br>แต่ละครั้งที่บันทึกจะได้รับ 5 คะแนน</p>
+                    <p>เริ่มบันทึกเมนูอาหารสุขภาพของคุณได้เลย!</p>
                     <button class="retry-btn" onclick="Navigation.switchTab('record')">
                         <i class="fas fa-utensils"></i>
                         เริ่มบันทึก
