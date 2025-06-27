@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบสอบถามก่อนเข้าร่วมโครงการ กินดี Healthy Life #2</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            padding: 20px 10px;
+        }
+
+        .survey-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4CAF50;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-container {
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .status-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .status-message {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .status-detail {
+            font-size: 14px;
+            color: #666;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .form-content {
+            padding: 30px 20px;
+        }
+
+        .user-info {
+            background: #f0f7ff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .user-info h3 {
+            color: #4CAF50;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .user-info p {
+            margin: 5px 0;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .question-group {
+            margin-bottom: 35px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 30px;
+        }
+
+        .question-group:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .question-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .question-number {
+            color: #4CAF50;
+            font-weight: 700;
+        }
+
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            position: relative;
+        }
+
+        .option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .option label {
+            display: block;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1.4;
+            transition: all 0.3s ease;
+            position: relative;
+            padding-left: 50px;
+        }
+
+        .option input[type="radio"] + label:before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .option input:checked + label {
+            background: #e8f5e8;
+            border-color: #4CAF50;
+            color: #2e7d32;
+        }
+
+        .option input:checked + label:before {
+            background: #4CAF50;
+            border-color: #4CAF50;
+        }
+
+        .option input[type="radio"]:checked + label:after {
+            content: '';
+            position: absolute;
+            left: 21px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: white;
+        }
+
+        .option label:hover {
+            background: #f0f7ff;
+            border-color: #4CAF50;
+        }
+
+        .submit-section {
+            text-align: center;
+            padding: 30px 20px;
+            background: #f8f9fa;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            display: none;
+        }
+
+        .retry-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .error-container {
+            color: #dc3545;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .success-container {
+            color: #28a745;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px 5px;
+            }
+            
+            .header {
+                padding: 25px 15px;
+            }
+            
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .form-content {
+                padding: 25px 15px;
+            }
+            
+            .question-title {
+                font-size: 16px;
+            }
+            
+            .option label {
+                font-size: 15px;
+                padding: 12px 15px 12px 45px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="survey-container">
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-container">
+            <div class="loading-spinner"></div>
+            <p>กำลังตรวจสอบข้อมูล...</p>
+        </div>
+
+        <!-- Already Completed State -->
+        <div id="completedState" class="status-container" style="display: none;">
+            <div class="header">
+                <h1>ขอบคุณสำหรับการเข้าร่วม</h1>
+            </div>
+            <div class="status-icon">✅</div>
+            <div class="status-message">คุณได้ทำแบบสอบถามเรียบร้อยแล้ว</div>
+            <div class="status-detail" id="completedDetails"></div>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="error-container" style="display: none;">
+            <div class="status-icon">❌</div>
+            <div class="status-message">เกิดข้อผิดพลาด</div>
+            <div id="errorMessage"></div>
+            <button class="retry-btn" onclick="initializeLiff()">ลองอีกครั้ง</button>
+        </div>
+
+        <!-- Survey Form -->
+        <div id="surveyForm" style="display: none;">
+            <div class="header">
+                <h1>แบบสอบถามก่อนเข้าร่วมโครงการ กินดี Healthy Life #2</h1>
+                <p>กรุณาตอบคำถามทุกข้อเพื่อให้เราเข้าใจความต้องการของคุณ</p>
+            </div>
+
+            <!-- User Info Display -->
+            <div class="user-info" id="userInfo" style="display: none;">
+                <h3>ข้อมูลผู้ตอบแบบสอบถาม</h3>
+                <p><strong>รหัสพนักงาน:</strong> <span id="userEmpNo">-</span></p>
+                <p><strong>ชื่อ:</strong> <span id="userName">-</span></p>
+                <p><strong>แผนก:</strong> <span id="userDivision">-</span></p>
+                <p><strong>โรงงาน:</strong> <span id="userFactory">-</span></p>
+            </div>
+
+            <form id="healthySurvey" class="form-content">
+                <!-- Question 1 -->
+                <div class="question-group">
+                    <div class="question-title">
+                        <span class="question-number">1.</span> ท่านเคยเข้าร่วมโครงการกินดี Healthy Life หรือไม่
+                    </div>
+                    <div class="option-group">
+                        <div class="option">
+                            <input type="radio" id="q1_yes" name="q1" value="เคย">
+                            <label for="q1_yes">เคย</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="q1_no" name="q1" value="ไม่เคย">
+                            <label for="q1_no">ไม่เคย</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="question-group">
+                    <div class="question-title">
+                        <span class="question-number">2.</span> เหตุผลที่ท่านเข้าร่วมโครงการกินดี Healthy Life #2
+                    </div>
+                    <div class="option-group">
+                        <div class="option">
+                            <input type="radio" id="q2_improve" name="q2" value="ปรับพฤติกรรมการกินของตนเอง เพื่อดูแลสุขภาพ ให้ดียิ่งขึ้น">
+                            <label for="q2_improve">ปรับพฤติกรรมการกินของตนเอง เพื่อดูแลสุขภาพ ให้ดียิ่งขึ้น</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="q2_join" name="q2" value="ได้เข้าร่วมกิจกรรมของบริษัท">
+                            <label for="q2_join">ได้เข้าร่วมกิจกรรมของบริษัท</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="q2_reward" name="q2" value="อยากได้ของรางวัล">
+                            <label for="q2_reward">อยากได้ของรางวัล</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="question-group">
+                    <div class="question-title">
+                        <span class="question-number">3.</span> ท่านคาดหวังให้สุขภาพท่านดีขึ้นอย่างไร หลังจากการเข้าร่วมโครงการฯ
+                    </div>
+                    <div class="option-group">
+                        <div class="option">
+                            <input type="radio" id="q3_knowledge" name="q3" value="ไม่คาดหวังเนื่องจาก ไม่มีปัญหาด้านสุขภาพ">
+                            <label for="q3_knowledge">ไม่คาดหวังเนื่องจาก ไม่มีปัญหาด้านสุขภาพ</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="q3_habits" name="q3" value="สร้างนิสัยไม่มีปัญหาด้านสุขภาพในอนาคต">
+                            <label for="q3_habits">สร้างนิสัยไม่มีปัญหาด้านสุขภาพในอนาคต</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="q3_nutrition" name="q3" value="ให้สุขภาพดีขึ้น จากการปรับพฤติกรรมการกิน เพียงอย่างเดียว">
+                            <label for="q3_nutrition">ให้สุขภาพดีขึ้น จากการปรับพฤติกรรมการกิน เพียงอย่างเดียว</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="q3_lifestyle" name="q3" value="ให้สุขภาพดีขึ้น โดยปรับพฤติกรรมการกิน และออกกำลังกายควบคู่ไปด้วย">
+                            <label for="q3_lifestyle">ให้สุขภาพดีขึ้น โดยปรับพฤติกรรมการกิน และออกกำลังกายควบคู่ไปด้วย</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="q3_rewards" name="q3" value="รับรางวัลจากการเข้าร่วมโครงการฯ">
+                            <label for="q3_rewards">รับรางวัลจากการเข้าร่วมโครงการฯ</label>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div class="submit-section">
+                <button type="submit" class="submit-btn" id="submitBtn" onclick="submitSurvey()" disabled>ส่งแบบสอบถาม</button>
+            </div>
+        </div>
+
+        <!-- Success State -->
+        <div id="successState" class="success-container" style="display: none;">
+            <div class="status-icon">🎉</div>
+            <div class="status-message">ส่งแบบสอบถามสำเร็จ!</div>
+            <div class="status-detail">ขอบคุณสำหรับการตอบแบบสอบถาม เราจะนำข้อมูลไปใช้ในการพัฒนาโครงการต่อไป</div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const LIFF_ID = '2004752543-lgDEqXnG';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec'; // เปลี่ยนเป็น URL จริงของ Google Apps Script
+        
+        let currentUserId = null;
+        let userInfo = null;
+
+        // Initialize LIFF
+        async function initializeLiff() {
+            try {
+                showLoading();
+                
+                await liff.init({ liffId: LIFF_ID });
+                
+                if (!liff.isLoggedIn()) {
+                    liff.login();
+                    return;
+                }
+
+                // Get user profile
+                const profile = await liff.getProfile();
+                currentUserId = profile.userId;
+                console.log('User ID:', currentUserId);
+
+                // Check if user already completed survey
+                await checkSurveyStatus();
+                
+            } catch (error) {
+                console.error('LIFF initialization failed', error);
+                showError('ไม่สามารถเชื่อมต่อกับระบบได้ กรุณาลองใหม่อีกครั้ง');
+            }
+        }
+
+        // Check if user already completed survey
+        async function checkSurveyStatus() {
+            try {
+                const response = await fetch(`${API_URL}?action=checkSurveyStatus&uid=${currentUserId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.hasResponded) {
+                        // User already completed survey
+                        showCompletedState(data.responseData);
+                    } else {
+                        // User hasn't completed survey, get user info and show form
+                        await getUserInfo();
+                    }
+                } else {
+                    showError(data.message || 'ไม่สามารถตรวจสอบสถานะได้');
+                }
+            } catch (error) {
+                console.error('Error checking survey status:', error);
+                showError('เกิดข้อผิดพลาดในการตรวจสอบข้อมูล');
+            }
+        }
+
+        // Get user information
+        async function getUserInfo() {
+            try {
+                const response = await fetch(`${API_URL}?action=getUserInfoByUID&uid=${currentUserId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    userInfo = data;
+                    showSurveyForm();
+                } else {
+                    showError('ไม่พบข้อมูลผู้ใช้ในระบบ กรุณาติดต่อผู้ดูแลระบบ');
+                }
+            } catch (error) {
+                console.error('Error getting user info:', error);
+                showError('ไม่สามารถดึงข้อมูลผู้ใช้ได้');
+            }
+        }
+
+        // Show different states
+        function showLoading() {
+            hideAllStates();
+            document.getElementById('loadingState').style.display = 'flex';
+        }
+
+        function showCompletedState(responseData) {
+            hideAllStates();
+            
+            const completedDetails = document.getElementById('completedDetails');
+            completedDetails.innerHTML = `
+                <strong>วันที่ตอบ:</strong> ${new Date(responseData.timestamp).toLocaleString('th-TH')}<br>
+                <strong>คำตอบของคุณ:</strong><br>
+                1. ${responseData.ans1}<br>
+                2. ${responseData.ans2}<br>
+                3. ${responseData.ans3}
+            `;
+            
+            document.getElementById('completedState').style.display = 'block';
+        }
+
+        function showSurveyForm() {
+            hideAllStates();
+            
+            // Show user info if available
+            if (userInfo) {
+                document.getElementById('userEmpNo').textContent = userInfo.empNo || '-';
+                document.getElementById('userName').textContent = userInfo.name || '-';
+                document.getElementById('userDivision').textContent = userInfo.division || '-';
+                document.getElementById('userFactory').textContent = userInfo.factory || '-';
+                document.getElementById('userInfo').style.display = 'block';
+            }
+            
+            document.getElementById('surveyForm').style.display = 'block';
+            checkAllAnswered(); // Initial check
+        }
+
+        function showError(message) {
+            hideAllStates();
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorState').style.display = 'block';
+        }
+
+        function showSuccess() {
+            hideAllStates();
+            document.getElementById('successState').style.display = 'block';
+        }
+
+        function hideAllStates() {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('completedState').style.display = 'none';
+            document.getElementById('errorState').style.display = 'none';
+            document.getElementById('surveyForm').style.display = 'none';
+            document.getElementById('successState').style.display = 'none';
+        }
+
+        // Check if all questions are answered
+        function checkAllAnswered() {
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
+            const q3 = document.querySelector('input[name="q3"]:checked');
+            
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (q1 && q2 && q3) {
+                submitBtn.disabled = false;
+                submitBtn.style.display = 'inline-block';
+            } else {
+                submitBtn.disabled = true;
+                submitBtn.style.display = 'none';
+            }
+        }
+
+        // Submit survey
+        async function submitSurvey() {
+            try {
+                const form = document.getElementById('healthySurvey');
+                const formData = new FormData(form);
+                
+                const responses = {
+                    ans1: formData.get('q1'),
+                    ans2: formData.get('q2'),
+                    ans3: formData.get('q3')
+                };
+
+                showLoading();
+
+                const response = await fetch(`${API_URL}?action=saveSurveyResponse&uid=${currentUserId}&ans1=${encodeURIComponent(responses.ans1)}&ans2=${encodeURIComponent(responses.ans2)}&ans3=${encodeURIComponent(responses.ans3)}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    showSuccess();
+                    console.log('Survey submitted successfully:', data);
+                } else {
+                    showError(data.message || 'ไม่สามารถบันทึกข้อมูลได้');
+                }
+                
+            } catch (error) {
+                console.error('Error submitting survey:', error);
+                showError('เกิดข้อผิดพลาดในการส่งข้อมูล');
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('change', function(e) {
+            if (e.target.type === 'radio') {
+                e.target.closest('.option').style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    e.target.closest('.option').style.transform = 'scale(1)';
+                }, 150);
+                
+                checkAllAnswered();
+            }
+        });
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeLiff();
+        });
+    </script>
+</body>
+</html>
