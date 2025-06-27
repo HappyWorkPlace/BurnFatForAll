@@ -1849,16 +1849,17 @@ const LIFF = {
         }
         
         if (typeof liff === 'undefined') {
-            throw new Error('LIFF SDK is not defined');
+            console.error('LIFF SDK is not defined');
+            this.handleError('LIFF SDK ไม่พร้อมใช้งาน');
+            return;
         }
-
+        
         // Set initialization timeout
         const timeoutPromise = new Promise((_, reject) => {
             setTimeout(() => reject(new Error('LIFF initialization timeout')), CONFIG.INIT_TIMEOUT);
         });
-
         const liffPromise = liff.init({ liffId: CONFIG.LIFF_ID });
-
+        
         try {
             await Promise.race([liffPromise, timeoutPromise]);
             console.log('LIFF initialized successfully');
@@ -1872,7 +1873,7 @@ const LIFF = {
             }
         } catch (error) {
             console.error('LIFF Initialization failed:', error);
-            this.handleError(MESSAGES.LIFF_ERROR);
+            this.handleError('ไม่สามารถเชื่อมต่อ LINE ได้');
         }
     },
 
@@ -1895,25 +1896,126 @@ const LIFF = {
     },
 
     handleError(message) {
+        console.error('LIFF Error:', message);
         UI.hideLoadingScreen();
         
-        Swal.fire({
-            title: 'ไม่สามารถเชื่อมต่อ LINE ได้',
-            html: `
-                <p>${message}</p>
-                <div style="margin-top: 15px; padding: 10px; background: #f3f4f6; border-radius: 8px; font-size: 0.85rem;">
-                    <strong>วิธีแก้ไข:</strong><br>
-                    1. เปิดแอปใน LINE Browser<br>
-                    2. ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต<br>
-                    3. ลองปิดแล้วเปิดใหม่
+        // แสดงหน้า error แทนการ popup
+        this.showErrorPage(message);
+    },
+
+    showErrorPage(message) {
+        const app = document.getElementById('app');
+        if (app) {
+            app.innerHTML = `
+                <div class="error-container">
+                    <div class="error-content">
+                        <div class="error-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h2>ไม่สามารถเชื่อมต่อได้</h2>
+                        <p class="error-message">${message}</p>
+                        <div class="error-instructions">
+                            <h4>วิธีแก้ไข:</h4>
+                            <ul>
+                                <li>เปิดแอปใน LINE Browser</li>
+                                <li>ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</li>
+                                <li>ลองปิดแล้วเปิดใหม่</li>
+                            </ul>
+                        </div>
+                        <button class="retry-button" onclick="location.reload()">
+                            <i class="fas fa-redo-alt"></i>
+                            ลองใหม่
+                        </button>
+                    </div>
                 </div>
-            `,
-            icon: 'warning',
-            confirmButtonText: 'ลองใหม่',
-            confirmButtonColor: '#10b981'
-        }).then(() => {
-            location.reload();
-        });
+                
+                <style>
+                .error-container {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 100vh;
+                    padding: 20px;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                }
+                
+                .error-content {
+                    background: white;
+                    padding: 40px 30px;
+                    border-radius: 16px;
+                    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+                    text-align: center;
+                    max-width: 400px;
+                    width: 100%;
+                }
+                
+                .error-icon {
+                    font-size: 60px;
+                    color: #f59e0b;
+                    margin-bottom: 20px;
+                }
+                
+                .error-content h2 {
+                    color: #1f2937;
+                    margin-bottom: 15px;
+                    font-size: 24px;
+                }
+                
+                .error-message {
+                    color: #6b7280;
+                    margin-bottom: 25px;
+                    font-size: 16px;
+                }
+                
+                .error-instructions {
+                    background: #f9fafb;
+                    padding: 20px;
+                    border-radius: 12px;
+                    margin-bottom: 25px;
+                    text-align: left;
+                }
+                
+                .error-instructions h4 {
+                    color: #374151;
+                    margin-bottom: 10px;
+                    font-size: 16px;
+                }
+                
+                .error-instructions ul {
+                    color: #6b7280;
+                    margin: 0;
+                    padding-left: 20px;
+                }
+                
+                .error-instructions li {
+                    margin-bottom: 5px;
+                    font-size: 14px;
+                }
+                
+                .retry-button {
+                    background: #10b981;
+                    color: white;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    cursor: pointer;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    transition: background-color 0.2s;
+                }
+                
+                .retry-button:hover {
+                    background: #059669;
+                }
+                
+                .retry-button i {
+                    font-size: 14px;
+                }
+                </style>
+            `;
+        }
     }
 };
 
