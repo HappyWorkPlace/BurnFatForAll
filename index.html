@@ -2638,7 +2638,7 @@ const History = {
             const dateTime = Utils.formatDateTime(record.TimeStamp);
             const menu = record.Menu || 'ไม่ระบุเมนู';
             // คำนวณหมายเลขรายการจากล่าสุดมาแรกสุด
-            const recordNumber = startIndex + index + 1;
+            const recordNumber = totalRecords - (startIndex + index);
             
             historyHTML += `
                 <div class="history-item">
