@@ -322,8 +322,21 @@
             <div class="status-icon">❌</div>
             <div class="status-message">เกิดข้อผิดพลาด</div>
             <div id="errorMessage"></div>
-            <button class="retry-btn" onclick="initializeLiff()">ลองอีกครั้ง</button>
-            <button class="retry-btn" onclick="debugAPI()" style="background: #dc3545; margin-left: 10px;">Debug</button>
+            <div style="margin-top: 20px;">
+                <button class="retry-btn" onclick="initializeLiff()">ลองอีกครั้ง</button>
+                <button class="retry-btn" onclick="quickTest()" style="background: #28a745; margin-left: 10px;">Quick Test</button>
+                <button class="retry-btn" onclick="debugAPI()" style="background: #dc3545; margin-left: 10px;">Debug</button>
+                <button class="retry-btn" onclick="testAllEndpoints()" style="background: #ffc107; color: #000; margin-left: 10px;">Test All</button>
+            </div>
+            <div style="font-size: 12px; color: #666; margin-top: 15px; text-align: left; background: #f8f9fa; padding: 10px; border-radius: 5px;">
+                <strong>🔧 วิธีแก้ปัญหา:</strong><br>
+                1. กด <strong>Quick Test</strong> เพื่อทดสอบการเชื่อมต่อ API<br>
+                2. กด <strong>F12</strong> เปิด Console เพื่อดู log<br>
+                3. กด <strong>Debug</strong> เพื่อดูข้อมูลละเอียด<br>
+                4. กด <strong>Test All</strong> เพื่อทดสอบ API ทั้งหมด<br>
+                <br>
+                <strong>📝 หมายเหตุ:</strong> ใช้ JSONP เพื่อหลีกเลี่ยง CORS policy
+            </div>
         </div>
 
         <!-- Survey Form -->
@@ -427,7 +440,7 @@
     <script>
         // Configuration
         const LIFF_ID = '2004752543-lgDEqXnG';
-        const API_URL = 'https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbz5j0Xp6HXqm9qmnraGzkgFoOLY2ub6qEt...Eqar_W8/exec'; // ใส่ URL จริงของ Google Apps Script
         
         // Retry configuration
         const MAX_RETRIES = 3;
@@ -543,9 +556,13 @@
         // Get user-friendly error message
         function getErrorMessage(error) {
             if (error.message.includes('Failed to fetch')) {
-                return 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต';
+                return 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ ลองใช้ JSONP แทน';
             } else if (error.message.includes('CORS')) {
-                return 'มีปัญหาเกี่ยวกับการอนุญาตการเข้าถึง';
+                return 'มีปัญหา CORS policy - ใช้ JSONP เพื่อแก้ปัญหา';
+            } else if (error.message.includes('JSONP')) {
+                return 'JSONP request ไม่สำเร็จ - ตรวจสอบ Google Apps Script';
+            } else if (error.message.includes('timeout')) {
+                return 'การเชื่อมต่อใช้เวลานานเกินไป (timeout)';
             } else if (error.message.includes('HTTP error')) {
                 return `เซิร์ฟเวอร์ตอบกลับผิดพลาด (${error.message})`;
             } else {
@@ -665,35 +682,113 @@
                 'Current User ID': currentUserId,
                 'User Info': userInfo,
                 'Is LIFF Ready': typeof liff !== 'undefined',
-                'Is Logged In': typeof liff !== 'undefined' ? liff.isLoggedIn() : 'N/A'
+                'Is Logged In': typeof liff !== 'undefined' ? liff.isLoggedIn() : 'N/A',
+                'Current Domain': window.location.origin,
+                'Method': 'JSONP Only (No CORS)'
             };
             
             console.log('=== DEBUG INFO ===');
             console.table(debugInfo);
             
-            // Test API connection
+            // Test API connection with JSONP only
             if (currentUserId) {
-                console.log('Testing API connection...');
+                console.log('🧪 Testing API connection with JSONP...');
                 const testUrl = `${API_URL}?action=checkSurveyStatus&uid=${currentUserId}`;
-                console.log('Test URL:', testUrl);
+                console.log('🔗 Test URL:', testUrl);
                 
-                fetch(testUrl)
-                    .then(response => {
-                        console.log('API Response Status:', response.status);
-                        return response.text();
-                    })
-                    .then(text => {
-                        console.log('API Raw Response:', text);
-                        try {
-                            const json = JSON.parse(text);
-                            console.log('API Parsed Response:', json);
-                        } catch (e) {
-                            console.error('Failed to parse JSON:', e);
-                        }
+                jsonp(testUrl)
+                    .then(data => {
+                        console.log('🎉 JSONP Success - API is working!');
+                        console.log('📊 Response Data:', data);
+                        alert('✅ API Connection Successful!\n\nResponse: ' + JSON.stringify(data, null, 2));
                     })
                     .catch(error => {
-                        console.error('API Test Failed:', error);
+                        console.error('💥 JSONP Failed:', error);
+                        alert('❌ API Connection Failed!\n\nError: ' + error.message + '\n\nCheck console for details.');
                     });
+            } else {
+                console.warn('⚠️ No User ID available for testing');
+                alert('⚠️ Cannot test API - No User ID available\n\nTry initializing LIFF first.');
+            }
+        }
+
+        // Test all endpoints with JSONP
+        function testAllEndpoints() {
+            if (!currentUserId) {
+                console.error('❌ No user ID available');
+                alert('❌ Cannot test - No User ID available');
+                return;
+            }
+            
+            const endpoints = [
+                { 
+                    name: 'checkSurveyStatus', 
+                    url: `${API_URL}?action=checkSurveyStatus&uid=${currentUserId}`,
+                    description: 'ตรวจสอบสถานะแบบสอบถาม'
+                },
+                { 
+                    name: 'getUserInfoByUID', 
+                    url: `${API_URL}?action=getUserInfoByUID&uid=${currentUserId}`,
+                    description: 'ดึงข้อมูลผู้ใช้'
+                },
+                { 
+                    name: 'getUserData2', 
+                    url: `${API_URL}?action=getUserData2&uid=${currentUserId}`,
+                    description: 'ดึงข้อมูลผู้ใช้ (แบบเดิม)'
+                }
+            ];
+            
+            console.log('🧪 === Testing All Endpoints with JSONP ===');
+            
+            let testResults = [];
+            let completedTests = 0;
+            
+            endpoints.forEach((endpoint, index) => {
+                console.log(`🔄 Testing ${endpoint.name}...`);
+                
+                setTimeout(() => {
+                    jsonp(endpoint.url)
+                        .then(data => {
+                            const result = `✅ ${endpoint.name}: Success`;
+                            console.log(result, data);
+                            testResults.push(`${result}\n${endpoint.description}\nResponse: ${JSON.stringify(data).substring(0, 100)}...`);
+                        })
+                        .catch(error => {
+                            const result = `❌ ${endpoint.name}: Failed`;
+                            console.error(result, error);
+                            testResults.push(`${result}\n${endpoint.description}\nError: ${error.message}`);
+                        })
+                        .finally(() => {
+                            completedTests++;
+                            if (completedTests === endpoints.length) {
+                                // Show results when all tests complete
+                                setTimeout(() => {
+                                    alert('🧪 API Test Results:\n\n' + testResults.join('\n\n---\n\n'));
+                                }, 500);
+                            }
+                        });
+                }, index * 1000); // Delay each test by 1 second
+            });
+        }
+
+        // Quick test function for immediate feedback
+        function quickTest() {
+            if (!currentUserId) {
+                // Test with a dummy UID for API availability
+                const testUrl = `${API_URL}?action=checkSurveyStatus&uid=test123`;
+                console.log('🚀 Quick API Test (without real UID):', testUrl);
+                
+                jsonp(testUrl)
+                    .then(data => {
+                        console.log('✅ API is responding:', data);
+                        alert('✅ API is working!\n\nThe server is responding to requests.');
+                    })
+                    .catch(error => {
+                        console.error('❌ API not responding:', error);
+                        alert('❌ API connection failed!\n\nError: ' + error.message);
+                    });
+            } else {
+                debugAPI();
             }
         }
 
@@ -714,8 +809,11 @@
             initializeLiff();
         });
 
-        // Make debug function available globally
+        // Make all debug functions available globally
         window.debugAPI = debugAPI;
+        window.testAllEndpoints = testAllEndpoints;
+        window.quickTest = quickTest;
+        window.jsonp = jsonp; // For manual testing in console
     </script>
 </body>
 </html>
