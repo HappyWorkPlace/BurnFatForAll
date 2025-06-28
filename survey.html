@@ -323,6 +323,7 @@
             <div class="status-message">เกิดข้อผิดพลาด</div>
             <div id="errorMessage"></div>
             <button class="retry-btn" onclick="initializeLiff()">ลองอีกครั้ง</button>
+            <button class="retry-btn" onclick="debugAPI()" style="background: #dc3545; margin-left: 10px;">Debug</button>
         </div>
 
         <!-- Survey Form -->
@@ -426,10 +427,49 @@
     <script>
         // Configuration
         const LIFF_ID = '2004752543-lgDEqXnG';
-        const API_URL = 'https://script.google.com/macros/s/AKfycbz5i0Xp6HXqm9gmnraGzkgFoQOLY2ub6qEthUOFRn7yoLabUd3vkfl2VimiEqar_W8/exec'; // เปลี่ยนเป็น URL จริงของ Google Apps Script
+        const API_URL = 'https://script.google.com/macros/s/AKfycbz5j0Xp6HXqm9qmnraGzkgFoOLY2ub6qEt...Eqar_W8/exec'; // ใส่ URL จริงของ Google Apps Script
+        
+        // Retry configuration
+        const MAX_RETRIES = 3;
+        const RETRY_DELAY = 2000;
         
         let currentUserId = null;
         let userInfo = null;
+
+        // API call with retry mechanism
+        async function apiCall(url, retries = MAX_RETRIES) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    console.log(`API Call attempt ${i + 1}: ${url}`);
+                    
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        mode: 'cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('API Response:', data);
+                    return data;
+                    
+                } catch (error) {
+                    console.error(`API call failed (attempt ${i + 1}):`, error);
+                    
+                    if (i === retries - 1) {
+                        throw error;
+                    }
+                    
+                    // Wait before retry
+                    await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+                }
+            }
+        }
 
         // Initialize LIFF
         async function initializeLiff() {
@@ -460,8 +500,8 @@
         // Check if user already completed survey
         async function checkSurveyStatus() {
             try {
-                const response = await fetch(`${API_URL}?action=checkSurveyStatus&uid=${currentUserId}`);
-                const data = await response.json();
+                const url = `${API_URL}?action=checkSurveyStatus&uid=${currentUserId}`;
+                const data = await apiCall(url);
                 
                 if (data.success) {
                     if (data.hasResponded) {
@@ -476,15 +516,16 @@
                 }
             } catch (error) {
                 console.error('Error checking survey status:', error);
-                showError('เกิดข้อผิดพลาดในการตรวจสอบข้อมูล');
+                const errorMsg = getErrorMessage(error);
+                showError(`เกิดข้อผิดพลาดในการตรวจสอบข้อมูล: ${errorMsg}`);
             }
         }
 
         // Get user information
         async function getUserInfo() {
             try {
-                const response = await fetch(`${API_URL}?action=getUserInfoByUID&uid=${currentUserId}`);
-                const data = await response.json();
+                const url = `${API_URL}?action=getUserInfoByUID&uid=${currentUserId}`;
+                const data = await apiCall(url);
                 
                 if (data.success) {
                     userInfo = data;
@@ -494,7 +535,21 @@
                 }
             } catch (error) {
                 console.error('Error getting user info:', error);
-                showError('ไม่สามารถดึงข้อมูลผู้ใช้ได้');
+                const errorMsg = getErrorMessage(error);
+                showError(`ไม่สามารถดึงข้อมูลผู้ใช้ได้: ${errorMsg}`);
+            }
+        }
+
+        // Get user-friendly error message
+        function getErrorMessage(error) {
+            if (error.message.includes('Failed to fetch')) {
+                return 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต';
+            } else if (error.message.includes('CORS')) {
+                return 'มีปัญหาเกี่ยวกับการอนุญาตการเข้าถึง';
+            } else if (error.message.includes('HTTP error')) {
+                return `เซิร์ฟเวอร์ตอบกลับผิดพลาด (${error.message})`;
+            } else {
+                return error.message || 'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ';
             }
         }
 
@@ -585,8 +640,8 @@
 
                 showLoading();
 
-                const response = await fetch(`${API_URL}?action=saveSurveyResponse&uid=${currentUserId}&ans1=${encodeURIComponent(responses.ans1)}&ans2=${encodeURIComponent(responses.ans2)}&ans3=${encodeURIComponent(responses.ans3)}`);
-                const data = await response.json();
+                const url = `${API_URL}?action=saveSurveyResponse&uid=${currentUserId}&ans1=${encodeURIComponent(responses.ans1)}&ans2=${encodeURIComponent(responses.ans2)}&ans3=${encodeURIComponent(responses.ans3)}`;
+                const data = await apiCall(url);
                 
                 if (data.success) {
                     showSuccess();
@@ -597,7 +652,48 @@
                 
             } catch (error) {
                 console.error('Error submitting survey:', error);
-                showError('เกิดข้อผิดพลาดในการส่งข้อมูล');
+                const errorMsg = getErrorMessage(error);
+                showError(`เกิดข้อผิดพลาดในการส่งข้อมูล: ${errorMsg}`);
+            }
+        }
+
+        // Debug function to test API connection
+        function debugAPI() {
+            const debugInfo = {
+                'LIFF ID': LIFF_ID,
+                'API URL': API_URL,
+                'Current User ID': currentUserId,
+                'User Info': userInfo,
+                'Is LIFF Ready': typeof liff !== 'undefined',
+                'Is Logged In': typeof liff !== 'undefined' ? liff.isLoggedIn() : 'N/A'
+            };
+            
+            console.log('=== DEBUG INFO ===');
+            console.table(debugInfo);
+            
+            // Test API connection
+            if (currentUserId) {
+                console.log('Testing API connection...');
+                const testUrl = `${API_URL}?action=checkSurveyStatus&uid=${currentUserId}`;
+                console.log('Test URL:', testUrl);
+                
+                fetch(testUrl)
+                    .then(response => {
+                        console.log('API Response Status:', response.status);
+                        return response.text();
+                    })
+                    .then(text => {
+                        console.log('API Raw Response:', text);
+                        try {
+                            const json = JSON.parse(text);
+                            console.log('API Parsed Response:', json);
+                        } catch (e) {
+                            console.error('Failed to parse JSON:', e);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('API Test Failed:', error);
+                    });
             }
         }
 
@@ -617,6 +713,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             initializeLiff();
         });
+
+        // Make debug function available globally
+        window.debugAPI = debugAPI;
     </script>
 </body>
 </html>
