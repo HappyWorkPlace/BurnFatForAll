@@ -5,299 +5,399 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แบบสอบถามก่อนเข้าร่วมโครงการ กินดี Healthy Life #2</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<style>
+    * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #ffffff;
-            min-height: 100vh;
-            padding: 20px 10px;
-        }
+body {
+    font-family: 'Segoe UI', 'Sukhumvit Set', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f5f7fa;
+    min-height: 100vh;
+    padding: 15px;
+    color: #2c3e50;
+    line-height: 1.6;
+}
 
-        .survey-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
+.survey-container {
+    max-width: 650px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    overflow: hidden;
+    border: 1px solid #e1e8ed;
+}
 
-        .header {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-        }
+.header {
+    background: #34495e;
+    color: white;
+    padding: 35px 25px;
+    text-align: center;
+    border-bottom: 3px solid #2c3e50;
+}
 
-        .header h1 {
-            font-size: 22px;
-            font-weight: 600;
-            line-height: 1.4;
-            margin-bottom: 10px;
-        }
+.header h1 {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.4;
+    margin-bottom: 8px;
+    letter-spacing: 0.3px;
+}
 
-        .header p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
+.header p {
+    font-size: 13px;
+    opacity: 0.85;
+    font-weight: 300;
+}
 
-        .loading-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 60px 20px;
-            text-align: center;
-        }
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+}
 
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #4CAF50;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #ecf0f1;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1.2s linear infinite;
+    margin-bottom: 20px;
+}
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 
-        .status-container {
-            padding: 40px 20px;
-            text-align: center;
-        }
+.status-container {
+    padding: 45px 25px;
+    text-align: center;
+}
 
-        .status-icon {
-            font-size: 60px;
-            margin-bottom: 20px;
-        }
+.status-icon {
+    font-size: 50px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-        .status-message {
-            font-size: 18px;
-            color: #333;
-            margin-bottom: 20px;
-        }
+.status-icon img {
+    max-width: 50px;
+    max-height: 50px;
+    object-fit: contain;
+}
 
-        .status-detail {
-            font-size: 14px;
-            color: #666;
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
+.status-message {
+    font-size: 18px;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
 
-        .form-content {
-            padding: 30px 20px;
-        }
+.status-detail {
+    font-size: 14px;
+    color: #5a6c7d;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 6px;
+    margin-top: 20px;
+    border-left: 3px solid #3498db;
+    text-align: left;
+    line-height: 1.5;
+}
 
-        .user-info {
-            background: #f0f7ff;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-            border-left: 4px solid #4CAF50;
-        }
+.status-detail h4 {
+    color: #2c3e50;
+    margin-bottom: 12px;
+    font-size: 15px;
+    font-weight: 600;
+}
 
-        .user-info h3 {
-            color: #4CAF50;
-            margin-bottom: 10px;
-            font-size: 16px;
-        }
+.status-detail p {
+    margin: 8px 0;
+}
 
-        .user-info p {
-            margin: 5px 0;
-            color: #333;
-            font-size: 14px;
-        }
+.status-detail hr {
+    margin: 15px 0;
+    border: none;
+    border-top: 1px solid #ddd;
+}
 
-        .question-group {
-            margin-bottom: 35px;
-            border-bottom: 1px solid #f0f0f0;
-            padding-bottom: 30px;
-        }
+.form-content {
+    padding: 30px 25px;
+}
 
-        .question-group:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-        }
+.user-info {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 6px;
+    margin-bottom: 30px;
+    border-left: 3px solid #3498db;
+}
 
-        .question-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
+.user-info h3 {
+    color: #2c3e50;
+    margin-bottom: 12px;
+    font-size: 15px;
+    font-weight: 600;
+}
 
-        .question-number {
-            color: #4CAF50;
-            font-weight: 700;
-        }
+.user-info p {
+    margin: 6px 0;
+    color: #5a6c7d;
+    font-size: 14px;
+}
 
-        .option-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+.user-info strong {
+    color: #2c3e50;
+    font-weight: 500;
+}
 
-        .option {
-            position: relative;
-        }
+.question-group {
+    margin-bottom: 35px;
+    border-bottom: 1px solid #e1e8ed;
+    padding-bottom: 30px;
+}
 
-        .option input[type="radio"] {
-            position: absolute;
-            opacity: 0;
-            cursor: pointer;
-        }
+.question-group:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
 
-        .option label {
-            display: block;
-            padding: 15px 20px;
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 16px;
-            line-height: 1.4;
-            transition: all 0.3s ease;
-            position: relative;
-            padding-left: 50px;
-        }
+.question-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
 
-        .option input[type="radio"] + label:before {
-            content: '';
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 20px;
-            height: 20px;
-            border: 2px solid #ddd;
-            border-radius: 50%;
-            background: white;
-            transition: all 0.3s ease;
-        }
+.question-number {
+    color: #3498db;
+    font-weight: 600;
+}
 
-        .option input:checked + label {
-            background: #e8f5e8;
-            border-color: #4CAF50;
-            color: #2e7d32;
-        }
+.option-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
 
-        .option input:checked + label:before {
-            background: #4CAF50;
-            border-color: #4CAF50;
-        }
+.option {
+    position: relative;
+}
 
-        .option input[type="radio"]:checked + label:after {
-            content: '';
-            position: absolute;
-            left: 21px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: white;
-        }
+.option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
 
-        .option label:hover {
-            background: #f0f7ff;
-            border-color: #4CAF50;
-        }
+.option label {
+    display: block;
+    padding: 14px 18px;
+    background: #ffffff;
+    border: 1px solid #d5dbdb;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1.4;
+    transition: all 0.2s ease;
+    position: relative;
+    padding-left: 45px;
+}
 
-        .submit-section {
-            text-align: center;
-            padding: 30px 20px;
-            background: #f8f9fa;
-        }
+.option input[type="radio"] + label:before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    border: 1px solid #bdc3c7;
+    border-radius: 50%;
+    background: white;
+    transition: all 0.2s ease;
+}
 
-        .submit-btn {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 18px;
-            font-weight: 600;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
-        }
+.option input:checked + label {
+    background: #ebf3fd;
+    border-color: #3498db;
+    color: #2c3e50;
+}
 
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
-        }
+.option input:checked + label:before {
+    background: #3498db;
+    border-color: #3498db;
+}
 
-        .submit-btn:active {
-            transform: translateY(0);
-        }
+.option input[type="radio"]:checked + label:after {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+}
 
-        .submit-btn:disabled {
-            display: none;
-        }
+.option label:hover {
+    background: #f8f9fa;
+    border-color: #3498db;
+}
 
-        .retry-btn {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            font-size: 16px;
-            border-radius: 25px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
+.submit-section {
+    text-align: center;
+    padding: 30px 25px;
+    background: #f8f9fa;
+    border-top: 1px solid #e1e8ed;
+}
 
-        .error-container {
-            color: #dc3545;
-            text-align: center;
-            padding: 40px 20px;
-        }
+.submit-btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 14px 35px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.3px;
+}
 
-        .success-container {
-            color: #28a745;
-            text-align: center;
-            padding: 40px 20px;
-        }
+.submit-btn:hover {
+    background: #2980b9;
+    transform: translateY(-1px);
+}
 
-        @media (max-width: 480px) {
-            body {
-                padding: 10px 5px;
-            }
-            
-            .header {
-                padding: 25px 15px;
-            }
-            
-            .header h1 {
-                font-size: 20px;
-            }
-            
-            .form-content {
-                padding: 25px 15px;
-            }
-            
-            .question-title {
-                font-size: 16px;
-            }
-            
-            .option label {
-                font-size: 15px;
-                padding: 12px 15px 12px 45px;
-            }
-        }
-    </style>
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+.submit-btn:disabled {
+    display: none;
+}
+
+.retry-btn {
+    background: #95a5a6;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 8px 5px;
+    transition: all 0.2s ease;
+}
+
+.retry-btn:hover {
+    background: #7f8c8d;
+}
+
+.error-container {
+    color: #e74c3c;
+    text-align: center;
+    padding: 40px 25px;
+}
+
+.success-container {
+    color: #27ae60;
+    text-align: center;
+    padding: 40px 25px;
+}
+
+/* โทนสีสำหรับปุ่ม debug */
+.retry-btn[onclick*="quickTest"] {
+    background: #27ae60;
+}
+
+.retry-btn[onclick*="quickTest"]:hover {
+    background: #229954;
+}
+
+.retry-btn[onclick*="debugAPI"] {
+    background: #e74c3c;
+}
+
+.retry-btn[onclick*="debugAPI"]:hover {
+    background: #c0392b;
+}
+
+.retry-btn[onclick*="testAllEndpoints"] {
+    background: #f39c12;
+    color: #2c3e50;
+}
+
+.retry-btn[onclick*="testAllEndpoints"]:hover {
+    background: #e67e22;
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 8px;
+    }
+    
+    .header {
+        padding: 25px 20px;
+    }
+    
+    .header h1 {
+        font-size: 18px;
+    }
+    
+    .form-content {
+        padding: 25px 20px;
+    }
+    
+    .question-title {
+        font-size: 15px;
+    }
+    
+    .option label {
+        font-size: 13px;
+        padding: 12px 15px 12px 40px;
+    }
+    
+    .submit-section {
+        padding: 25px 20px;
+    }
+    
+    .submit-btn {
+        padding: 12px 30px;
+        font-size: 15px;
+    }
+}
+
+/* Typography สำหรับความเป็นทางการ */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 500;
+    letter-spacing: 0.2px;
+}
+
+p, label, span {
+    letter-spacing: 0.1px;
+}
+
+/* เพิ่มความสวยงามให้กับข้อมูลในตารางเล็กน้อย */
+.status-detail p strong {
+    min-width: 120px;
+    display: inline-block;
+}
+</style>
+
 </head>
 <body>
     <div class="survey-container">
@@ -316,29 +416,6 @@
             <div class="status-message">คุณได้ทำแบบสอบถามเรียบร้อยแล้ว</div>
             <div class="status-detail" id="completedDetails"></div>
         </div>
-
-        <!-- Error State -->
-        <div id="errorState" class="error-container" style="display: none;">
-            <div class="status-icon">❌</div>
-            <div class="status-message">เกิดข้อผิดพลาด</div>
-            <div id="errorMessage"></div>
-            <div style="margin-top: 20px;">
-                <button class="retry-btn" onclick="initializeLiff()">ลองอีกครั้ง</button>
-                <button class="retry-btn" onclick="quickTest()" style="background: #28a745; margin-left: 10px;">Quick Test</button>
-                <button class="retry-btn" onclick="debugAPI()" style="background: #dc3545; margin-left: 10px;">Debug</button>
-                <button class="retry-btn" onclick="testAllEndpoints()" style="background: #ffc107; color: #000; margin-left: 10px;">Test All</button>
-            </div>
-            <div style="font-size: 12px; color: #666; margin-top: 15px; text-align: left; background: #f8f9fa; padding: 10px; border-radius: 5px;">
-                <strong>🔧 วิธีแก้ปัญหา:</strong><br>
-                1. กด <strong>Quick Test</strong> เพื่อทดสอบการเชื่อมต่อ API<br>
-                2. กด <strong>F12</strong> เปิด Console เพื่อดู log<br>
-                3. กด <strong>Debug</strong> เพื่อดูข้อมูลละเอียด<br>
-                4. กด <strong>Test All</strong> เพื่อทดสอบ API ทั้งหมด<br>
-                <br>
-                <strong>📝 หมายเหตุ:</strong> ใช้ JSONP เพื่อหลีกเลี่ยง CORS policy
-            </div>
-        </div>
-
         <!-- Survey Form -->
         <div id="surveyForm" style="display: none;">
             <div class="header">
@@ -438,7 +515,7 @@
     </div>
 
     <script>
-  // ==========================================
+// ==========================================
 // กินดี Healthy Life #2 Survey Application
 // ==========================================
 
@@ -745,16 +822,70 @@ async function submitSurvey() {
 function showCompletedState(responseData) {
     showState('completedState');
     
+    // เปลี่ยนเครื่องหมายถูกเป็นรูปภาพ
+    const statusIcon = document.querySelector('#completedState .status-icon');
+    if (statusIcon) {
+        statusIcon.innerHTML = '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/pop3.png" alt="Success" style="width: 60px; height: 60px; object-fit: contain;">';
+    }
+    
     const detailsEl = document.getElementById('completedDetails');
     if (detailsEl && responseData) {
         let detailsHTML = '<h4>คำตอบของท่าน:</h4>';
-        detailsHTML += `<p><strong>คำถามที่ 1:</strong> ${responseData.answer1 || 'ไม่ระบุ'}</p>`;
-        detailsHTML += `<p><strong>คำถามที่ 2:</strong> ${responseData.answer2 || 'ไม่ระบุ'}</p>`;
-        detailsHTML += `<p><strong>คำถามที่ 3:</strong> ${responseData.answer3 || 'ไม่ระบุ'}</p>`;
-        if (responseData.timestamp) {
-            detailsHTML += `<p><strong>วันที่ตอบ:</strong> ${new Date(responseData.timestamp).toLocaleString('th-TH')}</p>`;
+        
+        // แสดงคำตอบจาก responseData โดยตรง โดยตรวจสอบ key ที่เป็นไปได้
+        const ans1 = responseData.ans1 || responseData.answer1 || 'ไม่ระบุ';
+        const ans2 = responseData.ans2 || responseData.answer2 || 'ไม่ระบุ';
+        const ans3 = responseData.ans3 || responseData.answer3 || 'ไม่ระบุ';
+        
+        detailsHTML += `<p><strong>คำถามที่ 1:</strong> ${ans1}</p>`;
+        detailsHTML += `<p><strong>คำถามที่ 2:</strong> ${ans2}</p>`;
+        detailsHTML += `<p><strong>คำถามที่ 3:</strong> ${ans3}</p>`;
+        
+        // แสดงข้อมูลผู้ใช้ถ้ามี
+        if (responseData.name || responseData.empNo) {
+            detailsHTML += '<hr style="margin: 20px 0; border: 1px solid #eee;">';
+            detailsHTML += '<h4>ข้อมูลผู้ตอบ:</h4>';
+            if (responseData.empNo) detailsHTML += `<p><strong>รหัสพนักงาน:</strong> ${responseData.empNo}</p>`;
+            if (responseData.name) detailsHTML += `<p><strong>ชื่อ:</strong> ${responseData.name}</p>`;
+            if (responseData.division) detailsHTML += `<p><strong>แผนก:</strong> ${responseData.division}</p>`;
+            if (responseData.factory) detailsHTML += `<p><strong>โรงงาน:</strong> ${responseData.factory}</p>`;
         }
+        
+        // แสดงวันที่ตอบ
+        if (responseData.timestamp) {
+            let formattedDate = 'ไม่ระบุ';
+            try {
+                // ลองแปลง timestamp หลายรูปแบบ
+                let dateObj;
+                if (responseData.timestamp.includes('/')) {
+                    // รูปแบบ DD/MM/YYYY, HH:MM:SS
+                    const [datePart, timePart] = responseData.timestamp.split(', ');
+                    const [day, month, year] = datePart.split('/');
+                    dateObj = new Date(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${timePart}`);
+                } else {
+                    dateObj = new Date(responseData.timestamp);
+                }
+                
+                if (!isNaN(dateObj.getTime())) {
+                    formattedDate = dateObj.toLocaleString('th-TH', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+                }
+            } catch (error) {
+                console.warn('Date parsing error:', error);
+                formattedDate = responseData.timestamp; // แสดงค่าเดิมถ้าแปลงไม่ได้
+            }
+            detailsHTML += `<p><strong>วันที่ตอบ:</strong> ${formattedDate}</p>`;
+        }
+        
         detailsEl.innerHTML = detailsHTML;
+        
+        console.log('✅ Completed state displayed with data:', responseData);
     }
 }
 
