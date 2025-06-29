@@ -1886,23 +1886,33 @@ const API = {
     }
 },
 
-    // Save food record
-    async saveRedeemData(empNo, factory, selectedFood, name) {
-        console.log('🍽️ Starting saveRedeemData:', { empNo, factory, selectedFood, name });
-        
-        // Validate parameters
-        if (!empNo || !factory || !selectedFood || !name) {
-            throw new Error('Missing required parameters for saveRedeemData');
-        }
-        
-        const params = { 
-            action: 'saveRedeemData',
-            empNo: String(empNo).trim(),
-            factory: String(factory).trim(),
-            selectedFood: String(selectedFood).trim(),
-            name: String(name).trim()
-        }
-    },
+// Save food record
+async saveRedeemData(empNo, factory, selectedFood, name) {
+    console.log('🍽️ Starting saveRedeemData:', { empNo, factory, selectedFood, name });
+    
+    // Validate parameters
+    if (!empNo || !factory || !selectedFood || !name) {
+        throw new Error('Missing required parameters for saveRedeemData');
+    }
+    
+    const params = { 
+        action: 'saveRedeemData',
+        empNo: String(empNo).trim(),
+        factory: String(factory).trim(),
+        selectedFood: String(selectedFood).trim(),
+        name: String(name).trim()
+    };
+    
+    // ⭐ เพิ่มส่วนนี้
+    try {
+        const result = await this.request(params);
+        console.log('✅ saveRedeemData successful:', result);
+        return result;
+    } catch (error) {
+        console.error('💥 saveRedeemData error:', error);
+        throw error;
+    }
+},
 
     // Get gift list
     async getGiftList() {
