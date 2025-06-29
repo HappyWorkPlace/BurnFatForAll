@@ -1630,7 +1630,8 @@ body {
         </div>
     </div>
 
-    <script>
+
+<script>
 /* =================================
    ⚙️ CONSTANTS & CONFIGURATION
    ================================= */
@@ -1752,6 +1753,30 @@ const Utils = {
             }
         }
         return 0;
+    },
+
+    // Check if all required data is loaded
+    isDataReady() {
+        return !!(
+            userData && Array.isArray(userData) && userData.length > 0 &&
+            validFoodList && validFoodList.length > 0 &&
+            giftListData && giftListData.length > 0
+        );
+    },
+
+    // Safe data access
+    safeDataAccess(callback, fallback = null) {
+        try {
+            if (this.isDataReady()) {
+                return callback();
+            } else {
+                console.warn('Data not ready, using fallback');
+                return fallback;
+            }
+        } catch (error) {
+            console.error('Error in safe data access:', error);
+            return fallback;
+        }
     }
 };
 
@@ -2071,17 +2096,49 @@ const User = {
         userPoints = parseInt(parsedData.Point) || 0;
         UI.updatePointsDisplay(userPoints);
         
-        // Load data
-        Promise.all([
-            Food.loadFoodList(),
-            Gift.loadGiftData()
-        ]).then(() => {
+        // Load data sequentially to avoid race conditions
+        this.loadInitialData();
+    },
+
+    async loadInitialData() {
+        try {
+            console.log('Starting sequential data loading...');
+            
+            // Step 1: Load food list first
+            await Food.loadFoodList();
+            console.log('Food list loaded successfully');
+            
+            // Step 2: Load gift data  
+            await Gift.loadGiftData();
+            console.log('Gift data loaded successfully');
+            
+            // Step 3: Update gift buttons after all data is ready
+            Gift.updateGiftButtons(userPoints);
+            console.log('Gift buttons updated');
+            
+            // Step 4: Start UI features
             UI.startAutoScroll();
             UI.hideLoadingScreen();
-        }).catch(error => {
-            console.error('Error loading initial data:', error);
+            
+            console.log('All initialization completed successfully');
+            
+        } catch (error) {
+            console.error('Error during sequential data loading:', error);
             UI.hideLoadingScreen();
-        });
+            
+            // Show user-friendly error
+            Swal.fire({
+                title: 'เกิดข้อผิดพลาด',
+                text: 'ไม่สามารถโหลดข้อมูลได้ กรุณาลองใหม่อีกครั้ง',
+                icon: 'error',
+                confirmButtonText: 'ลองใหม่',
+                confirmButtonColor: '#10b981'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    location.reload();
+                }
+            });
+        }
     },
 
     redirectToRegister() {
@@ -2096,7 +2153,9 @@ const User = {
 const Food = {
     async loadFoodList() {
         try {
+            console.log('Loading food list...');
             const response = await API.getFoodList();
+            
             if (response.success) {
                 validFoodList = response.data.filter(food => 
                     food && food.trim() !== '' && food !== '-'
@@ -2111,7 +2170,7 @@ const Food = {
             console.error('Error fetching food list:', error);
             validFoodList = [];
             this.populateDropdown(validFoodList);
-            throw error;
+            throw error; // Re-throw to let the caller handle it
         }
     },
 
@@ -2302,19 +2361,33 @@ const Gift = {
             }
             
             console.log('Gift data loaded:', giftListData);
-            this.updateGiftButtons(userPoints);
+            // Don't call updateGiftButtons here - let the caller handle it
+            
         } catch (error) {
             console.error('Error loading gift data:', error);
             giftListData = [];
-            this.updateGiftButtons(userPoints);
+            throw error; // Re-throw to let the caller handle it
         }
     },
 
     updateGiftButtons(points = userPoints) {
+        // Validate required data before proceeding
         if (!giftListData || giftListData.length === 0) {
-            console.log('Gift data not loaded yet');
+            console.log('Gift data not ready yet, skipping button update');
             return;
         }
+        
+        if (!userData || !Array.isArray(userData)) {
+            console.log('User data not ready yet, skipping button update');
+            return;
+        }
+        
+        if (!validFoodList || validFoodList.length === 0) {
+            console.log('Food list not ready yet, skipping button update');
+            return;
+        }
+
+        console.log('Updating gift buttons with points:', points);
 
         CONFIG.GIFT_LEVELS.forEach(level => {
             const gift = giftListData.find(g => g.Level === level);
@@ -2474,8 +2547,15 @@ const Gift = {
                 // Redirect to check orders
                 window.open('https://liff.line.me/2004752543-O6BZm2yN', '_blank');
                 
-                // Reload gift data
-                this.loadGiftData();
+                // Reload gift data and update buttons
+                try {
+                    await this.loadGiftData();
+                    this.updateGiftButtons(userPoints);
+                    console.log('Gift data reloaded after successful redemption');
+                } catch (error) {
+                    console.error('Error reloading gift data:', error);
+                    // Still show success, but log the error
+                }
             } else {
                 Swal.fire({
                     title: 'ไม่สามารถรับได้',
@@ -2544,7 +2624,14 @@ const UI = {
             }
         });
 
-        Gift.updateGiftButtons(points);
+        // Only update gift buttons if all required data is ready
+        if (giftListData && giftListData.length > 0 && 
+            userData && Array.isArray(userData) && 
+            validFoodList && validFoodList.length > 0) {
+            Gift.updateGiftButtons(points);
+        } else {
+            console.log('Skipping gift button update - data not ready yet');
+        }
     },
 
     updateValidationStatus(inputElement, validation) {
@@ -3004,20 +3091,46 @@ const Navigation = {
    ================================= */
 const App = {
     async initialize() {
-        console.log('App initializing...');
+        console.log('🚀 App initializing...');
         
         try {
-            // Setup event listeners
+            // Setup event listeners first
+            console.log('📋 Setting up event listeners...');
             Navigation.setupEventListeners();
             
             // Initialize LIFF
+            console.log('📱 Initializing LIFF...');
             await LIFF.initialize();
             
-            console.log('App initialized successfully');
+            console.log('✅ App initialized successfully');
         } catch (error) {
-            console.error('App initialization failed:', error);
+            console.error('❌ App initialization failed:', error);
             UI.showErrorAndHideLoading('ไม่สามารถเริ่มต้นแอปได้');
         }
+    },
+
+    // Recovery method for when things go wrong
+    async recover() {
+        console.log('🔄 Attempting to recover app state...');
+        
+        try {
+            if (Utils.isDataReady()) {
+                console.log('Data is ready, updating UI...');
+                Gift.updateGiftButtons(userPoints);
+                UI.startAutoScroll();
+                return true;
+            } else {
+                console.log('Data not ready, attempting reload...');
+                if (userData && userData.length > 0) {
+                    await User.loadInitialData();
+                    return true;
+                }
+            }
+        } catch (error) {
+            console.error('Recovery failed:', error);
+        }
+        
+        return false;
     }
 };
 
@@ -3025,11 +3138,31 @@ const App = {
 window.switchTab = Navigation.switchTab.bind(Navigation);
 window.scrollToGift = UI.scrollToGift.bind(UI);
 window.History = History;
+window.App = App; // Make App available globally for debugging
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', App.initialize);
-window.addEventListener('load', App.initialize);
+window.addEventListener('load', () => {
+    // Fallback initialization if DOMContentLoaded didn't work
+    if (!document.querySelector('.app-container')) {
+        console.log('🔄 Fallback initialization triggered');
+        App.initialize();
+    }
+});
 
-    </script>
+// Add error recovery on window error
+window.addEventListener('error', (event) => {
+    console.error('💥 Window error:', event.error);
+    
+    // Try to recover after a short delay
+    setTimeout(() => {
+        if (window.App && typeof window.App.recover === 'function') {
+            console.log('🔧 Attempting automatic recovery...');
+            window.App.recover();
+        }
+    }, 2000);
+});
+</script>
+
 </body>
 </html>
