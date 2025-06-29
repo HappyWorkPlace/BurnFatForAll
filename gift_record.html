@@ -128,7 +128,7 @@ body {
 .header {
     background: var(--gradient-primary);
     color: var(--white);
-    padding: var(--space-3xl) var(--space-xl) var(--space-2xl);
+    padding: var(--space-2xl) var(--space-xl) var(--space-xl);
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -182,15 +182,15 @@ body {
 
 /* Content */
 .content {
-    padding: var(--space-2xl) var(--space-xl);
+    padding: var(--space-xl) var(--space-lg);
 }
 
 /* User Info Card */
 .user-info-card {
     background: var(--gradient-card);
     border-radius: var(--radius-xl);
-    padding: var(--space-2xl);
-    margin-bottom: var(--space-2xl);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-xl);
     box-shadow: var(--shadow-md);
     border: 1px solid var(--secondary-200);
     position: relative;
@@ -202,31 +202,31 @@ body {
     position: absolute;
     top: 0;
     right: 0;
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
-    border-radius: 0 0 0 80px;
+    border-radius: 0 0 0 60px;
 }
 
 .user-info-header {
     display: flex;
     align-items: center;
-    gap: var(--space-lg);
-    margin-bottom: var(--space-xl);
+    gap: var(--space-md);
+    margin-bottom: 0;
     position: relative;
     z-index: 1;
 }
 
 .user-avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: var(--radius-lg);
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
     background: var(--gradient-primary);
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--white);
-    font-size: var(--text-xl);
+    font-size: var(--text-lg);
     box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
     flex-shrink: 0;
     overflow: hidden;
@@ -236,20 +236,21 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
 }
 
 .user-details h3 {
-    font-size: var(--text-lg);
+    font-size: var(--text-base);
     font-weight: var(--font-semibold);
     color: var(--secondary-800);
     margin-bottom: var(--space-xs);
 }
 
 .user-details p {
-    font-size: var(--text-sm);
+    font-size: var(--text-xs);
     color: var(--secondary-500);
-    margin: 2px 0;
+    margin: 0;
+    line-height: 1.4;
 }
 
 
@@ -409,10 +410,31 @@ body {
         padding: 0;
     }
     
+    .content {
+        padding: var(--space-lg) var(--space-md);
+    }
+    
+    .user-info-card {
+        margin-bottom: var(--space-lg);
+        padding: var(--space-md);
+    }
+    
     .user-info-header {
-        flex-direction: column;
-        text-align: center;
-        gap: var(--space-md);
+        gap: var(--space-sm);
+    }
+    
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: var(--text-base);
+    }
+    
+    .user-details h3 {
+        font-size: var(--text-sm);
+    }
+    
+    .user-details p {
+        font-size: 10px;
     }
     
     .records-table th,
@@ -421,12 +443,17 @@ body {
         font-size: var(--text-xs);
     }
     
-    .header h1 {
-        font-size: var(--text-xl);
+    .header {
+        padding: var(--space-xl) var(--space-md);
     }
     
     .header-icon {
         font-size: 2.5rem;
+        margin-bottom: var(--space-md);
+    }
+    
+    .header h1 {
+        font-size: var(--text-xl);
     }
 }
 
@@ -601,6 +628,9 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function updateUserInfo(userInfo, profilePicture = null) {
+        console.log('🔄 Updating user info:', userInfo);
+        console.log('📸 Profile picture URL:', profilePicture);
+        
         // Update header
         userNameElement.textContent = userInfo.Name || 'ผู้ใช้';
         userEmpNoElement.textContent = `รหัสพนักงาน: ${userInfo.EmpNo || '-'}`;
@@ -614,8 +644,16 @@ document.addEventListener("DOMContentLoaded", function() {
         
         // Update profile picture
         const userAvatar = document.querySelector('.user-avatar');
-        if (profilePicture && userAvatar) {
-            userAvatar.innerHTML = `<img src="${profilePicture}" alt="${userInfo.Name || 'User'}" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\\"fas fa-user\\"></i>';">`;
+        if (userAvatar) {
+            if (profilePicture && profilePicture !== '') {
+                console.log('✅ Setting profile picture');
+                userAvatar.innerHTML = `<img src="${profilePicture}" alt="${userInfo.Name || 'User'}" 
+                    onload="console.log('✅ Profile image loaded successfully')" 
+                    onerror="console.log('❌ Profile image failed to load'); this.style.display='none'; this.parentElement.innerHTML='<i class=\\"fas fa-user\\"></i>';">`;
+            } else {
+                console.log('⚠️ No profile picture URL, using default icon');
+                userAvatar.innerHTML = '<i class="fas fa-user"></i>';
+            }
         }
     }
 
@@ -705,6 +743,19 @@ document.addEventListener("DOMContentLoaded", function() {
             // Check if LIFF SDK is loaded
             if (typeof liff === 'undefined') {
                 console.error('❌ LIFF SDK not loaded');
+                // For testing purposes, show demo data
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    console.log('🧪 Development mode - showing demo data');
+                    const demoUserInfo = {
+                        EmpNo: 'LC046',
+                        Name: 'MR. KUNANON SUKJARUEN',
+                        Division: 'HRA (LPB)',
+                        Factory: 'LOPBURI'
+                    };
+                    updateUserInfo(demoUserInfo, null);
+                    showEmpty();
+                    return;
+                }
                 throw new Error('LIFF SDK not available');
             }
             
@@ -719,6 +770,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 const pictureUrl = profile.pictureUrl;
                 
                 console.log('📋 LINE Profile:', profile);
+                console.log('🆔 User ID:', userId);
+                console.log('🖼️ Picture URL:', pictureUrl);
+                
                 fetchData(userId, pictureUrl);
             } else {
                 console.log('🔐 User not logged in, redirecting to login...');
