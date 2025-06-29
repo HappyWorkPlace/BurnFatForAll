@@ -107,6 +107,7 @@ body {
     overflow-x: hidden;
     font-size: var(--text-base);
     line-height: 1.5;
+    padding-bottom: 200px;
 }
 
 /* =================================
@@ -2295,12 +2296,12 @@ const Food = {
             
             if (response.success) {
                 // Add points and update UI
-                userPoints += 5;
+                userPoints += 1;
                 UI.updatePointsDisplay(userPoints);
                 
                 Swal.fire({
                     title: 'สำเร็จ!',
-                    html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_1.png" alt="success" style="width:100px;height:100px;"><p>บันทึกข้อมูลแล้ว +5 คะแนน</p>',
+                    html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_1.png" alt="success" style="width:100px;height:100px;"><p>บันทึกข้อมูลแล้ว</p>',
                     showConfirmButton: true,
                     confirmButtonText: 'ตกลง'
                 });
