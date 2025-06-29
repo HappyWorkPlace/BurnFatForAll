@@ -244,35 +244,7 @@ body {
     margin: 2px 0;
 }
 
-.info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-lg);
-    position: relative;
-    z-index: 1;
-}
 
-.info-item {
-    background: rgba(16, 185, 129, 0.05);
-    border-radius: var(--radius-md);
-    padding: var(--space-md);
-    border-left: 3px solid var(--primary-500);
-}
-
-.info-label {
-    font-size: var(--text-xs);
-    font-weight: var(--font-semibold);
-    color: var(--primary-600);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: var(--space-xs);
-}
-
-.info-value {
-    font-size: var(--text-sm);
-    font-weight: var(--font-medium);
-    color: var(--secondary-800);
-}
 
 /* Records Section */
 .records-section {
@@ -336,15 +308,9 @@ body {
 }
 
 .level-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-xs);
-    background: var(--gradient-primary);
-    color: var(--white);
-    padding: var(--space-xs) var(--space-md);
-    border-radius: var(--radius-full);
-    font-size: var(--text-xs);
+    font-size: var(--text-sm);
     font-weight: var(--font-semibold);
+    color: var(--secondary-700);
 }
 
 .timestamp {
@@ -433,11 +399,6 @@ body {
     
     body {
         padding: 0;
-    }
-    
-    .info-grid {
-        grid-template-columns: 1fr;
-        gap: var(--space-md);
     }
     
     .user-info-header {
@@ -531,27 +492,11 @@ body {
                         <h3 id="userName">กำลังโหลด...</h3>
                         <p id="userEmpNo">รหัสพนักงาน: -</p>
                         <p id="userDivision">แผนก: -</p>
+                        <p id="userFactory">โรงงาน: -</p>
                     </div>
                 </div>
                 
-                <div class="info-grid">
-                    <div class="info-item">
-                        <div class="info-label">รหัสพนักงาน</div>
-                        <div class="info-value" id="empNo">-</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">โรงงาน</div>
-                        <div class="info-value" id="factory">-</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">ชื่อ-นามสกุล</div>
-                        <div class="info-value" id="name">-</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">แผนก</div>
-                        <div class="info-value" id="division">-</div>
-                    </div>
-                </div>
+
             </div>
 
             <!-- Records Section -->
@@ -608,12 +553,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const tableContainer = document.querySelector('.table-container');
     const tableBody = document.getElementById('recordsTable').querySelector('tbody');
     
-    // User info elements
-    const empNoElement = document.getElementById('empNo');
-    const nameElement = document.getElementById('name');
-    const divisionElement = document.getElementById('division');
-    const factoryElement = document.getElementById('factory');
-    
     // Header user info
     const userNameElement = document.getElementById('userName');
     const userEmpNoElement = document.getElementById('userEmpNo');
@@ -648,28 +587,20 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function updateUserInfo(userInfo) {
-        empNoElement.textContent = userInfo.EmpNo || '-';
-        nameElement.textContent = userInfo.Name || '-';
-        divisionElement.textContent = userInfo.Division || '-';
-        factoryElement.textContent = userInfo.Factory || '-';
-        
         // Update header
         userNameElement.textContent = userInfo.Name || 'ผู้ใช้';
         userEmpNoElement.textContent = `รหัสพนักงาน: ${userInfo.EmpNo || '-'}`;
         userDivisionElement.textContent = `แผนก: ${userInfo.Division || '-'}`;
+        
+        // Add factory info
+        const userFactoryElement = document.getElementById('userFactory');
+        if (userFactoryElement) {
+            userFactoryElement.textContent = `โรงงาน: ${userInfo.Factory || '-'}`;
+        }
     }
 
     function formatLevel(level) {
-        const levelMap = {
-            30: { text: '30 คะแนน', icon: 'fas fa-box-tissue' },
-            60: { text: '60 คะแนน', icon: 'fas fa-umbrella' },
-            90: { text: '90 คะแนน', icon: 'fas fa-box' },
-            120: { text: '120 คะแนน', icon: 'fas fa-shopping-bag' },
-            150: { text: '150 คะแนน', icon: 'fas fa-glass-water' }
-        };
-        
-        const levelInfo = levelMap[level] || { text: `${level} คะแนน`, icon: 'fas fa-gift' };
-        return `<span class="level-badge"><i class="${levelInfo.icon}"></i> ${levelInfo.text}</span>`;
+        return `<span class="level-badge">${level} คะแนน</span>`;
     }
 
     function formatTimestamp(timestamp) {
