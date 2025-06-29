@@ -1830,115 +1830,89 @@ const API = {
     // },
 
     // Check if user already recorded today
-    // ⭐ แก้ไขฟังก์ชันนี้ให้เช็คจาก userData[12] แทนการเรียก API
+// ⭐ แก้ไขฟังก์ชันนี้ให้เช็คจาก userData[12] แทนการเรียก API
     async checkUserColumnJ(uid) {
+    try {
+        // เช็คจาก userData[12] แทนการเรียก API
+        if (!userData || !Array.isArray(userData) || userData.length < 13) {
+            throw new Error('User data not available');
+        }
+        
+        const todayRecorded = userData[12]; // "TRUE" หรือ "FALSE"
+        
+        // ⭐ จัดการเวลาอย่างปลอดภัย
+        let recordedTime = null;
         try {
-            // เช็คจาก userData[12] แทนการเรียก API
-            if (!userData || !Array.isArray(userData) || userData.length < 13) {
-                throw new Error('User data not available');
-            }
-            
-            const todayRecorded = userData[12]; // "TRUE" หรือ "FALSE"
-            
-            // ⭐ จัดการเวลาอย่างปลอดภัย
-            let recordedTime = null;
-            try {
-                if (userData[13]) {
-                    // ถ้า userData[13] เป็น Date object
-                    if (userData[13] instanceof Date) {
-                        recordedTime = userData[13].toISOString();
-                    }
-                    // ถ้า userData[13] เป็น string ที่เป็นวันที่
-                    else if (typeof userData[13] === 'string') {
-                        recordedTime = new Date(userData[13]).toISOString();
-                    }
-                    // ถ้า userData[13] เป็น timestamp
-                    else if (typeof userData[13] === 'number') {
-                        recordedTime = new Date(userData[13]).toISOString();
-                    }
+            if (userData[13]) {
+                // ถ้า userData[13] เป็น Date object
+                if (userData[13] instanceof Date) {
+                    recordedTime = userData[13].toISOString();
                 }
-            } catch (timeError) {
-                console.log('⚠️ Cannot parse time from userData[13]:', userData[13]);
-                recordedTime = new Date().toISOString(); // ใช้เวลาปัจจุบันเป็น fallback
+                // ถ้า userData[13] เป็น string ที่เป็นวันที่
+                else if (typeof userData[13] === 'string') {
+                    recordedTime = new Date(userData[13]).toISOString();
+                }
+                // ถ้า userData[13] เป็น timestamp
+                else if (typeof userData[13] === 'number') {
+                    recordedTime = new Date(userData[13]).toISOString();
+                }
             }
-            
-            // ⭐ แก้ไข Logic ให้ถูกต้อง
-            if (todayRecorded === "TRUE") {
-                return {
-                    success: true,
-                    status: 'TRUE', // สามารถบันทึกได้
-                    message: 'Can record today'
-                };
-            } else {
-                return {
-                    success: true,
-                    status: 'FALSE', // บันทึกไปแล้ว
-                    message: 'Already recorded today',
-                    lastTimestamp: recordedTime || new Date().toISOString()
-                };
-            }
-        } catch (error) {
-            console.error('Error checking user status from userData:', error);
-            
-            // ถ้าเกิด error ให้ fallback ไปเรียก API จริง
-            console.log('🔄 Fallback: เรียก API checkUserColumnJ...');
-            return this.request({ action: 'checkUserColumnJ', uid });
+        } catch (timeError) {
+            console.log('⚠️ Cannot parse time from userData[13]:', userData[13]);
+            recordedTime = new Date().toISOString(); // ใช้เวลาปัจจุบันเป็น fallback
         }
-    },
+        
+        // ⭐ แก้ไข Logic ให้ถูกต้อง
+        if (todayRecorded === "TRUE") {
+            return {
+                success: true,
+                status: 'TRUE', // สามารถบันทึกได้
+                message: 'Can record today'
+            };
+        } else {
+            return {
+                success: true,
+                status: 'FALSE', // บันทึกไปแล้ว
+                message: 'Already recorded today',
+                lastTimestamp: recordedTime || new Date().toISOString()
+            };
+        }
+    } catch (error) {
+        console.error('Error checking user status from userData:', error);
+        
+        // ถ้าเกิด error ให้ fallback ไปเรียก API จริง
+        console.log('🔄 Fallback: เรียก API checkUserColumnJ...');
+        return this.request({ action: 'checkUserColumnJ', uid });
+    }
+},
 
-    // Save food record
-    async saveRedeemData(empNo, factory, selectedFood, name) {
-        console.log('🍽️ Starting saveRedeemData:', { empNo, factory, selectedFood, name });
-        
-        // Validate parameters
-        if (!empNo || !factory || !selectedFood || !name) {
-            throw new Error('Missing required parameters for saveRedeemData');
-        }
-        
-        const params = { 
-            action: 'saveRedeemData',
-            empNo: String(empNo).trim(),
-            factory: String(factory).trim(),
-            selectedFood: String(selectedFood).trim(),
-            name: String(name).trim()
-        };
-        
-        // ⭐ เพิ่มส่วนนี้
-        try {
-            const result = await this.request(params);
-            console.log('✅ saveRedeemData successful:', result);
-            return result;
-        } catch (error) {
-            console.error('💥 saveRedeemData error:', error);
-            throw error;
-        }
-    },
-
-    // Update user status after recording
-    async updateUserStatus(uid, status) {
-        console.log('🔄 Updating user status:', { uid, status });
-        
-        try {
-            const result = await this.request({ 
-                action: 'updateUserStatus', 
-                uid: uid, 
-                status: status,
-                timestamp: new Date().toISOString()
-            });
-            
-            // อัพเดท userData ในหน้าเว็บด้วย
-            if (typeof userData !== 'undefined' && Array.isArray(userData)) {
-                userData[12] = status; // อัพเดทสถานะ
-                userData[13] = new Date().toISOString(); // อัพเดทเวลา
-                console.log('✅ Local userData updated:', { status: userData[12], timestamp: userData[13] });
-            }
-            
-            return result;
-        } catch (error) {
-            console.error('💥 updateUserStatus error:', error);
-            throw error;
-        }
-    },
+// Save food record
+async saveRedeemData(empNo, factory, selectedFood, name) {
+    console.log('🍽️ Starting saveRedeemData:', { empNo, factory, selectedFood, name });
+    
+    // Validate parameters
+    if (!empNo || !factory || !selectedFood || !name) {
+        throw new Error('Missing required parameters for saveRedeemData');
+    }
+    
+    const params = { 
+        action: 'saveRedeemData',
+        empNo: String(empNo).trim(),
+        factory: String(factory).trim(),
+        selectedFood: String(selectedFood).trim(),
+        name: String(name).trim()
+    };
+    
+    // ⭐ เพิ่มส่วนนี้
+    try {
+        const result = await this.request(params);
+        console.log('✅ saveRedeemData successful:', result);
+        return result;
+    } catch (error) {
+        console.error('💥 saveRedeemData error:', error);
+        throw error;
+    }
+},
 
     // Get gift list
     async getGiftList() {
@@ -2369,121 +2343,122 @@ const Food = {
         }
     },
 
-async checkAndSave(uid, empNo, factory, selectedFood, name) {
-    try {
-        const response = await API.checkUserColumnJ(uid);
-        Swal.close();
-        
-        if (response.status === 'TRUE') {
-            await this.saveSelection(empNo, factory, selectedFood, uid, name);
-        } else if (response.status === 'FALSE') {
-            this.resetSubmitting();
-            Swal.fire({
-                title: 'แย่จัง..',
-                html: `วันนี้คุณบันทึกข้อมูลไปแล้วเมื่อ ${new Date(response.lastTimestamp).toLocaleString()} พรุ่งนี้ค่อยมาใหม่นะ <br><img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_error.png" alt="icon" style="width:100px;height:100px;">`
-            });
-        } else {
-            this.resetSubmitting();
-            Swal.fire('Error', 'Failed to check user status.', 'error');
-        }
-    } catch (error) {
-        console.error('Error checking user status:', error);
-        this.resetSubmitting();
-        Swal.fire('Error', 'Failed to check user status. Please try again later.', 'error');
-    }
-},
-
-async saveSelection(empNo, factory, selectedFood, uid, name) {
-    Swal.fire({
-        title: 'กำลังบันทึกข้อมูล',
-        text: 'รอสักครู่..',
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading()
-    });
-
-    try {
-        const response = await API.saveRedeemData(empNo, factory, selectedFood, name);
-        
-        if (response.success) {
-            // Add points and update UI
-            userPoints += 1;
-            UI.updatePointsDisplay(userPoints);
-            
-            // Update user status to FALSE
-            await API.updateUserStatus(uid, 'FALSE');
-            
+    async checkAndSave(uid, empNo, factory, selectedFood, name) {
+        try {
+            const response = await API.checkUserColumnJ(uid);
             Swal.close();
             
-            Swal.fire({
-                title: 'สำเร็จ!',
-                html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_1.png" alt="success" style="width:100px;height:100px;"><p>บันทึกข้อมูลแล้ว</p>',
-                showConfirmButton: true,
-                confirmButtonText: 'ตกลง'
-            }).then(() => {
-                // ปิดช่องพิมพ์เมนูอาหารและแสดงข้อความ
-                this.disableFoodInput();
-            });
-            
-            this.resetForm();
-            Gift.updateGiftButtons(userPoints);
-        } else {
-            Swal.close();
-            Swal.fire('Error', response.message || 'Failed to save data.', 'error');
+            if (response.status === 'TRUE') {
+                await this.saveSelection(empNo, factory, selectedFood, uid, name);
+            } else if (response.status === 'FALSE') {
+                this.resetSubmitting();
+                Swal.fire({
+                    title: 'แย่จัง..',
+                    html: `วันนี้คุณบันทึกข้อมูลไปแล้วเมื่อ ${new Date(response.lastTimestamp).toLocaleString()} พรุ่งนี้ค่อยมาใหม่นะ <br><img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_error.png" alt="icon" style="width:100px;height:100px;">`
+                });
+            } else {
+                this.resetSubmitting();
+                Swal.fire('Error', 'Failed to check user status.', 'error');
+            }
+        } catch (error) {
+            console.error('Error checking user status:', error);
+            this.resetSubmitting();
+            Swal.fire('Error', 'Failed to check user status. Please try again later.', 'error');
         }
-    } catch (error) {
-        console.error('Error saving data:', error);
-        Swal.close();
-        Swal.fire('Error', `Network error: ${error.message}`, 'error');
-    } finally {
-        this.resetSubmitting();
-    }
-},
+    },
 
-disableFoodInput() {
-    const foodSearch = document.getElementById('foodSearch');
-    const recordButton = document.querySelector('.record-button');
-    
-    if (foodSearch) {
-        foodSearch.disabled = true;
-        foodSearch.placeholder = 'วันนี้คุณบันทึกข้อมูลแล้ว พรุ่งนี้ค่อยมาใหม่นะ';
-        foodSearch.value = '';
-        foodSearch.style.backgroundColor = '#f5f5f5';
-        foodSearch.style.color = '#999';
-    }
-    
-    if (recordButton) {
-        recordButton.disabled = true;
-        recordButton.style.backgroundColor = '#cccccc';
-        recordButton.style.cursor = 'not-allowed';
-        recordButton.textContent = 'บันทึกแล้วแล้ว';
-    }
-    
-    // ซ่อนส่วนแสดงผลการค้นหาอาหาร
-    const statusContainer = document.querySelector('.validation-status');
-    if (statusContainer) {
-        statusContainer.textContent = 'วันนี้คุณบันทึกข้อมูลแล้ว พรุ่งนี้ค่อยมาใหม่นะ';
-        statusContainer.style.color = '#999';
-    }
-},
+    async saveSelection(empNo, factory, selectedFood, uid, name) {
+        Swal.fire({
+            title: 'กำลังบันทึกข้อมูล',
+            text: 'รอสักครู่..',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
 
-resetForm() {
-    const foodSearch = document.getElementById('foodSearch');
-    if (foodSearch) {
-        foodSearch.value = '';
-        foodSearch.classList.remove('valid-food', 'invalid-food');
-    }
-    selectedFood = '';
-    
-    const statusContainer = document.querySelector('.validation-status');
-    if (statusContainer) {
-        statusContainer.textContent = '';
-    }
-},
+        try {
+            const response = await API.saveRedeemData(empNo, factory, selectedFood, name);
+            
+            if (response.success) {
+                // Add points and update UI
+                userPoints += 1;
+                UI.updatePointsDisplay(userPoints);
+                
+                // Update user status to FALSE
+                await API.updateUserStatus(uid, 'FALSE');
+                
+                Swal.close();
+                
+                Swal.fire({
+                    title: 'สำเร็จ!',
+                    html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_1.png" alt="success" style="width:100px;height:100px;"><p>บันทึกข้อมูลแล้ว</p>',
+                    showConfirmButton: true,
+                    confirmButtonText: 'ตกลง'
+                }).then(() => {
+                    // ปิดช่องพิมพ์เมนูอาหารและแสดงข้อความ
+                    this.disableFoodInput();
+                });
+                
+                this.resetForm();
+                Gift.updateGiftButtons(userPoints);
+            } else {
+                Swal.close();
+                Swal.fire('Error', response.message || 'Failed to save data.', 'error');
+            }
+        } catch (error) {
+            console.error('Error saving data:', error);
+            Swal.close();
+            Swal.fire('Error', `Network error: ${error.message}`, 'error');
+        } finally {
+            this.resetSubmitting();
+        }
+    },
 
-resetSubmitting() {
-    isSubmitting = false;
-    UI.updateRecordButton('');
-}
+    disableFoodInput() {
+        const foodSearch = document.getElementById('foodSearch');
+        const recordButton = document.querySelector('.record-button');
+        
+        if (foodSearch) {
+            foodSearch.disabled = true;
+            foodSearch.placeholder = 'วันนี้คุณบันทึกข้อมูลแล้ว พรุ่งนี้ค่อยมาใหม่นะ';
+            foodSearch.value = '';
+            foodSearch.style.backgroundColor = '#f5f5f5';
+            foodSearch.style.color = '#999';
+        }
+        
+        if (recordButton) {
+            recordButton.disabled = true;
+            recordButton.style.backgroundColor = '#cccccc';
+            recordButton.style.cursor = 'not-allowed';
+            recordButton.textContent = 'บันทึกแล้วแล้ว';
+        }
+        
+        // ซ่อนส่วนแสดงผลการค้นหาอาหาร
+        const statusContainer = document.querySelector('.validation-status');
+        if (statusContainer) {
+            statusContainer.textContent = 'วันนี้คุณบันทึกข้อมูลแล้ว พรุ่งนี้ค่อยมาใหม่นะ';
+            statusContainer.style.color = '#999';
+        }
+    },
+
+    resetForm() {
+        const foodSearch = document.getElementById('foodSearch');
+        if (foodSearch) {
+            foodSearch.value = '';
+            foodSearch.classList.remove('valid-food', 'invalid-food');
+        }
+        selectedFood = '';
+        
+        const statusContainer = document.querySelector('.validation-status');
+        if (statusContainer) {
+            statusContainer.textContent = '';
+        }
+    },
+
+    resetSubmitting() {
+        isSubmitting = false;
+        UI.updateRecordButton('');
+    }
+};
 
 /* =================================
    🎁 GIFT/REWARD SYSTEM
