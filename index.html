@@ -2343,86 +2343,121 @@ const Food = {
         }
     },
 
-    async checkAndSave(uid, empNo, factory, selectedFood, name) {
-        try {
-            const response = await API.checkUserColumnJ(uid);
-            Swal.close();
-            
-            if (response.status === 'TRUE') {
-                await this.saveSelection(empNo, factory, selectedFood, uid, name);
-            } else if (response.status === 'FALSE') {
-                this.resetSubmitting();
-                Swal.fire({
-                    title: 'แย่จัง..',
-                    html: `วันนี้คุณบันทึกข้อมูลไปแล้วเมื่อ ${new Date(response.lastTimestamp).toLocaleString()} พรุ่งนี้ค่อยมาใหม่นะ <br><img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_error.png" alt="icon" style="width:100px;height:100px;">`
-                });
-            } else {
-                this.resetSubmitting();
-                Swal.fire('Error', 'Failed to check user status.', 'error');
-            }
-        } catch (error) {
-            console.error('Error checking user status:', error);
-            this.resetSubmitting();
-            Swal.fire('Error', 'Failed to check user status. Please try again later.', 'error');
-        }
-    },
-
-    async saveSelection(empNo, factory, selectedFood, uid, name) {
-        Swal.fire({
-            title: 'กำลังบันทึกข้อมูล',
-            text: 'รอสักครู่..',
-            allowOutsideClick: false,
-            didOpen: () => Swal.showLoading()
-        });
-
-        try {
-            const response = await API.saveRedeemData(empNo, factory, selectedFood, name);
-            Swal.close();
-            
-            if (response.success) {
-                // Add points and update UI
-                userPoints += 1;
-                UI.updatePointsDisplay(userPoints);
-                
-                Swal.fire({
-                    title: 'สำเร็จ!',
-                    html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_1.png" alt="success" style="width:100px;height:100px;"><p>บันทึกข้อมูลแล้ว</p>',
-                    showConfirmButton: true,
-                    confirmButtonText: 'ตกลง'
-                });
-                
-                this.resetForm();
-                Gift.updateGiftButtons(userPoints);
-            } else {
-                Swal.fire('Error', response.message || 'Failed to save data.', 'error');
-            }
-        } catch (error) {
-            console.error('Error saving data:', error);
-            Swal.fire('Error', `Network error: ${error.message}`, 'error');
-        } finally {
-            this.resetSubmitting();
-        }
-    },
-
-    resetForm() {
-        const foodSearch = document.getElementById('foodSearch');
-        if (foodSearch) {
-            foodSearch.value = '';
-            foodSearch.classList.remove('valid-food', 'invalid-food');
-        }
-        selectedFood = '';
+async checkAndSave(uid, empNo, factory, selectedFood, name) {
+    try {
+        const response = await API.checkUserColumnJ(uid);
+        Swal.close();
         
-        const statusContainer = document.querySelector('.validation-status');
-        if (statusContainer) {
-            statusContainer.textContent = '';
+        if (response.status === 'TRUE') {
+            await this.saveSelection(empNo, factory, selectedFood, uid, name);
+        } else if (response.status === 'FALSE') {
+            this.resetSubmitting();
+            Swal.fire({
+                title: 'แย่จัง..',
+                html: `วันนี้คุณบันทึกข้อมูลไปแล้วเมื่อ ${new Date(response.lastTimestamp).toLocaleString()} พรุ่งนี้ค่อยมาใหม่นะ <br><img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_error.png" alt="icon" style="width:100px;height:100px;">`
+            });
+        } else {
+            this.resetSubmitting();
+            Swal.fire('Error', 'Failed to check user status.', 'error');
         }
-    },
-
-    resetSubmitting() {
-        isSubmitting = false;
-        UI.updateRecordButton('');
+    } catch (error) {
+        console.error('Error checking user status:', error);
+        this.resetSubmitting();
+        Swal.fire('Error', 'Failed to check user status. Please try again later.', 'error');
     }
-};
+},
+
+async saveSelection(empNo, factory, selectedFood, uid, name) {
+    Swal.fire({
+        title: 'กำลังบันทึกข้อมูล',
+        text: 'รอสักครู่..',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    try {
+        const response = await API.saveRedeemData(empNo, factory, selectedFood, name);
+        
+        if (response.success) {
+            // Add points and update UI
+            userPoints += 1;
+            UI.updatePointsDisplay(userPoints);
+            
+            // Update user status to FALSE
+            await API.updateUserStatus(uid, 'FALSE');
+            
+            Swal.close();
+            
+            Swal.fire({
+                title: 'สำเร็จ!',
+                html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_1.png" alt="success" style="width:100px;height:100px;"><p>บันทึกข้อมูลแล้ว</p>',
+                showConfirmButton: true,
+                confirmButtonText: 'ตกลง'
+            }).then(() => {
+                // ปิดช่องพิมพ์เมนูอาหารและแสดงข้อความ
+                this.disableFoodInput();
+            });
+            
+            this.resetForm();
+            Gift.updateGiftButtons(userPoints);
+        } else {
+            Swal.close();
+            Swal.fire('Error', response.message || 'Failed to save data.', 'error');
+        }
+    } catch (error) {
+        console.error('Error saving data:', error);
+        Swal.close();
+        Swal.fire('Error', `Network error: ${error.message}`, 'error');
+    } finally {
+        this.resetSubmitting();
+    }
+},
+
+disableFoodInput() {
+    const foodSearch = document.getElementById('foodSearch');
+    const recordButton = document.querySelector('.record-button');
+    
+    if (foodSearch) {
+        foodSearch.disabled = true;
+        foodSearch.placeholder = 'วันนี้คุณบันทึกข้อมูลแล้ว พรุ่งนี้ค่อยมาใหม่นะ';
+        foodSearch.value = '';
+        foodSearch.style.backgroundColor = '#f5f5f5';
+        foodSearch.style.color = '#999';
+    }
+    
+    if (recordButton) {
+        recordButton.disabled = true;
+        recordButton.style.backgroundColor = '#cccccc';
+        recordButton.style.cursor = 'not-allowed';
+        recordButton.textContent = 'บันทึกแล้วแล้ว';
+    }
+    
+    // ซ่อนส่วนแสดงผลการค้นหาอาหาร
+    const statusContainer = document.querySelector('.validation-status');
+    if (statusContainer) {
+        statusContainer.textContent = 'วันนี้คุณบันทึกข้อมูลแล้ว พรุ่งนี้ค่อยมาใหม่นะ';
+        statusContainer.style.color = '#999';
+    }
+},
+
+resetForm() {
+    const foodSearch = document.getElementById('foodSearch');
+    if (foodSearch) {
+        foodSearch.value = '';
+        foodSearch.classList.remove('valid-food', 'invalid-food');
+    }
+    selectedFood = '';
+    
+    const statusContainer = document.querySelector('.validation-status');
+    if (statusContainer) {
+        statusContainer.textContent = '';
+    }
+},
+
+resetSubmitting() {
+    isSubmitting = false;
+    UI.updateRecordButton('');
+}
 
 /* =================================
    🎁 GIFT/REWARD SYSTEM
