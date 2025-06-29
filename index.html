@@ -1821,12 +1821,12 @@ const API = {
     },
 
     // Save food record
-    async saveRedeemData(empNo, factory, menu, name) {
+    async saveRedeemData(empNo, factory, selectedFood, name) {
         return this.request({ 
             action: 'saveRedeemData',
             empNo,
             factory,
-            menu,
+            selectedFood,
             name
         });
     },
