@@ -2320,8 +2320,10 @@ const Food = {
             return;
         }
 
+        // เก็บค่า selectedFood ไว้ก่อนที่จะถูก reset
+        const currentSelectedFood = selectedFood;
         isSubmitting = true;
-        // UI.updateRecordButton(selectedFood);
+        UI.updateRecordButton(currentSelectedFood);
 
         Swal.fire({
             title: 'วันนี้บันทึกไปรึยังน้า...',
@@ -2333,7 +2335,7 @@ const Food = {
         try {
             const profile = await liff.getProfile();
             const uid = profile.userId;
-            await this.checkAndSave(uid, userData[1], userData[4], selectedFood, userData[2]);
+            await this.checkAndSave(uid, userData[1], userData[4], currentSelectedFood, userData[2]);
         } catch (error) {
             console.error('Failed to get user profile:', error);
             this.resetSubmitting();
