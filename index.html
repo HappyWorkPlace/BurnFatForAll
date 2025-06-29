@@ -1392,35 +1392,10 @@ body {
 
 .shadow { box-shadow: var(--shadow-md); }
 .shadow-lg { box-shadow: var(--shadow-lg); }
-
-    /* Cover Screen Styles */
-.cover-screen { /* styles สำหรับหน้าปก */ }
-.cover-content { /* layout สำหรับเนื้อหา */ }
-.poster-image { /* รูปโปสเตอร์ */ }
-.cover-text { /* ข้อความและปุ่ม */ }
-.finger-icon { /* animation นิ้วขยับๆ */ }
-
-@keyframes fingerClick { /* animation สำหรับนิ้วคลิก */ }
-@keyframes pulse { /* animation สำหรับ glow effect */ }
 </style>
 
 </head>
 <body>
-    <!-- เพิ่มก่อน <div class="loading-screen"> -->
-<div class="cover-screen" id="coverScreen">
-    <div class="cover-content">
-        <div class="poster-image">
-            <img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/Week1.png" alt="Week1">
-        </div>
-        <div class="cover-text">
-            <h2>เปิดหน้าบันทึกคะแนน</h2>
-            <div class="click-indicator">
-                <i class="fas fa-hand-pointer finger-icon"></i>
-                <span>แตะเพื่อเริ่มต้น</span>
-            </div>
-        </div>
-    </div>
-</div>
     <!-- Loading Screen -->
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-image">
@@ -3258,32 +3233,7 @@ const Navigation = {
         }
     }
 };
-/* =================================
-   🎬 COVER SCREEN MANAGEMENT
-   ================================= */
-const Cover = {
-    initialize() {
-        const coverScreen = document.getElementById('coverScreen');
-        if (coverScreen) {
-            coverScreen.addEventListener('click', this.startApp.bind(this));
-        }
-    },
-    
-    async startApp() {
-        // ซ่อน cover screen
-        const coverScreen = document.getElementById('coverScreen');
-        if (coverScreen) {
-            coverScreen.style.display = 'none';
-        }
-        
-        // เริ่ม LIFF initialization
-        try {
-            await LIFF.initialize();
-        } catch (error) {
-            console.error('Failed to start app:', error);
-        }
-    }
-};
+
 /* =================================
    🚀 INITIALIZATION
    ================================= */
@@ -3295,10 +3245,10 @@ const App = {
             // Setup event listeners first
             console.log('📋 Setting up event listeners...');
             Navigation.setupEventListeners();
-            Cover.initialize(); 
             
-            // ❌ ลบบรรทัดนี้ออก
-            // await LIFF.initialize();
+            // Initialize LIFF
+            console.log('📱 Initializing LIFF...');
+            await LIFF.initialize();
             
             console.log('✅ App initialized successfully');
         } catch (error) {
