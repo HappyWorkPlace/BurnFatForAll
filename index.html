@@ -1830,89 +1830,115 @@ const API = {
     // },
 
     // Check if user already recorded today
-// ⭐ แก้ไขฟังก์ชันนี้ให้เช็คจาก userData[12] แทนการเรียก API
+    // ⭐ แก้ไขฟังก์ชันนี้ให้เช็คจาก userData[12] แทนการเรียก API
     async checkUserColumnJ(uid) {
-    try {
-        // เช็คจาก userData[12] แทนการเรียก API
-        if (!userData || !Array.isArray(userData) || userData.length < 13) {
-            throw new Error('User data not available');
-        }
-        
-        const todayRecorded = userData[12]; // "TRUE" หรือ "FALSE"
-        
-        // ⭐ จัดการเวลาอย่างปลอดภัย
-        let recordedTime = null;
         try {
-            if (userData[13]) {
-                // ถ้า userData[13] เป็น Date object
-                if (userData[13] instanceof Date) {
-                    recordedTime = userData[13].toISOString();
-                }
-                // ถ้า userData[13] เป็น string ที่เป็นวันที่
-                else if (typeof userData[13] === 'string') {
-                    recordedTime = new Date(userData[13]).toISOString();
-                }
-                // ถ้า userData[13] เป็น timestamp
-                else if (typeof userData[13] === 'number') {
-                    recordedTime = new Date(userData[13]).toISOString();
-                }
+            // เช็คจาก userData[12] แทนการเรียก API
+            if (!userData || !Array.isArray(userData) || userData.length < 13) {
+                throw new Error('User data not available');
             }
-        } catch (timeError) {
-            console.log('⚠️ Cannot parse time from userData[13]:', userData[13]);
-            recordedTime = new Date().toISOString(); // ใช้เวลาปัจจุบันเป็น fallback
+            
+            const todayRecorded = userData[12]; // "TRUE" หรือ "FALSE"
+            
+            // ⭐ จัดการเวลาอย่างปลอดภัย
+            let recordedTime = null;
+            try {
+                if (userData[13]) {
+                    // ถ้า userData[13] เป็น Date object
+                    if (userData[13] instanceof Date) {
+                        recordedTime = userData[13].toISOString();
+                    }
+                    // ถ้า userData[13] เป็น string ที่เป็นวันที่
+                    else if (typeof userData[13] === 'string') {
+                        recordedTime = new Date(userData[13]).toISOString();
+                    }
+                    // ถ้า userData[13] เป็น timestamp
+                    else if (typeof userData[13] === 'number') {
+                        recordedTime = new Date(userData[13]).toISOString();
+                    }
+                }
+            } catch (timeError) {
+                console.log('⚠️ Cannot parse time from userData[13]:', userData[13]);
+                recordedTime = new Date().toISOString(); // ใช้เวลาปัจจุบันเป็น fallback
+            }
+            
+            // ⭐ แก้ไข Logic ให้ถูกต้อง
+            if (todayRecorded === "TRUE") {
+                return {
+                    success: true,
+                    status: 'TRUE', // สามารถบันทึกได้
+                    message: 'Can record today'
+                };
+            } else {
+                return {
+                    success: true,
+                    status: 'FALSE', // บันทึกไปแล้ว
+                    message: 'Already recorded today',
+                    lastTimestamp: recordedTime || new Date().toISOString()
+                };
+            }
+        } catch (error) {
+            console.error('Error checking user status from userData:', error);
+            
+            // ถ้าเกิด error ให้ fallback ไปเรียก API จริง
+            console.log('🔄 Fallback: เรียก API checkUserColumnJ...');
+            return this.request({ action: 'checkUserColumnJ', uid });
         }
-        
-        // ⭐ แก้ไข Logic ให้ถูกต้อง
-        if (todayRecorded === "TRUE") {
-            return {
-                success: true,
-                status: 'TRUE', // สามารถบันทึกได้
-                message: 'Can record today'
-            };
-        } else {
-            return {
-                success: true,
-                status: 'FALSE', // บันทึกไปแล้ว
-                message: 'Already recorded today',
-                lastTimestamp: recordedTime || new Date().toISOString()
-            };
-        }
-    } catch (error) {
-        console.error('Error checking user status from userData:', error);
-        
-        // ถ้าเกิด error ให้ fallback ไปเรียก API จริง
-        console.log('🔄 Fallback: เรียก API checkUserColumnJ...');
-        return this.request({ action: 'checkUserColumnJ', uid });
-    }
-},
+    },
 
-// Save food record
-async saveRedeemData(empNo, factory, selectedFood, name) {
-    console.log('🍽️ Starting saveRedeemData:', { empNo, factory, selectedFood, name });
-    
-    // Validate parameters
-    if (!empNo || !factory || !selectedFood || !name) {
-        throw new Error('Missing required parameters for saveRedeemData');
-    }
-    
-    const params = { 
-        action: 'saveRedeemData',
-        empNo: String(empNo).trim(),
-        factory: String(factory).trim(),
-        selectedFood: String(selectedFood).trim(),
-        name: String(name).trim()
-    };
-    
-    // ⭐ เพิ่มส่วนนี้
-    try {
-        const result = await this.request(params);
-        console.log('✅ saveRedeemData successful:', result);
-        return result;
-    } catch (error) {
-        console.error('💥 saveRedeemData error:', error);
-        throw error;
-    }
-},
+    // Save food record
+    async saveRedeemData(empNo, factory, selectedFood, name) {
+        console.log('🍽️ Starting saveRedeemData:', { empNo, factory, selectedFood, name });
+        
+        // Validate parameters
+        if (!empNo || !factory || !selectedFood || !name) {
+            throw new Error('Missing required parameters for saveRedeemData');
+        }
+        
+        const params = { 
+            action: 'saveRedeemData',
+            empNo: String(empNo).trim(),
+            factory: String(factory).trim(),
+            selectedFood: String(selectedFood).trim(),
+            name: String(name).trim()
+        };
+        
+        // ⭐ เพิ่มส่วนนี้
+        try {
+            const result = await this.request(params);
+            console.log('✅ saveRedeemData successful:', result);
+            return result;
+        } catch (error) {
+            console.error('💥 saveRedeemData error:', error);
+            throw error;
+        }
+    },
+
+    // ⭐ เพิ่มฟังก์ชันใหม่: Update user status after recording
+    async updateUserStatus(uid, status) {
+        console.log('🔄 Updating user status:', { uid, status });
+        
+        try {
+            const result = await this.request({ 
+                action: 'updateUserStatus', 
+                uid: uid, 
+                status: status,
+                timestamp: new Date().toISOString()
+            });
+            
+            // อัพเดท userData ในหน้าเว็บด้วย
+            if (typeof userData !== 'undefined' && Array.isArray(userData)) {
+                userData[12] = status; // อัพเดทสถานะ
+                userData[13] = new Date().toISOString(); // อัพเดทเวลา
+                console.log('✅ Local userData updated:', { status: userData[12], timestamp: userData[13] });
+            }
+            
+            return result;
+        } catch (error) {
+            console.error('💥 updateUserStatus error:', error);
+            throw error;
+        }
+    },
 
     // Get gift list
     async getGiftList() {
