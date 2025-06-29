@@ -1,5 +1,5 @@
 /* =================================
-   🍽️ HARD CODE FOOD SYSTEM
+   🍽️ HARDCODE FOOD SYSTEM
    ================================= */
 
 const HARDCODE_FOOD_LIST = [
@@ -149,10 +149,13 @@ const HARDCODE_FOOD_LIST = [
     "หมูมะนาว",
     "เห็ดย่าง",
     "อกไก่นึ่ง",
-    "อกไก่ย่าง"];
+    "อกไก่ย่าง"
+];
 
+/* =================================
+   🍽️ FOOD SYSTEM
+   ================================= */
 const Food = {
-    // โหลดรายการอาหารจาก hardcode แทน API
     async loadFoodList() {
         try {
             console.log('โหลดรายการอาหารจาก hardcode...');
@@ -176,46 +179,6 @@ const Food = {
         }
     },
 
-    // เพิ่มเมนูใหม่แบบ dynamic (optional)
-    addFoodItem(foodName) {
-        if (foodName && foodName.trim() !== '') {
-            const trimmedFood = foodName.trim();
-            if (!HARDCODE_FOOD_LIST.includes(trimmedFood)) {
-                HARDCODE_FOOD_LIST.push(trimmedFood);
-                validFoodList.push(trimmedFood);
-                this.populateDropdown(validFoodList);
-                console.log('เพิ่มเมนูใหม่:', trimmedFood);
-            }
-        }
-    },
-
-    // เอาเมนูออก (optional)
-    removeFoodItem(foodName) {
-        const index = HARDCODE_FOOD_LIST.indexOf(foodName);
-        if (index > -1) {
-            HARDCODE_FOOD_LIST.splice(index, 1);
-            validFoodList = validFoodList.filter(food => food !== foodName);
-            this.populateDropdown(validFoodList);
-            console.log('ลบเมนู:', foodName);
-        }
-    },
-
-    // ดูรายการอาหารทั้งหมด
-    getAllFoodItems() {
-        return [...validFoodList]; // return copy
-    },
-
-    // ค้นหาเมนู
-    searchFood(keyword) {
-        if (!keyword || keyword.trim() === '') return validFoodList;
-        
-        const searchTerm = keyword.toLowerCase();
-        return validFoodList.filter(food => 
-            food.toLowerCase().includes(searchTerm)
-        );
-    },
-
-    // ฟังก์ชันเดิมที่ใช้ populate dropdown
     populateDropdown(foodList) {
         const dropdownList = document.getElementById('foodDropdown');
         if (!dropdownList) return;
@@ -230,7 +193,6 @@ const Food = {
         });
     },
 
-    // ฟังก์ชันเดิมอื่นๆ ยังคงเหมือนเดิม...
     validateFood(foodName) {
         if (!foodName || foodName.trim() === '') {
             return {
@@ -252,22 +214,131 @@ const Food = {
         };
     },
 
-    // ส่วนอื่นๆ ของ Food object ยังคงเหมือนเดิม
-    // (recordSelection, checkAndSave, saveSelection, etc.)
+    async recordSelection() {
+        if (isSubmitting) {
+            console.log('กำลังบันทึกอยู่ กรุณารอ...');
+            return;
+        }
+
+        if (!userData || !selectedFood) {
+            Swal.fire({
+                title: 'กรุณาเลือกเมนูอาหาร',
+                text: 'กรุณาเลือกเมนูที่ถูกต้องก่อนบันทึก',
+                icon: 'warning',
+                confirmButtonColor: '#10b981'
+            });
+            return;
+        }
+
+        const validation = this.validateFood(selectedFood);
+        if (!validation.isValid) {
+            Swal.fire({
+                title: 'เมนูไม่ถูกต้อง',
+                text: 'กรุณาเลือกเมนูจากรายการที่แนะนำเท่านั้น',
+                icon: 'error',
+                confirmButtonColor: '#10b981'
+            });
+            return;
+        }
+
+        isSubmitting = true;
+        UI.updateRecordButton(selectedFood);
+
+        Swal.fire({
+            title: 'วันนี้บันทึกไปรึยังน้า...',
+            text: 'ตรวจสอบสักครู่..',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        try {
+            const profile = await liff.getProfile();
+            const uid = profile.userId;
+            await this.checkAndSave(uid, userData[1], userData[4], selectedFood, userData[2]);
+        } catch (error) {
+            console.error('Failed to get user profile:', error);
+            this.resetSubmitting();
+            Swal.fire('Error', 'Failed to get user profile. Please try again later.', 'error');
+        }
+    },
+
+    async checkAndSave(uid, empNo, factory, selectedFood, name) {
+        try {
+            const response = await API.checkUserColumnJ(uid);
+            Swal.close();
+            
+            if (response.status === 'TRUE') {
+                await this.saveSelection(empNo, factory, selectedFood, uid, name);
+            } else if (response.status === 'FALSE') {
+                this.resetSubmitting();
+                Swal.fire({
+                    title: 'แย่จัง..',
+                    html: `วันนี้คุณบันทึกข้อมูลไปแล้วเมื่อ ${new Date(response.lastTimestamp).toLocaleString()} พรุ่งนี้ค่อยมาใหม่นะ <br><img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_error.png" alt="icon" style="width:100px;height:100px;">`
+                });
+            } else {
+                this.resetSubmitting();
+                Swal.fire('Error', 'Failed to check user status.', 'error');
+            }
+        } catch (error) {
+            console.error('Error checking user status:', error);
+            this.resetSubmitting();
+            Swal.fire('Error', 'Failed to check user status. Please try again later.', 'error');
+        }
+    },
+
+    async saveSelection(empNo, factory, selectedFood, uid, name) {
+        Swal.fire({
+            title: 'กำลังบันทึกข้อมูล',
+            text: 'รอสักครู่..',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        try {
+            const response = await API.saveRedeemData(empNo, factory, selectedFood, name);
+            Swal.close();
+            
+            if (response.success) {
+                // Add points and update UI
+                userPoints += 5;
+                UI.updatePointsDisplay(userPoints);
+                
+                Swal.fire({
+                    title: 'สำเร็จ!',
+                    html: '<img src="https://raw.githubusercontent.com/HappyWorkPlace/BurnFatForAll/main/picture/healthy-food_1.png" alt="success" style="width:100px;height:100px;"><p>บันทึกข้อมูลแล้ว +5 คะแนน</p>',
+                    showConfirmButton: true,
+                    confirmButtonText: 'ตกลง'
+                });
+                
+                this.resetForm();
+                Gift.updateGiftButtons(userPoints);
+            } else {
+                Swal.fire('Error', response.message || 'Failed to save data.', 'error');
+            }
+        } catch (error) {
+            console.error('Error saving data:', error);
+            Swal.fire('Error', `Network error: ${error.message}`, 'error');
+        } finally {
+            this.resetSubmitting();
+        }
+    },
+
+    resetForm() {
+        const foodSearch = document.getElementById('foodSearch');
+        if (foodSearch) {
+            foodSearch.value = '';
+            foodSearch.classList.remove('valid-food', 'invalid-food');
+        }
+        selectedFood = '';
+        
+        const statusContainer = document.querySelector('.validation-status');
+        if (statusContainer) {
+            statusContainer.textContent = '';
+        }
+    },
+
+    resetSubmitting() {
+        isSubmitting = false;
+        UI.updateRecordButton('');
+    }
 };
-
-/* =================================
-   📝 วิธีใช้งาน
-   ================================= */
-
-// เพิ่มเมนูใหม่
-// Food.addFoodItem('ข้าวผัดกุ้ง');
-
-// ลบเมนู
-// Food.removeFoodItem('ผัดไทย');
-
-// ดูรายการทั้งหมด
-// console.log(Food.getAllFoodItems());
-
-// ค้นหาเมนู
-// console.log(Food.searchFood('ข้าว'));
