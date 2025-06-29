@@ -70,6 +70,7 @@ body {
     border-radius: 50%;
     animation: spin 1.2s linear infinite;
     margin-bottom: 20px;
+    align-items: center;
 }
 
 @keyframes spin {
@@ -88,6 +89,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 10px 10px;
 }
 
 .status-icon img {
@@ -288,7 +290,10 @@ body {
 }
 
 .submit-btn:disabled {
-    display: none;
+    background: #bdc3c7;
+    color: #7f8c8d;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .retry-btn {
@@ -313,36 +318,18 @@ body {
     padding: 40px 25px;
 }
 
+.error-container .status-icon {
+    color: #e74c3c;
+}
+
 .success-container {
     color: #27ae60;
     text-align: center;
     padding: 40px 25px;
 }
 
-/* โทนสีสำหรับปุ่ม debug */
-.retry-btn[onclick*="quickTest"] {
-    background: #27ae60;
-}
-
-.retry-btn[onclick*="quickTest"]:hover {
-    background: #229954;
-}
-
-.retry-btn[onclick*="debugAPI"] {
-    background: #e74c3c;
-}
-
-.retry-btn[onclick*="debugAPI"]:hover {
-    background: #c0392b;
-}
-
-.retry-btn[onclick*="testAllEndpoints"] {
-    background: #f39c12;
-    color: #2c3e50;
-}
-
-.retry-btn[onclick*="testAllEndpoints"]:hover {
-    background: #e67e22;
+.retry-buttons {
+    margin-top: 20px;
 }
 
 @media (max-width: 480px) {
@@ -381,7 +368,6 @@ body {
     }
 }
 
-/* Typography สำหรับความเป็นทางการ */
 h1, h2, h3, h4, h5, h6 {
     font-weight: 500;
     letter-spacing: 0.2px;
@@ -391,7 +377,6 @@ p, label, span {
     letter-spacing: 0.1px;
 }
 
-/* เพิ่มความสวยงามให้กับข้อมูลในตารางเล็กน้อย */
 .status-detail p strong {
     min-width: 120px;
     display: inline-block;
@@ -407,6 +392,16 @@ p, label, span {
             <p>กำลังตรวจสอบข้อมูล...</p>
         </div>
 
+        <!-- Error State -->
+        <div id="errorState" class="status-container error-container" style="display: none;">
+            <div class="status-icon">❌</div>
+            <div class="status-message">เกิดข้อผิดพลาด</div>
+            <div class="status-detail" id="errorMessage"></div>
+            <div class="retry-buttons">
+                <button class="retry-btn" onclick="initializeLiff()">ลองใหม่</button>
+            </div>
+        </div>
+
         <!-- Already Completed State -->
         <div id="completedState" class="status-container" style="display: none;">
             <div class="header">
@@ -416,6 +411,7 @@ p, label, span {
             <div class="status-message">คุณได้ทำแบบสอบถามเรียบร้อยแล้ว</div>
             <div class="status-detail" id="completedDetails"></div>
         </div>
+
         <!-- Survey Form -->
         <div id="surveyForm" style="display: none;">
             <div class="header">
@@ -502,7 +498,7 @@ p, label, span {
             </form>
 
             <div class="submit-section">
-                <button type="submit" class="submit-btn" id="submitBtn" onclick="submitSurvey()" disabled>ส่งแบบสอบถาม</button>
+                <button type="button" class="submit-btn" id="submitBtn" disabled>ส่งแบบสอบถาม</button>
             </div>
         </div>
 
@@ -556,10 +552,11 @@ function showError(message, details = '') {
     showState('errorState');
     const errorMessageEl = document.getElementById('errorMessage');
     if (errorMessageEl) {
-        errorMessageEl.innerHTML = `<p style="margin: 10px 0; font-size: 14px;">${message}</p>`;
+        let errorHTML = `<p style="margin: 10px 0; font-size: 14px;">${message}</p>`;
         if (details) {
-            errorMessageEl.innerHTML += `<div style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-top: 10px; font-size: 12px; text-align: left;">${details}</div>`;
+            errorHTML += `<div style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-top: 10px; font-size: 12px; text-align: left;">${details}</div>`;
         }
+        errorMessageEl.innerHTML = errorHTML;
     }
     console.error('Error:', message, details);
 }
@@ -584,8 +581,6 @@ async function fetchAPI(url, options = {}) {
     
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
         try {
-            console.log(`🔄 API Call (Attempt ${attempt}/${maxAttempts}):`, url);
-            
             const response = await fetch(url, {
                 method: 'GET',
                 mode: 'cors',
@@ -598,59 +593,19 @@ async function fetchAPI(url, options = {}) {
             }
             
             const data = await response.json();
-            console.log(`✅ API Response (Attempt ${attempt}):`, data);
             return data;
             
         } catch (error) {
             lastError = error;
-            console.error(`❌ API Error (Attempt ${attempt}/${maxAttempts}):`, error.message);
             
             if (attempt < maxAttempts) {
                 const delayTime = CONFIG.RETRY_DELAY * attempt;
-                console.log(`⏳ Retrying in ${delayTime}ms...`);
                 await delay(delayTime);
             }
         }
     }
     
     throw new Error(`API call failed after ${maxAttempts} attempts. Last error: ${lastError.message}`);
-}
-
-/**
- * ฟังก์ชันสำหรับเรียก API ด้วย JSONP (เป็นทางเลือกสำหรับ CORS issues)
- */
-function fetchAPIWithJSONP(url, callbackName = 'jsonpCallback') {
-    return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        const timeoutId = setTimeout(() => {
-            cleanup();
-            reject(new Error('JSONP request timeout'));
-        }, 10000);
-        
-        const cleanup = () => {
-            if (script.parentNode) {
-                script.parentNode.removeChild(script);
-            }
-            if (window[callbackName]) {
-                delete window[callbackName];
-            }
-            clearTimeout(timeoutId);
-        };
-        
-        window[callbackName] = (data) => {
-            cleanup();
-            resolve(data);
-        };
-        
-        script.onerror = () => {
-            cleanup();
-            reject(new Error('JSONP script load error'));
-        };
-        
-        const separator = url.includes('?') ? '&' : '?';
-        script.src = `${url}${separator}callback=${callbackName}`;
-        document.head.appendChild(script);
-    });
 }
 
 // ==========================================
@@ -663,35 +618,30 @@ function fetchAPIWithJSONP(url, callbackName = 'jsonpCallback') {
 async function initializeLiff() {
     try {
         showState('loadingState');
-        console.log('🚀 Initializing LIFF...');
+        
+        // ตรวจสอบว่า LIFF SDK ถูกโหลดแล้วหรือยัง
+        if (typeof liff === 'undefined') {
+            throw new Error('LIFF SDK is not loaded');
+        }
         
         // เริ่มต้น LIFF
         await liff.init({ liffId: CONFIG.LIFF_ID });
-        console.log('✅ LIFF initialized successfully');
         
         // ตรวจสอบการล็อกอิน
         if (!liff.isLoggedIn()) {
-            console.log('🔐 User not logged in, redirecting to login...');
             liff.login();
             return;
         }
-        
-        console.log('✅ User is logged in');
         
         // ดึงข้อมูลโปรไฟล์ผู้ใช้
         userProfile = await liff.getProfile();
         currentUserId = userProfile.userId;
         
-        console.log('👤 User Profile:', {
-            userId: currentUserId,
-            displayName: userProfile.displayName
-        });
-        
         // ตรวจสอบสถานะแบบสอบถาม
         await checkSurveyStatus(currentUserId);
         
     } catch (error) {
-        console.error('❌ LIFF initialization failed:', error);
+        console.error('LIFF initialization failed:', error);
         showError(
             'ไม่สามารถเริ่มต้น LIFF ได้',
             `รายละเอียด: ${error.message}<br><br>กรุณาตรวจสอบ:<br>• การเชื่อมต่ออินเทอร์เน็ต<br>• เปิดใน LINE Browser`
@@ -708,23 +658,19 @@ async function initializeLiff() {
  */
 async function checkSurveyStatus(uid) {
     try {
-        console.log('🔍 Checking survey status for UID:', uid);
-        
         const url = `${CONFIG.API_URL}?action=checkSurveyStatus&uid=${encodeURIComponent(uid)}`;
         const data = await fetchAPI(url);
         
         if (data.hasResponded === true) {
-            console.log('✅ User has already responded');
             showCompletedState(data.responseData);
         } else if (data.hasResponded === false) {
-            console.log('📝 User has not responded yet, getting user info...');
             await getUserInfo(uid);
         } else {
             throw new Error('Invalid response format from checkSurveyStatus');
         }
         
     } catch (error) {
-        console.error('❌ Error checking survey status:', error);
+        console.error('Error checking survey status:', error);
         showError(
             'ไม่สามารถตรวจสอบสถานะแบบสอบถามได้',
             `รายละเอียด: ${error.message}`
@@ -737,16 +683,12 @@ async function checkSurveyStatus(uid) {
  */
 async function getUserInfo(uid) {
     try {
-        console.log('👤 Getting user info for UID:', uid);
-        
         const url = `${CONFIG.API_URL}?action=getUserInfoByUID&uid=${encodeURIComponent(uid)}`;
         const data = await fetchAPI(url);
         
         if (data.success === true) {
-            console.log('✅ User info retrieved successfully:', data.userInfo);
             showSurveyForm(data.userInfo);
         } else {
-            console.log('❌ User not found in system');
             showError(
                 'ไม่พบข้อมูลผู้ใช้ในระบบ',
                 'กรุณาติดต่อผู้ดูแลระบบเพื่อลงทะเบียนข้อมูลของท่าน'
@@ -754,7 +696,7 @@ async function getUserInfo(uid) {
         }
         
     } catch (error) {
-        console.error('❌ Error getting user info:', error);
+        console.error('Error getting user info:', error);
         showError(
             'ไม่สามารถดึงข้อมูลผู้ใช้ได้',
             `รายละเอียด: ${error.message}`
@@ -768,7 +710,6 @@ async function getUserInfo(uid) {
 async function submitSurvey() {
     try {
         showState('loadingState');
-        console.log('📤 Submitting survey...');
         
         // รวบรวมคำตอบจากฟอร์ม
         const form = document.getElementById('healthySurvey');
@@ -780,11 +721,10 @@ async function submitSurvey() {
             q3: formData.get('q3')
         };
         
-        console.log('📋 Survey answers:', answers);
-        
         // ตรวจสอบความสมบูรณ์ของคำตอบ
         if (!answers.q1 || !answers.q2 || !answers.q3) {
-            throw new Error('กรุณาตอบคำถามให้ครบทุกข้อ');
+            showError('กรุณาตอบคำถามให้ครบทุกข้อ');
+            return;
         }
         
         // สร้าง URL สำหรับส่งคำตอบ
@@ -797,14 +737,13 @@ async function submitSurvey() {
         const data = await fetchAPI(url);
         
         if (data.success === true) {
-            console.log('✅ Survey submitted successfully');
             showState('successState');
         } else {
             throw new Error(data.message || 'ไม่สามารถบันทึกคำตอบได้');
         }
         
     } catch (error) {
-        console.error('❌ Error submitting survey:', error);
+        console.error('Error submitting survey:', error);
         showError(
             'ไม่สามารถส่งแบบสอบถามได้',
             `รายละเอียด: ${error.message}`
@@ -832,7 +771,7 @@ function showCompletedState(responseData) {
     if (detailsEl && responseData) {
         let detailsHTML = '<h4>คำตอบของท่าน:</h4>';
         
-        // แสดงคำตอบจาก responseData โดยตรง โดยตรวจสอบ key ที่เป็นไปได้
+        // แสดงคำตอบจาก responseData โดยตรง
         const ans1 = responseData.ans1 || responseData.answer1 || 'ไม่ระบุ';
         const ans2 = responseData.ans2 || responseData.answer2 || 'ไม่ระบุ';
         const ans3 = responseData.ans3 || responseData.answer3 || 'ไม่ระบุ';
@@ -855,7 +794,6 @@ function showCompletedState(responseData) {
         if (responseData.timestamp) {
             let formattedDate = 'ไม่ระบุ';
             try {
-                // ลองแปลง timestamp หลายรูปแบบ
                 let dateObj;
                 if (responseData.timestamp.includes('/')) {
                     // รูปแบบ DD/MM/YYYY, HH:MM:SS
@@ -884,8 +822,6 @@ function showCompletedState(responseData) {
         }
         
         detailsEl.innerHTML = detailsHTML;
-        
-        console.log('✅ Completed state displayed with data:', responseData);
     }
 }
 
@@ -925,103 +861,7 @@ function checkAllAnswered() {
     
     const allAnswered = q1 && q2 && q3;
     
-    if (allAnswered) {
-        submitBtn.disabled = false;
-        submitBtn.style.display = 'inline-block';
-        console.log('✅ All questions answered, enabling submit button');
-    } else {
-        submitBtn.disabled = true;
-        submitBtn.style.display = 'none';
-        console.log('⏳ Not all questions answered yet');
-    }
-}
-
-// ==========================================
-// Debug Functions
-// ==========================================
-
-/**
- * ฟังก์ชันทดสอบการเชื่อมต่อ API อย่างรวดเร็ว
- */
-async function quickTest() {
-    try {
-        showState('loadingState');
-        console.log('🧪 Quick API Test...');
-        
-        const testUrl = `${CONFIG.API_URL}?action=ping`;
-        const result = await fetchAPI(testUrl);
-        
-        console.log('✅ Quick Test Result:', result);
-        alert(`Quick Test ผ่าน!\n\nResponse: ${JSON.stringify(result, null, 2)}`);
-        
-    } catch (error) {
-        console.error('❌ Quick Test Failed:', error);
-        alert(`Quick Test ล้มเหลว!\n\nError: ${error.message}`);
-    }
-}
-
-/**
- * ฟังก์ชันดีบักเพื่อแสดงข้อมูลระบบ
- */
-function debugAPI() {
-    const debugInfo = {
-        CONFIG: CONFIG,
-        currentUserId: currentUserId,
-        userProfile: userProfile,
-        liffAvailable: typeof liff !== 'undefined',
-        liffReady: typeof liff !== 'undefined' && liff.isReady && liff.isReady(),
-        liffLoggedIn: typeof liff !== 'undefined' && liff.isLoggedIn && liff.isLoggedIn(),
-        timestamp: new Date().toISOString()
-    };
-    
-    console.log('🔍 Debug Info:', debugInfo);
-    alert(`Debug Information:\n\n${JSON.stringify(debugInfo, null, 2)}`);
-}
-
-/**
- * ทดสอบ API endpoints ทั้งหมด
- */
-async function testAllEndpoints() {
-    try {
-        showState('loadingState');
-        console.log('🧪 Testing All API Endpoints...');
-        
-        const testUserId = 'test-user-123';
-        const endpoints = [
-            { name: 'Ping', url: `${CONFIG.API_URL}?action=ping` },
-            { name: 'Check Survey Status', url: `${CONFIG.API_URL}?action=checkSurveyStatus&uid=${testUserId}` },
-            { name: 'Get User Info', url: `${CONFIG.API_URL}?action=getUserInfoByUID&uid=${testUserId}` }
-        ];
-        
-        const results = [];
-        
-        for (const endpoint of endpoints) {
-            try {
-                console.log(`Testing ${endpoint.name}...`);
-                const result = await fetchAPI(endpoint.url);
-                results.push({ name: endpoint.name, status: 'SUCCESS', data: result });
-            } catch (error) {
-                results.push({ name: endpoint.name, status: 'FAILED', error: error.message });
-            }
-        }
-        
-        console.log('🏁 Test Results:', results);
-        
-        let resultText = 'API Test Results:\n\n';
-        results.forEach(result => {
-            resultText += `${result.name}: ${result.status}\n`;
-            if (result.error) {
-                resultText += `  Error: ${result.error}\n`;
-            }
-            resultText += '\n';
-        });
-        
-        alert(resultText);
-        
-    } catch (error) {
-        console.error('❌ Test All Endpoints Failed:', error);
-        alert(`Test All Endpoints ล้มเหลว!\n\nError: ${error.message}`);
-    }
+    submitBtn.disabled = !allAnswered;
 }
 
 // ==========================================
@@ -1032,27 +872,22 @@ async function testAllEndpoints() {
  * ผูกอีเวนต์ทั้งหมดเมื่อ DOM โหลดเสร็จ
  */
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('📄 DOM Content Loaded, setting up event listeners...');
-    
     // ผูกอีเวนต์การเปลี่ยนแปลงในฟอร์ม
     const surveyForm = document.getElementById('healthySurvey');
     if (surveyForm) {
         surveyForm.addEventListener('change', checkAllAnswered);
-        console.log('✅ Form change event listener added');
     }
     
-    // ผูกอีเวนต์ปุ่มส่ง
+    // ผูกอีเวนต์ปุ่มส่ง (ใช้ event listener แทน onclick เพื่อป้องกันการเรียกซ้ำ)
     const submitBtn = document.getElementById('submitBtn');
     if (submitBtn) {
         submitBtn.addEventListener('click', function(e) {
             e.preventDefault();
             submitSurvey();
         });
-        console.log('✅ Submit button event listener added');
     }
     
     // เริ่มต้นแอปพลิเคชัน
-    console.log('🚀 Starting application...');
     initializeLiff();
 });
 
@@ -1083,11 +918,6 @@ window.addEventListener('unhandledrejection', function(event) {
 // ทำให้ฟังก์ชันสำคัญเป็น global เพื่อให้สามารถเรียกจาก HTML ได้
 window.initializeLiff = initializeLiff;
 window.submitSurvey = submitSurvey;
-window.quickTest = quickTest;
-window.debugAPI = debugAPI;
-window.testAllEndpoints = testAllEndpoints;
-
-console.log('✅ กินดี Healthy Life #2 Survey Application loaded successfully');
     </script>
 </body>
 </html>
