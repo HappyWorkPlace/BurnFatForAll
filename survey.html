@@ -6,7 +6,7 @@
     <title>แบบสอบถามก่อนเข้าร่วมโครงการ กินดี Healthy Life #2</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <style>
-    * {
+    * {ไม่พบ
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -54,23 +54,22 @@ body {
 }
 
 .loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 20px;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; 
+    padding: 60px 20px;
+    text-align: center;
 }
 
 .loading-spinner {
-    width: 40px;
-    height: 40px;
-    border: 3px solid #ecf0f1;
-    border-top: 3px solid #3498db;
-    border-radius: 50%;
-    animation: spin 1.2s linear infinite;
-    margin-bottom: 20px;
-    align-items: center;
+    width: 40px;
+    height: 40px;
+    border: 3px solid #ecf0f1;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1.2s linear infinite;
+    margin-bottom: 20px;
 }
 
 @keyframes spin {
@@ -691,7 +690,7 @@ async function getUserInfo(uid) {
         } else {
             showError(
                 'ไม่พบข้อมูลผู้ใช้ในระบบ',
-                'กรุณาติดต่อผู้ดูแลระบบเพื่อลงทะเบียนข้อมูลของท่าน'
+                'กรุณาลงทะเบียนเข้าร่วมโครงการก่อน'
             );
         }
         
