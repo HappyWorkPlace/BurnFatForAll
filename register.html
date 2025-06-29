@@ -412,6 +412,10 @@
                 document.getElementById(nextFieldId).focus();
             }
         }
+        function enforceNumericInput(element) {
+            // ใช้ Regular Expression เพื่อลบทุกอย่างที่ไม่ใช่ตัวเลข (0-9) ออกไป
+            element.value = element.value.replace(/[^0-9]/g, '');
+        }
 
         function convertToUpper(inputElement) {
             inputElement.value = inputElement.value.toUpperCase();
