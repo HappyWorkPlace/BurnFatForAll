@@ -1782,7 +1782,7 @@ const Utils = {
 };
 
 /* =================================
-   🌐 API FUNCTIONS
+   🌐 API FUNCTIONS (แก้ไขแล้ว)
    ================================= */
 const API = {
     // Base fetch with error handling
@@ -1806,7 +1806,21 @@ const API = {
         return this.request({ action: 'getUserData2', uid });
     },
 
-    // Get food list
+    // ⭐ ฟังก์ชันใหม่: อ่านรายการอาหารจากไฟล์ JSON
+    async getFoodListFromFile() {
+        try {
+            const response = await fetch('./foodlist.json');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Failed to load food list from file:', error);
+            throw error;
+        }
+    },
+
+    // ⚠️ ฟังก์ชันเก่า - สามารถลบออกได้หรือเก็บไว้เป็น backup
     async getFoodList() {
         return this.request({ 
             action: 'getFoodList', 
@@ -2155,7 +2169,7 @@ const Food = {
     async loadFoodList() {
         try {
             console.log('Loading food list...');
-            const response = await API.getFoodList();
+            const response = await API.getFoodListFromFile();
             
             if (response.success) {
                 validFoodList = response.data.filter(food => 
