@@ -1832,37 +1832,59 @@ const API = {
     // Check if user already recorded today
 // ⭐ แก้ไขฟังก์ชันนี้ให้เช็คจาก userData[12] แทนการเรียก API
     async checkUserColumnJ(uid) {
-        try {
-            // เช็คจาก userData[12] แทนการเรียก API
-            if (!userData || !Array.isArray(userData) || userData.length < 13) {
-                throw new Error('User data not available');
-            }
-            
-            const todayRecorded = userData[12]; // "TRUE" หรือ "FALSE"
-            
-            // ส่งค่ากลับในรูปแบบเดียวกับ API เดิม เพื่อให้โค้ดที่เรียกใช้ไม่ต้องแก้ไข
-            if (todayRecorded === "FALSE") {
-                return {
-                    success: true,
-                    status: 'TRUE', // สามารถบันทึกได้
-                    message: 'Can record today'
-                };
-            } else {
-                return {
-                    success: true,
-                    status: 'FALSE', // บันทึกไปแล้ว
-                    message: 'Already recorded today',
-                    lastTimestamp: new Date().toISOString() // ใส่เวลาปัจจุบันเป็น fallback
-                };
-            }
-        } catch (error) {
-            console.error('Error checking user status from userData:', error);
-            
-            // ถ้าเกิด error ให้ fallback ไปเรียก API จริง
-            console.log('🔄 Fallback: เรียก API checkUserColumnJ...');
-            return this.request({ action: 'checkUserColumnJ', uid });
+    try {
+        // เช็คจาก userData[12] แทนการเรียก API
+        if (!userData || !Array.isArray(userData) || userData.length < 13) {
+            throw new Error('User data not available');
         }
-    },
+        
+        const todayRecorded = userData[12]; // "TRUE" หรือ "FALSE"
+        
+        // ⭐ จัดการเวลาอย่างปลอดภัย
+        let recordedTime = null;
+        try {
+            if (userData[13]) {
+                // ถ้า userData[13] เป็น Date object
+                if (userData[13] instanceof Date) {
+                    recordedTime = userData[13].toISOString();
+                }
+                // ถ้า userData[13] เป็น string ที่เป็นวันที่
+                else if (typeof userData[13] === 'string') {
+                    recordedTime = new Date(userData[13]).toISOString();
+                }
+                // ถ้า userData[13] เป็น timestamp
+                else if (typeof userData[13] === 'number') {
+                    recordedTime = new Date(userData[13]).toISOString();
+                }
+            }
+        } catch (timeError) {
+            console.log('⚠️ Cannot parse time from userData[13]:', userData[13]);
+            recordedTime = new Date().toISOString(); // ใช้เวลาปัจจุบันเป็น fallback
+        }
+        
+        // ⭐ แก้ไข Logic ให้ถูกต้อง
+        if (todayRecorded === "TRUE") {
+            return {
+                success: true,
+                status: 'TRUE', // สามารถบันทึกได้
+                message: 'Can record today'
+            };
+        } else {
+            return {
+                success: true,
+                status: 'FALSE', // บันทึกไปแล้ว
+                message: 'Already recorded today',
+                lastTimestamp: recordedTime || new Date().toISOString()
+            };
+        }
+    } catch (error) {
+        console.error('Error checking user status from userData:', error);
+        
+        // ถ้าเกิด error ให้ fallback ไปเรียก API จริง
+        console.log('🔄 Fallback: เรียก API checkUserColumnJ...');
+        return this.request({ action: 'checkUserColumnJ', uid });
+    }
+},
 
     // Save food record
     async saveRedeemData(empNo, factory, selectedFood, name) {
