@@ -6,7 +6,7 @@
     <title>บันทึกการแลกรับรางวัล - กินดี Healthy Life #2</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
 <style>
 /* =================================
@@ -526,6 +526,9 @@ body {
                     <i class="fas fa-exclamation-triangle"></i>
                     <div class="state-title">เกิดข้อผิดพลาด</div>
                     <div class="state-message">ไม่สามารถโหลดข้อมูลได้ กรุณาลองใหม่อีกครั้ง</div>
+                    <button class="retry-btn" onclick="location.reload()" style="margin-top: 20px; padding: 12px 24px; background: var(--primary-500); color: white; border: none; border-radius: 8px; cursor: pointer;">
+                        <i class="fas fa-redo-alt"></i> ลองใหม่
+                    </button>
                 </div>
 
                 <!-- Empty State -->
@@ -555,6 +558,9 @@ body {
 
     <script>
 document.addEventListener("DOMContentLoaded", function() {
+    console.log('📱 App started');
+    
+    let initTimeout; // Declare timeout variable
     const loadingElement = document.getElementById('loading');
     const errorElement = document.getElementById('error');
     const emptyElement = document.getElementById('empty');
@@ -677,24 +683,86 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     async function initializeLiff() {
+        // Set a timeout for LIFF initialization
+        initTimeout = setTimeout(() => {
+            console.warn('⏰ LIFF initialization timeout');
+            const errorElement = document.getElementById('error');
+            if (errorElement && errorElement.style.display === 'none') {
+                const errorTitle = errorElement.querySelector('.state-title');
+                const errorMessage = errorElement.querySelector('.state-message');
+                errorTitle.textContent = 'การเชื่อมต่อหมดเวลา';
+                errorMessage.innerHTML = `
+                    การเชื่อมต่อใช้เวลานานเกินไป<br>
+                    กรุณาตรวจสอบอินเทอร์เน็ตและลองใหม่
+                `;
+                showError();
+            }
+        }, 10000); // 10 seconds timeout
+        
         try {
+            console.log('🚀 Starting LIFF initialization...');
+            
+            // Check if LIFF SDK is loaded
+            if (typeof liff === 'undefined') {
+                console.error('❌ LIFF SDK not loaded');
+                throw new Error('LIFF SDK not available');
+            }
+            
             await liff.init({ liffId: "2004752543-O6BZm2yN" });
+            console.log('✅ LIFF initialized successfully');
+            clearTimeout(initTimeout); // Clear timeout on success
+            
             if (liff.isLoggedIn()) {
+                console.log('👤 User is logged in, getting profile...');
                 const profile = await liff.getProfile();
                 const userId = profile.userId;
                 const pictureUrl = profile.pictureUrl;
                 
-                console.log('LINE Profile:', profile);
+                console.log('📋 LINE Profile:', profile);
                 fetchData(userId, pictureUrl);
             } else {
+                console.log('🔐 User not logged in, redirecting to login...');
                 liff.login();
             }
         } catch (error) {
-            console.error('LIFF initialization failed:', error);
+            console.error('💥 LIFF initialization failed:', error);
+            clearTimeout(initTimeout); // Clear timeout on error
+            
+            // Show detailed error message
+            const errorElement = document.getElementById('error');
+            const errorTitle = errorElement.querySelector('.state-title');
+            const errorMessage = errorElement.querySelector('.state-message');
+            
+            if (error.message.includes('Unable to load client features') || 
+                error.message.includes('INTERNET_DISCONNECTED')) {
+                errorTitle.textContent = 'ปัญหาการเชื่อมต่อ';
+                errorMessage.innerHTML = `
+                    ไม่สามารถเชื่อมต่อกับ LINE ได้<br>
+                    <strong>วิธีแก้ไข:</strong><br>
+                    • ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต<br>
+                    • เปิดลิงก์ใน LINE Browser เท่านั้น<br>
+                    • ปิดแล้วเปิดใหม่อีกครั้ง<br><br>
+                    <small style="color: #666;">หรือ <a href="https://line.me/R/app/2004752543-O6BZm2yN" style="color: var(--primary-500);">คลิกที่นี่</a> เพื่อเปิดใน LINE</small>
+                `;
+            } else if (error.message.includes('LIFF SDK not available')) {
+                errorTitle.textContent = 'LIFF SDK ไม่พร้อมใช้งาน';
+                errorMessage.innerHTML = `
+                    ไม่สามารถโหลด LINE SDK ได้<br>
+                    กรุณาลองใหม่อีกครั้ง
+                `;
+            } else {
+                errorTitle.textContent = 'เกิดข้อผิดพลาด';
+                errorMessage.innerHTML = `
+                    ไม่สามารถเริ่มต้นแอปได้<br>
+                    ${error.message}
+                `;
+            }
+            
             showError();
         }
     }
 
+    // Start LIFF initialization
     initializeLiff();
 });
     </script>
