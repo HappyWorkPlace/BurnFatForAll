@@ -229,6 +229,14 @@ body {
     font-size: var(--text-xl);
     box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
     flex-shrink: 0;
+    overflow: hidden;
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
 }
 
 .user-details h3 {
@@ -586,7 +594,7 @@ document.addEventListener("DOMContentLoaded", function() {
         tableContainer.style.display = 'block';
     }
 
-    function updateUserInfo(userInfo) {
+    function updateUserInfo(userInfo, profilePicture = null) {
         // Update header
         userNameElement.textContent = userInfo.Name || 'ผู้ใช้';
         userEmpNoElement.textContent = `รหัสพนักงาน: ${userInfo.EmpNo || '-'}`;
@@ -596,6 +604,12 @@ document.addEventListener("DOMContentLoaded", function() {
         const userFactoryElement = document.getElementById('userFactory');
         if (userFactoryElement) {
             userFactoryElement.textContent = `โรงงาน: ${userInfo.Factory || '-'}`;
+        }
+        
+        // Update profile picture
+        const userAvatar = document.querySelector('.user-avatar');
+        if (profilePicture && userAvatar) {
+            userAvatar.innerHTML = `<img src="${profilePicture}" alt="${userInfo.Name || 'User'}" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\\"fas fa-user\\"></i>';">`;
         }
     }
 
@@ -668,7 +682,10 @@ document.addEventListener("DOMContentLoaded", function() {
             if (liff.isLoggedIn()) {
                 const profile = await liff.getProfile();
                 const userId = profile.userId;
-                fetchData(userId);
+                const pictureUrl = profile.pictureUrl;
+                
+                console.log('LINE Profile:', profile);
+                fetchData(userId, pictureUrl);
             } else {
                 liff.login();
             }
