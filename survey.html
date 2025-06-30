@@ -6,7 +6,7 @@
     <title>แบบสอบถามก่อนเข้าร่วมโครงการ กินดี Healthy Life #2</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <style>
-    * {ไม่พบ
+    * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -54,27 +54,55 @@ body {
 }
 
 .loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center; 
-    padding: 60px 20px;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; 
+    padding: 60px 20px;
+    text-align: center;
 }
 
 .loading-spinner {
-    width: 40px;
-    height: 40px;
-    border: 3px solid #ecf0f1;
-    border-top: 3px solid #3498db;
-    border-radius: 50%;
-    animation: spin 1.2s linear infinite;
-    margin-bottom: 20px;
+    width: 40px;
+    height: 40px;
+    border: 3px solid #ecf0f1;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    margin-bottom: 20px;
+    -webkit-animation: spin 1.2s linear infinite;
+    -moz-animation: spin 1.2s linear infinite;
+    -o-animation: spin 1.2s linear infinite;
+    animation: spin 1.2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+}
+
+@-moz-keyframes spin {
+    0% { -moz-transform: rotate(0deg); }
+    100% { -moz-transform: rotate(360deg); }
+}
+
+@-o-keyframes spin {
+    0% { -o-transform: rotate(0deg); }
+    100% { -o-transform: rotate(360deg); }
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% { 
+        transform: rotate(0deg);
+        -webkit-transform: rotate(0deg);
+        -moz-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+    }
+    100% { 
+        transform: rotate(360deg);
+        -webkit-transform: rotate(360deg);
+        -moz-transform: rotate(360deg);
+        -o-transform: rotate(360deg);
+    }
 }
 
 .status-container {
@@ -381,7 +409,6 @@ p, label, span {
     display: inline-block;
 }
 </style>
-
 </head>
 <body>
     <div class="survey-container">
