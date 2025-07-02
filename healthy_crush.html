@@ -1,0 +1,2204 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthy Food Match - Super Stable Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.5s ease-out;
+            position: relative;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .screen-shake {
+            animation: screen-shake 0.5s ease-in-out;
+        }
+
+        @keyframes screen-shake {
+            0%, 100% { transform: translateX(0); }
+            10% { transform: translateX(-5px) rotate(-1deg); }
+            20% { transform: translateX(5px) rotate(1deg); }
+            30% { transform: translateX(-3px) rotate(-1deg); }
+            40% { transform: translateX(3px) rotate(1deg); }
+            50% { transform: translateX(-2px); }
+            60% { transform: translateX(2px); }
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .game-title {
+            font-size: 42px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #56ab2f, #a8e063);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #56ab2f, #a8e063);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+        .stat-box:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .multiplier-indicator {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: rgba(243, 156, 18, 1);
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .multiplier-indicator.show {
+            opacity: 1;
+            animation: multiplier-pulse 0.5s ease-out;
+        }
+
+        @keyframes multiplier-pulse {
+            0% { transform: scale(0.5); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .special-candies-info {
+            background: rgba(0,0,0,0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .special-candies-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #56ab2f;
+            margin-bottom: 10px;
+        }
+
+        .special-candies-list {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .special-candy-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 14px;
+        }
+
+        .board-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(8, 65px);
+            grid-template-rows: repeat(8, 65px);
+            gap: 5px;
+            background: rgba(0,0,0,0.1);
+            padding: 10px;
+            border-radius: 10px;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .cell {
+            width: 65px;
+            height: 65px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .cell:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .cell.selected {
+            transform: scale(1.1);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 1);
+            animation: pulse 0.5s infinite alternate;
+            z-index: 10;
+        }
+
+        .cell.processing {
+            pointer-events: none;
+        }
+
+        @keyframes pulse {
+            from { box-shadow: 0 0 25px rgba(255, 255, 255, 1); }
+            to { box-shadow: 0 0 35px rgba(255, 255, 255, 1), 0 0 45px rgba(86, 171, 47, 0.8); }
+        }
+
+        .candy {
+            font-size: 40px;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 10;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+            position: relative;
+            user-select: none;
+        }
+
+        .candy.falling {
+            animation: fall 0.4s ease-in;
+        }
+
+        @keyframes fall {
+            from { transform: translateY(-400px) rotate(180deg); opacity: 0; }
+            to { transform: translateY(0) rotate(0deg); opacity: 1; }
+        }
+
+        .candy.matched {
+            animation: explode 0.5s ease-out forwards;
+        }
+
+        @keyframes explode {
+            0% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.5) rotate(180deg); filter: brightness(2); }
+            100% { transform: scale(0) rotate(360deg); opacity: 0; }
+        }
+
+        .candy.striped-h::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -10px;
+            right: -10px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,1), transparent);
+            transform: translateY(-50%);
+            box-shadow: 0 0 10px rgba(255,255,255,0.8);
+            animation: stripe-glow-h 1s ease-in-out infinite;
+        }
+
+        .candy.striped-v::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: -10px;
+            bottom: -10px;
+            width: 3px;
+            background: linear-gradient(0deg, transparent, rgba(255,255,255,1), transparent);
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px rgba(255,255,255,0.8);
+            animation: stripe-glow-v 1s ease-in-out infinite;
+        }
+
+        @keyframes stripe-glow-h {
+            0%, 100% { opacity: 0.5; transform: translateY(-50%) scaleY(1); }
+            50% { opacity: 1; transform: translateY(-50%) scaleY(1.5); }
+        }
+
+        @keyframes stripe-glow-v {
+            0%, 100% { opacity: 0.5; transform: translateX(-50%) scaleX(1); }
+            50% { opacity: 1; transform: translateX(-50%) scaleX(1.5); }
+        }
+
+        .candy.wrapped {
+            animation: wrapped-spin 2s linear infinite;
+        }
+
+        @keyframes wrapped-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .candy.wrapped::before {
+            content: '🎁';
+            position: absolute;
+            font-size: 16px;
+            top: -8px;
+            right: -8px;
+            animation: gift-bounce 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes gift-bounce {
+            from { transform: scale(0.8) translateY(0); }
+            to { transform: scale(1.2) translateY(-3px); }
+        }
+
+        .candy.color-bomb {
+            font-size: 45px;
+            animation: rainbow-spin 2s linear infinite;
+            filter: drop-shadow(0 0 15px rgba(255,255,255,1));
+        }
+
+        @keyframes rainbow-spin {
+            0% { 
+                transform: rotate(0deg); 
+                filter: hue-rotate(0deg) drop-shadow(0 0 15px rgba(255,0,0,1));
+            }
+            25% { 
+                filter: hue-rotate(90deg) drop-shadow(0 0 15px rgba(255,255,0,1));
+            }
+            50% { 
+                transform: rotate(180deg); 
+                filter: hue-rotate(180deg) drop-shadow(0 0 15px rgba(0,255,0,1));
+            }
+            75% { 
+                filter: hue-rotate(270deg) drop-shadow(0 0 15px rgba(0,255,255,1));
+            }
+            100% { 
+                transform: rotate(360deg); 
+                filter: hue-rotate(360deg) drop-shadow(0 0 15px rgba(255,0,255,1));
+            }
+        }
+
+        .special-effect {
+            position: absolute;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .line-clear-h {
+            height: 65px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,1), transparent);
+            animation: sweep-h 0.5s ease-out forwards;
+            box-shadow: 0 0 20px rgba(255,255,255,0.8);
+        }
+
+        @keyframes sweep-h {
+            from { width: 0; left: 50%; }
+            to { width: 120%; left: -10%; }
+        }
+
+        .line-clear-v {
+            width: 65px;
+            background: linear-gradient(0deg, transparent, rgba(255,255,255,1), transparent);
+            animation: sweep-v 0.5s ease-out forwards;
+            box-shadow: 0 0 20px rgba(255,255,255,0.8);
+        }
+
+        @keyframes sweep-v {
+            from { height: 0; top: 50%; }
+            to { height: 120%; top: -10%; }
+        }
+
+        .explosion {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255,255,255,1), rgba(255,255,255,0.5), transparent);
+            border-radius: 50%;
+            animation: explode-area 0.6s ease-out forwards;
+            box-shadow: 0 0 30px rgba(255,255,255,0.8);
+        }
+
+        @keyframes explode-area {
+            from { transform: scale(0); opacity: 1; }
+            to { transform: scale(2); opacity: 0; }
+        }
+
+        .particle-system {
+            position: absolute;
+            pointer-events: none;
+            z-index: 150;
+        }
+
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: radial-gradient(circle, rgba(255,255,255,1), rgba(255,255,0,0.8));
+            border-radius: 50%;
+            animation: particle-burst 0.8s ease-out forwards;
+        }
+
+        @keyframes particle-burst {
+            0% { 
+                transform: scale(1) translate(0, 0); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: scale(0.2) translate(var(--dx), var(--dy)); 
+                opacity: 0; 
+            }
+        }
+
+        .score-popup {
+            position: absolute;
+            font-size: 28px;
+            font-weight: bold;
+            color: #56ab2f;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            pointer-events: none;
+            z-index: 200;
+            animation: score-rise 1s ease-out forwards;
+        }
+
+        @keyframes score-rise {
+            from { transform: translateY(0) scale(0.5); opacity: 1; }
+            to { transform: translateY(-80px) scale(1.5); opacity: 0; }
+        }
+
+        .combo-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 64px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #56ab2f, #f39c12);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            pointer-events: none;
+            z-index: 300;
+            animation: combo-bounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes combo-bounce {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(-180deg); }
+            50% { transform: translate(-50%, -50%) scale(1.5) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 0; }
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #56ab2f, #a8e063);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f39c12, #f1c40f);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .game-over-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .game-over-content {
+            background: white;
+            padding: 50px;
+            border-radius: 25px;
+            text-align: center;
+            animation: slideIn 0.5s ease-out;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-100px) scale(0.8); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .game-over-title {
+            font-size: 48px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #56ab2f, #a8e063);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        .final-stats {
+            font-size: 24px;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+
+        .final-stats strong {
+            color: #56ab2f;
+        }
+
+        .high-score {
+            font-size: 20px;
+            color: #f39c12;
+            margin-bottom: 20px;
+        }
+
+        .hint-animation {
+            animation: hint-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes hint-pulse {
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 0 0 rgba(86, 171, 47, 0);
+            }
+            50% { 
+                transform: scale(1.15); 
+                box-shadow: 0 0 30px rgba(86, 171, 47, 1);
+            }
+        }
+
+        .no-moves-shake {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .special-combo-effect {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 500;
+            background: radial-gradient(circle at center, transparent, rgba(255,255,255,0.3));
+            animation: special-combo-flash 0.5s ease-out;
+        }
+
+        @keyframes special-combo-flash {
+            from { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; }
+            to { opacity: 0; transform: scale(1.5); }
+        }
+
+        .processing-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.1);
+            z-index: 50;
+            display: none;
+        }
+
+        .debug-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            display: none;
+            z-index: 1001;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container" id="gameContainer">
+        <div class="game-header">
+            <h1 class="game-title">🥗 Healthy Food Match 🥗</h1>
+        </div>
+
+        <div class="game-stats">
+            <div class="stat-box">
+                <div class="stat-label">Score</div>
+                <div class="stat-value" id="score">0</div>
+                <div class="multiplier-indicator" id="multiplier">2x</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Moves Left</div>
+                <div class="stat-value" id="moves">30</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Chain</div>
+                <div class="stat-value" id="chain">0</div>
+            </div>
+        </div>
+
+        <div class="special-candies-info">
+            <div class="special-candies-title">🌟 อาหารพิเศษ 🌟</div>
+            <div class="special-candies-list">
+                <div class="special-candy-info">
+                    <span>4 ชิ้น</span>
+                    <span>➡️</span>
+                    <span style="font-size: 20px;">🥕</span>
+                    <span>ผักลาย (ทำลายแถว/คอลัมน์)</span>
+                </div>
+                <div class="special-candy-info">
+                    <span>รูป L/T</span>
+                    <span>➡️</span>
+                    <span style="font-size: 20px;">🎁</span>
+                    <span>ซุปเปอร์ฟู้ด (ระเบิด 3x3)</span>
+                </div>
+                <div class="special-candy-info">
+                    <span>5 ชิ้น</span>
+                    <span>➡️</span>
+                    <span style="font-size: 20px;">🌈</span>
+                    <span>สลัดรุ้ง (ทำลายชนิดเดียวกันทั้งหมด)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="board-container">
+            <div class="board" id="board"></div>
+            <div class="processing-overlay" id="processingOverlay"></div>
+        </div>
+
+        <div class="game-controls">
+            <button class="btn btn-primary" onclick="game.newGame()">เริ่มใหม่</button>
+            <button class="btn btn-secondary" onclick="game.showHint()">ช่วยบอกหน่อย 💡</button>
+            <button class="btn btn-secondary" onclick="game.toggleDebug()" id="debugBtn" style="display: none;">Debug</button>
+        </div>
+    </div>
+
+    <div class="game-over-overlay" id="gameOverOverlay">
+        <div class="game-over-content">
+            <h2 class="game-over-title">จบเกม!</h2>
+            <div class="final-stats">
+                <strong>คะแนนสุดท้าย:</strong> <span id="finalScore">0</span><br>
+                <strong>คอมโบสูงสุด:</strong> <span id="maxCombo">0</span>x<br>
+                <strong>อาหารพิเศษที่สร้าง:</strong> <span id="specialCreated">0</span> ชิ้น<br>
+                <strong>เชนสูงสุด:</strong> <span id="maxChain">0</span>
+            </div>
+            <div class="high-score" id="highScoreText"></div>
+            <button class="btn btn-primary" onclick="game.newGame()">เล่นอีกครั้ง</button>
+        </div>
+    </div>
+
+    <div class="debug-info" id="debugInfo">
+        <div>FPS: <span id="fps">60</span></div>
+        <div>State: <span id="gameState">idle</span></div>
+        <div>Processing: <span id="processingState">false</span></div>
+        <div>Queue: <span id="queueLength">0</span></div>
+    </div>
+
+    <script>
+        // Enhanced Configuration System
+        const CONFIG = {
+            BOARD_SIZE: 8,
+            CANDY_TYPES: ['🥕', '🥦', '🍎', '🍊', '🥒', '🍇'],
+            INITIAL_MOVES: 30,
+            MIN_MATCH: 3,
+            MAX_CHAIN_DEPTH: 10,
+            ANIMATION_SPEED: 300,
+            DEBUG_MODE: false,
+            PERFORMANCE: {
+                TARGET_FPS: 60,
+                PARTICLE_POOL_SIZE: 50,
+                EFFECT_POOL_SIZE: 20
+            },
+            SCORING: {
+                BASE_SCORE: 10,
+                COMBO_MULTIPLIER: 1.5,
+                SPECIAL_BONUS: 50,
+                CHAIN_BONUS: 20
+            }
+        };
+
+        // Enhanced Game State Machine
+        class GameStateMachine {
+            constructor() {
+                this.state = 'idle';
+                this.previousState = null;
+                this.stateHistory = [];
+            }
+
+            setState(newState) {
+                this.previousState = this.state;
+                this.stateHistory.push(this.state);
+                this.state = newState;
+                
+                if (CONFIG.DEBUG_MODE) {
+                    document.getElementById('gameState').textContent = this.state;
+                }
+            }
+
+            isProcessing() {
+                return this.state === 'processing' || this.state === 'animating';
+            }
+
+            canInteract() {
+                return this.state === 'idle' || this.state === 'selected';
+            }
+        }
+
+        // Animation Queue System
+        class AnimationQueue {
+            constructor() {
+                this.queue = [];
+                this.isRunning = false;
+            }
+
+            add(animation) {
+                this.queue.push(animation);
+                if (!this.isRunning) {
+                    this.process();
+                }
+            }
+
+            async process() {
+                this.isRunning = true;
+                
+                while (this.queue.length > 0) {
+                    const animation = this.queue.shift();
+                    try {
+                        await animation();
+                    } catch (error) {
+                        console.error('Animation error:', error);
+                    }
+                }
+                
+                this.isRunning = false;
+                
+                if (CONFIG.DEBUG_MODE) {
+                    document.getElementById('queueLength').textContent = this.queue.length;
+                }
+            }
+
+            clear() {
+                this.queue = [];
+                this.isRunning = false;
+            }
+        }
+
+        // Centralized Special Candy Manager
+        class SpecialCandyManager {
+            constructor() {
+                this.specialCandies = new Map();
+                this.pendingCreations = [];
+            }
+            
+            clear() {
+                this.specialCandies.clear();
+                this.pendingCreations = [];
+            }
+            
+            set(row, col, type) {
+                const key = `${row},${col}`;
+                this.specialCandies.set(key, type);
+            }
+            
+            get(row, col) {
+                const key = `${row},${col}`;
+                return this.specialCandies.get(key);
+            }
+            
+            has(row, col) {
+                const key = `${row},${col}`;
+                return this.specialCandies.has(key);
+            }
+            
+            delete(row, col) {
+                const key = `${row},${col}`;
+                return this.specialCandies.delete(key);
+            }
+            
+            move(fromRow, fromCol, toRow, toCol) {
+                const fromKey = `${fromRow},${fromCol}`;
+                const toKey = `${toRow},${toCol}`;
+                
+                if (this.specialCandies.has(fromKey)) {
+                    const type = this.specialCandies.get(fromKey);
+                    this.specialCandies.delete(fromKey);
+                    this.specialCandies.set(toKey, type);
+                    return true;
+                }
+                return false;
+            }
+            
+            swap(row1, col1, row2, col2) {
+                const key1 = `${row1},${col1}`;
+                const key2 = `${row2},${col2}`;
+                const special1 = this.specialCandies.get(key1);
+                const special2 = this.specialCandies.get(key2);
+                
+                this.specialCandies.delete(key1);
+                this.specialCandies.delete(key2);
+                
+                if (special1) this.specialCandies.set(key2, special1);
+                if (special2) this.specialCandies.set(key1, special2);
+            }
+            
+            planCreation(row, col, type, priority = 0) {
+                this.pendingCreations.push({ row, col, type, priority });
+            }
+            
+            executeCreations(board) {
+                // Sort by priority (higher first)
+                this.pendingCreations.sort((a, b) => b.priority - a.priority);
+                
+                const created = [];
+                const occupiedPositions = new Set();
+                
+                for (const creation of this.pendingCreations) {
+                    const key = `${creation.row},${creation.col}`;
+                    
+                    // Check if position is still available
+                    if (!occupiedPositions.has(key) && board[creation.row][creation.col]) {
+                        this.set(creation.row, creation.col, creation.type);
+                        occupiedPositions.add(key);
+                        created.push(creation);
+                        
+                        // Set special candy visual
+                        if (creation.type === 'color-bomb') {
+                            board[creation.row][creation.col] = '🌈';
+                        }
+                    }
+                }
+                
+                this.pendingCreations = [];
+                return created;
+            }
+            
+            getAllPositions() {
+                return Array.from(this.specialCandies.keys()).map(key => {
+                    const [row, col] = key.split(',').map(Number);
+                    return { row, col, type: this.specialCandies.get(key) };
+                });
+            }
+            
+            validateSync(board) {
+                const issues = [];
+                
+                for (const [key, type] of this.specialCandies) {
+                    const [row, col] = key.split(',').map(Number);
+                    
+                    // Check if position exists and has candy
+                    if (row < 0 || row >= board.length || 
+                        col < 0 || col >= board[0].length || 
+                        !board[row][col]) {
+                        issues.push(`Invalid special candy at ${key}: ${type}`);
+                        this.specialCandies.delete(key);
+                    }
+                }
+                
+                return issues;
+            }
+        }
+            constructor(createFn, resetFn, initialSize = 10) {
+                this.createFn = createFn;
+                this.resetFn = resetFn;
+                this.pool = [];
+                this.active = new Set();
+                
+                for (let i = 0; i < initialSize; i++) {
+                    this.pool.push(this.createFn());
+                }
+            }
+
+            get() {
+                let object;
+                if (this.pool.length > 0) {
+                    object = this.pool.pop();
+                } else {
+                    object = this.createFn();
+                }
+                
+                this.active.add(object);
+                return object;
+            }
+
+            release(object) {
+                if (this.active.has(object)) {
+                    this.active.delete(object);
+                    this.resetFn(object);
+                    this.pool.push(object);
+                }
+            }
+
+            releaseAll() {
+                this.active.forEach(object => {
+                    this.resetFn(object);
+                    this.pool.push(object);
+                });
+                this.active.clear();
+            }
+        }
+
+        // Enhanced Pattern Detection System
+        class PatternDetector {
+            static findMatches(board) {
+                const allMatches = [];
+                
+                // Find patterns separately to avoid conflicts
+                const basicMatches = this.findBasicMatches(board);
+                const complexMatches = this.findComplexMatches(board, basicMatches);
+                
+                // Merge with priority (complex patterns override basic ones)
+                const finalMatches = this.resolvePatternConflicts(basicMatches, complexMatches);
+                
+                return finalMatches;
+            }
+            
+            static findBasicMatches(board) {
+                const matches = [];
+                const processed = new Set();
+                
+                // Find horizontal matches
+                matches.push(...this.findHorizontalMatches(board, processed));
+                // Find vertical matches (with fresh processed set)
+                matches.push(...this.findVerticalMatches(board, new Set()));
+                
+                return matches;
+            }
+            
+            static findComplexMatches(board, basicMatches) {
+                const matches = [];
+                const basicCells = new Set();
+                
+                // Collect all cells involved in basic matches
+                basicMatches.forEach(match => {
+                    match.cells.forEach(cell => {
+                        basicCells.add(`${cell.row},${cell.col}`);
+                    });
+                });
+                
+                // Find L and T shapes that don't conflict with basic matches
+                matches.push(...this.findLShapes(board, basicCells));
+                matches.push(...this.findTShapes(board, basicCells));
+                
+                return matches;
+            }
+            
+            static resolvePatternConflicts(basicMatches, complexMatches) {
+                const finalMatches = [];
+                const complexCells = new Set();
+                
+                // Collect all cells in complex patterns (higher priority)
+                complexMatches.forEach(match => {
+                    match.cells.forEach(cell => {
+                        complexCells.add(`${cell.row},${cell.col}`);
+                    });
+                    finalMatches.push(match);
+                });
+                
+                // Only add basic matches that don't conflict with complex ones
+                basicMatches.forEach(match => {
+                    const hasConflict = match.cells.some(cell => 
+                        complexCells.has(`${cell.row},${cell.col}`)
+                    );
+                    
+                    if (!hasConflict) {
+                        finalMatches.push(match);
+                    }
+                });
+                
+                return finalMatches;
+            }
+
+            static findHorizontalMatches(board, processed) {
+                const matches = [];
+                
+                for (let row = 0; row < CONFIG.BOARD_SIZE; row++) {
+                    for (let col = 0; col < CONFIG.BOARD_SIZE - 2; col++) {
+                        const candy = board[row][col];
+                        if (!candy || candy === '🌈') continue;
+
+                        let matchLength = 1;
+                        while (col + matchLength < CONFIG.BOARD_SIZE && 
+                               board[row][col + matchLength] === candy) {
+                            matchLength++;
+                        }
+
+                        if (matchLength >= CONFIG.MIN_MATCH) {
+                            const match = {
+                                cells: [],
+                                type: 'horizontal',
+                                length: matchLength,
+                                candy: candy
+                            };
+                            
+                            for (let i = 0; i < matchLength; i++) {
+                                const key = `${row},${col + i}`;
+                                if (!processed.has(key)) {
+                                    match.cells.push({ row, col: col + i, candy });
+                                    processed.add(key);
+                                }
+                            }
+                            
+                            if (match.cells.length >= CONFIG.MIN_MATCH) {
+                                matches.push(match);
+                            }
+                            col += matchLength - 1;
+                        }
+                    }
+                }
+                
+                return matches;
+            }
+
+            static findVerticalMatches(board, processed) {
+                const matches = [];
+                
+                for (let col = 0; col < CONFIG.BOARD_SIZE; col++) {
+                    for (let row = 0; row < CONFIG.BOARD_SIZE - 2; row++) {
+                        const candy = board[row][col];
+                        if (!candy || candy === '🌈') continue;
+
+                        let matchLength = 1;
+                        while (row + matchLength < CONFIG.BOARD_SIZE && 
+                               board[row + matchLength][col] === candy) {
+                            matchLength++;
+                        }
+
+                        if (matchLength >= CONFIG.MIN_MATCH) {
+                            const match = {
+                                cells: [],
+                                type: 'vertical',
+                                length: matchLength,
+                                candy: candy
+                            };
+                            
+                            for (let i = 0; i < matchLength; i++) {
+                                const key = `${row + i},${col}`;
+                                if (!processed.has(key)) {
+                                    match.cells.push({ row: row + i, col, candy });
+                                    processed.add(key);
+                                }
+                            }
+                            
+                            if (match.cells.length >= CONFIG.MIN_MATCH) {
+                                matches.push(match);
+                            }
+                            row += matchLength - 1;
+                        }
+                    }
+                }
+                
+                return matches;
+            }
+
+            static findLShapes(board, processed) {
+                const matches = [];
+                
+                for (let row = 1; row < CONFIG.BOARD_SIZE - 1; row++) {
+                    for (let col = 1; col < CONFIG.BOARD_SIZE - 1; col++) {
+                        const candy = board[row][col];
+                        if (!candy || candy === '🌈') continue;
+
+                        const patterns = [
+                            // L shapes in 4 orientations
+                            [[-1,0], [0,0], [1,0], [1,1]], // ⌐
+                            [[-1,0], [0,0], [1,0], [1,-1]], // ¬
+                            [[0,-1], [0,0], [0,1], [1,1]], // _|
+                            [[0,-1], [0,0], [0,1], [-1,1]]  // ¯|
+                        ];
+
+                        for (const pattern of patterns) {
+                            const cells = [];
+                            let valid = true;
+                            
+                            for (const [dr, dc] of pattern) {
+                                const r = row + dr;
+                                const c = col + dc;
+                                if (r < 0 || r >= CONFIG.BOARD_SIZE || 
+                                    c < 0 || c >= CONFIG.BOARD_SIZE || 
+                                    board[r][c] !== candy) {
+                                    valid = false;
+                                    break;
+                                }
+                                
+                                const key = `${r},${c}`;
+                                if (!processed.has(key)) {
+                                    cells.push({ row: r, col: c, candy });
+                                }
+                            }
+                            
+                            if (valid && cells.length >= 4) {
+                                cells.forEach(cell => processed.add(`${cell.row},${cell.col}`));
+                                matches.push({
+                                    cells,
+                                    type: 'L-shape',
+                                    length: cells.length,
+                                    candy: candy,
+                                    centerRow: row,
+                                    centerCol: col
+                                });
+                            }
+                        }
+                    }
+                }
+                
+                return matches;
+            }
+
+            static findTShapes(board, processed) {
+                const matches = [];
+                
+                for (let row = 1; row < CONFIG.BOARD_SIZE - 1; row++) {
+                    for (let col = 1; col < CONFIG.BOARD_SIZE - 1; col++) {
+                        const candy = board[row][col];
+                        if (!candy || candy === '🌈') continue;
+
+                        const patterns = [
+                            // T shapes in 4 orientations
+                            [[-1,-1], [-1,0], [-1,1], [0,0]], // T
+                            [[0,-1], [0,0], [0,1], [1,0]], // ⊥
+                            [[0,0], [1,-1], [1,0], [1,1]], // ⊤
+                            [[-1,0], [0,-1], [0,0], [0,1]]  // ⊣
+                        ];
+
+                        for (const pattern of patterns) {
+                            const cells = [];
+                            let valid = true;
+                            
+                            for (const [dr, dc] of pattern) {
+                                const r = row + dr;
+                                const c = col + dc;
+                                if (r < 0 || r >= CONFIG.BOARD_SIZE || 
+                                    c < 0 || c >= CONFIG.BOARD_SIZE || 
+                                    board[r][c] !== candy) {
+                                    valid = false;
+                                    break;
+                                }
+                                
+                                const key = `${r},${c}`;
+                                if (!processed.has(key)) {
+                                    cells.push({ row: r, col: c, candy });
+                                }
+                            }
+                            
+                            if (valid && cells.length >= 4) {
+                                cells.forEach(cell => processed.add(`${cell.row},${cell.col}`));
+                                matches.push({
+                                    cells,
+                                    type: 'T-shape',
+                                    length: cells.length,
+                                    candy: candy,
+                                    centerRow: row,
+                                    centerCol: col
+                                });
+                            }
+                        }
+                    }
+                }
+                
+                return matches;
+            }
+        }
+
+        // Enhanced Game Class
+        class SuperCandyCrush {
+            constructor() {
+                this.initializeGameData();
+                this.initializeSystems();
+                this.initializeDOM();
+                this.init();
+            }
+
+            initializeGameData() {
+                this.board = [];
+                this.score = 0;
+                this.moves = CONFIG.INITIAL_MOVES;
+                this.selectedCell = null;
+                this.combo = 0;
+                this.maxCombo = 0;
+                this.chain = 0;
+                this.maxChain = 0;
+                this.specialCandiesCreated = 0;
+                this.specialCandyManager = new SpecialCandyManager();
+                this.multiplier = 1;
+                this.highScore = parseInt(localStorage.getItem('healthyFoodMatchHighScore')) || 0;
+            }
+
+            initializeSystems() {
+                this.stateMachine = new GameStateMachine();
+                this.animationQueue = new AnimationQueue();
+                this.effects = new Map();
+                this.frameCount = 0;
+                this.lastTime = 0;
+                
+                // Initialize object pools
+                this.particlePool = new ObjectPool(
+                    () => document.createElement('div'),
+                    (element) => {
+                        element.className = '';
+                        element.style.cssText = '';
+                        if (element.parentNode) {
+                            element.parentNode.removeChild(element);
+                        }
+                    },
+                    CONFIG.PERFORMANCE.PARTICLE_POOL_SIZE
+                );
+            }
+
+            initializeDOM() {
+                this.boardElement = document.getElementById('board');
+                this.scoreElement = document.getElementById('score');
+                this.movesElement = document.getElementById('moves');
+                this.chainElement = document.getElementById('chain');
+                this.multiplierElement = document.getElementById('multiplier');
+                
+                // Enable debug mode with Alt+D
+                document.addEventListener('keydown', (e) => {
+                    if (e.altKey && e.key === 'd') {
+                        this.toggleDebug();
+                    }
+                });
+                
+                this.startPerformanceMonitoring();
+            }
+
+            startPerformanceMonitoring() {
+                const updateFPS = () => {
+                    const now = performance.now();
+                    this.frameCount++;
+                    
+                    if (now - this.lastTime >= 1000) {
+                        if (CONFIG.DEBUG_MODE) {
+                            document.getElementById('fps').textContent = this.frameCount;
+                            document.getElementById('processingState').textContent = this.stateMachine.isProcessing();
+                        }
+                        this.frameCount = 0;
+                        this.lastTime = now;
+                    }
+                    
+                    requestAnimationFrame(updateFPS);
+                };
+                updateFPS();
+            }
+
+            init() {
+                this.stateMachine.setState('initializing');
+                this.createBoard();
+                this.updateUI();
+                this.validateBoard();
+                this.stateMachine.setState('idle');
+            }
+
+            createBoard() {
+                this.boardElement.innerHTML = '';
+                this.board = [];
+                this.specialCandyManager.clear();
+
+                for (let row = 0; row < CONFIG.BOARD_SIZE; row++) {
+                    this.board[row] = [];
+                    for (let col = 0; col < CONFIG.BOARD_SIZE; col++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'cell';
+                        cell.dataset.row = row;
+                        cell.dataset.col = col;
+                        cell.addEventListener('click', (e) => this.handleCellClick(row, col, e));
+                        this.boardElement.appendChild(cell);
+
+                        let candy;
+                        let attempts = 0;
+                        do {
+                            candy = this.getRandomCandy();
+                            attempts++;
+                        } while (this.wouldCreateMatch(row, col, candy) && attempts < 10);
+
+                        this.board[row][col] = candy;
+                        this.renderCandy(row, col);
+                    }
+                }
+            }
+
+            getRandomCandy() {
+                return CONFIG.CANDY_TYPES[Math.floor(Math.random() * CONFIG.CANDY_TYPES.length)];
+            }
+
+            wouldCreateMatch(row, col, candy) {
+                // Check horizontal
+                if (col >= 2 && 
+                    this.board[row][col - 1] === candy && 
+                    this.board[row][col - 2] === candy) {
+                    return true;
+                }
+                
+                // Check vertical
+                if (row >= 2 && 
+                    this.board[row - 1][col] === candy && 
+                    this.board[row - 2][col] === candy) {
+                    return true;
+                }
+                
+                return false;
+            }
+
+            renderCandy(row, col) {
+                const cell = this.getCellElement(row, col);
+                const candy = this.board[row][col];
+                
+                if (!candy) {
+                    cell.innerHTML = '';
+                    return;
+                }
+                
+                const candyElement = document.createElement('span');
+                candyElement.className = 'candy';
+                candyElement.textContent = candy;
+
+                // Apply special candy styles
+                const specialType = this.specialCandyManager.get(row, col);
+                if (specialType) {
+                    candyElement.classList.add(specialType);
+                    
+                    if (specialType === 'color-bomb') {
+                        candyElement.textContent = '🌈';
+                    }
+                }
+
+                cell.innerHTML = '';
+                cell.appendChild(candyElement);
+            }
+
+            getCellElement(row, col) {
+                return this.boardElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+            }
+
+            async handleCellClick(row, col, event) {
+                if (!this.stateMachine.canInteract() || this.moves <= 0) {
+                    return;
+                }
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                if (!this.selectedCell) {
+                    this.selectCell(row, col);
+                } else {
+                    const { row: prevRow, col: prevCol } = this.selectedCell;
+                    this.deselectCell();
+
+                    if (this.isAdjacent(prevRow, prevCol, row, col)) {
+                        await this.performSwap(prevRow, prevCol, row, col);
+                    }
+                }
+            }
+
+            selectCell(row, col) {
+                this.selectedCell = { row, col };
+                this.getCellElement(row, col).classList.add('selected');
+                this.stateMachine.setState('selected');
+            }
+
+            deselectCell() {
+                if (this.selectedCell) {
+                    const { row, col } = this.selectedCell;
+                    this.getCellElement(row, col).classList.remove('selected');
+                    this.selectedCell = null;
+                    this.stateMachine.setState('idle');
+                }
+            }
+
+            isAdjacent(row1, col1, row2, col2) {
+                const rowDiff = Math.abs(row1 - row2);
+                const colDiff = Math.abs(col1 - col2);
+                return (rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1);
+            }
+
+            async performSwap(row1, col1, row2, col2) {
+                this.stateMachine.setState('processing');
+                this.setProcessingState(true);
+                
+                try {
+                    // Perform the swap
+                    this.swapBoardPositions(row1, col1, row2, col2);
+                    this.swapSpecialCandyData(row1, col1, row2, col2);
+                    
+                    // Update visuals
+                    this.renderCandy(row1, col1);
+                    this.renderCandy(row2, col2);
+                    
+                    await this.delay(CONFIG.ANIMATION_SPEED);
+
+                    // Check for special combinations
+                    const special1 = this.specialCandyManager.get(row1, col1);
+                    const special2 = this.specialCandyManager.get(row2, col2);
+                    
+                    if (special1 && special2) {
+                        await this.handleSpecialCombo(row1, col1, row2, col2, special1, special2);
+                    }
+
+                    // Check for matches
+                    const matches = PatternDetector.findMatches(this.board);
+                    const hasValidMove = matches.length > 0 || special1 || special2;
+                    
+                    if (hasValidMove) {
+                        this.moves--;
+                        this.combo = 0;
+                        this.chain = 0;
+                        
+                        // Trigger special candies
+                        if (special1) await this.triggerSpecialCandy(row2, col2, special1);
+                        if (special2) await this.triggerSpecialCandy(row1, col1, special2);
+                        
+                        await this.processAllMatches();
+                    } else {
+                        // Revert the swap
+                        this.swapBoardPositions(row1, col1, row2, col2);
+                        this.swapSpecialCandyData(row1, col1, row2, col2);
+                        this.renderCandy(row1, col1);
+                        this.renderCandy(row2, col2);
+                        
+                        // Shake animation for invalid move
+                        this.boardElement.classList.add('no-moves-shake');
+                        setTimeout(() => this.boardElement.classList.remove('no-moves-shake'), 500);
+                    }
+                } catch (error) {
+                    console.error('Error during swap:', error);
+                    this.handleError(error);
+                } finally {
+                    this.setProcessingState(false);
+                    this.updateUI();
+                    this.checkGameStatus();
+                    this.stateMachine.setState('idle');
+                }
+            }
+
+            swapBoardPositions(row1, col1, row2, col2) {
+                [this.board[row1][col1], this.board[row2][col2]] = 
+                [this.board[row2][col2], this.board[row1][col1]];
+            }
+
+            swapSpecialCandyData(row1, col1, row2, col2) {
+                this.specialCandyManager.swap(row1, col1, row2, col2);
+            }
+
+            async handleSpecialCombo(row1, col1, row2, col2, type1, type2) {
+                this.createSpecialComboEffect();
+                
+                const megaCombos = [
+                    ['color-bomb', 'color-bomb'],
+                    ['striped-h', 'striped-v'],
+                    ['striped-v', 'striped-h']
+                ];
+                
+                const isMegaCombo = megaCombos.some(combo => 
+                    (combo[0] === type1 && combo[1] === type2) ||
+                    (combo[0] === type2 && combo[1] === type1)
+                );
+                
+                if (isMegaCombo) {
+                    await this.performMegaCombo();
+                } else {
+                    // Handle other special combinations
+                    await this.performSpecialCombo(type1, type2, row1, col1, row2, col2);
+                }
+            }
+
+            async performMegaCombo() {
+                this.showComboText('MEGA COMBO!');
+                this.triggerScreenShake();
+                
+                // Clear entire board
+                for (let r = 0; r < CONFIG.BOARD_SIZE; r++) {
+                    for (let c = 0; c < CONFIG.BOARD_SIZE; c++) {
+                        if (this.board[r][c]) {
+                            this.animateMatch(r, c);
+                            this.board[r][c] = null;
+                            this.score += CONFIG.SCORING.SPECIAL_BONUS * 2;
+                        }
+                    }
+                }
+                
+                this.createParticleExplosion(CONFIG.BOARD_SIZE / 2, CONFIG.BOARD_SIZE / 2, 20);
+                await this.delay(800);
+            }
+
+            async performSpecialCombo(type1, type2, row1, col1, row2, col2) {
+                // Implementation for other special combinations
+                this.showComboText('SPECIAL COMBO!');
+                this.score += CONFIG.SCORING.SPECIAL_BONUS;
+            }
+
+            async processAllMatches() {
+                let hasMatches = true;
+                let chainDepth = 0;
+                
+                while (hasMatches && chainDepth < CONFIG.MAX_CHAIN_DEPTH) {
+                    const matches = PatternDetector.findMatches(this.board);
+                    
+                    if (matches.length === 0) {
+                        hasMatches = false;
+                        break;
+                    }
+
+                    chainDepth++;
+                    this.chain = chainDepth;
+                    if (this.chain > this.maxChain) {
+                        this.maxChain = this.chain;
+                    }
+                    
+                    this.combo++;
+                    if (this.combo > this.maxCombo) {
+                        this.maxCombo = this.combo;
+                    }
+
+                    await this.processMatches(matches);
+                    await this.dropCandies();
+                    await this.fillBoard();
+                    await this.delay(CONFIG.ANIMATION_SPEED);
+                    
+                    this.updateUI();
+                }
+
+                this.validateBoard();
+            }
+
+            async processMatches(matches) {
+                // Create special candies first
+                await this.createSpecialCandies(matches);
+                
+                // Calculate score
+                let totalScore = 0;
+                const comboMultiplier = Math.pow(CONFIG.SCORING.COMBO_MULTIPLIER, this.combo - 1);
+                const chainBonus = this.chain * CONFIG.SCORING.CHAIN_BONUS;
+                
+                // Remove matched candies
+                for (const match of matches) {
+                    for (const cell of match.cells) {
+                        const specialType = this.specialCandies.get(`${cell.row},${cell.col}`);
+                        
+                        if (specialType) {
+                            await this.triggerSpecialCandy(cell.row, cell.col, specialType);
+                        }
+                        
+                        if (this.board[cell.row][cell.col] && this.board[cell.row][cell.col] !== '🌈') {
+                            this.animateMatch(cell.row, cell.col);
+                            this.board[cell.row][cell.col] = null;
+                            totalScore += CONFIG.SCORING.BASE_SCORE;
+                        }
+                    }
+                }
+                
+                // Apply multipliers
+                totalScore = Math.floor(totalScore * comboMultiplier) + chainBonus;
+                this.score += totalScore;
+                
+                this.showScorePopup(totalScore);
+                this.updateMultiplier();
+                
+                if (this.combo > 1) {
+                    this.showComboText(`${this.combo}x COMBO!`);
+                }
+                
+                if (this.chain > 1) {
+                    this.showComboText(`CHAIN ${this.chain}!`);
+                }
+
+                await this.delay(500);
+            }
+
+            async createSpecialCandies(matches) {
+                for (const match of matches) {
+                    let specialType = null;
+                    let centerRow, centerCol;
+                    
+                    if (match.length >= 5 || match.type.includes('shape')) {
+                        // Color bomb
+                        specialType = 'color-bomb';
+                        centerRow = match.centerRow || match.cells[Math.floor(match.cells.length / 2)].row;
+                        centerCol = match.centerCol || match.cells[Math.floor(match.cells.length / 2)].col;
+                        this.board[centerRow][centerCol] = '🌈';
+                        
+                    } else if (match.length === 4) {
+                        // Striped candy
+                        centerRow = match.cells[Math.floor(match.cells.length / 2)].row;
+                        centerCol = match.cells[Math.floor(match.cells.length / 2)].col;
+                        specialType = match.type === 'horizontal' ? 'striped-v' : 'striped-h';
+                        
+                    } else if (match.type.includes('L') || match.type.includes('T')) {
+                        // Wrapped candy
+                        centerRow = match.centerRow;
+                        centerCol = match.centerCol;
+                        specialType = 'wrapped';
+                    }
+                    
+                    if (specialType) {
+                        this.specialCandies.set(`${centerRow},${centerCol}`, specialType);
+                        this.specialCandiesCreated++;
+                        
+                        // Remove center from cells to clear
+                        match.cells = match.cells.filter(cell => 
+                            !(cell.row === centerRow && cell.col === centerCol)
+                        );
+                        
+                        // Create special effect
+                        this.createParticleExplosion(centerRow, centerCol, 8);
+                    }
+                }
+            }
+
+            async triggerSpecialCandy(row, col, type) {
+                this.specialCandies.delete(`${row},${col}`);
+                
+                switch (type) {
+                    case 'striped-h':
+                        await this.clearRow(row);
+                        break;
+                    case 'striped-v':
+                        await this.clearColumn(col);
+                        break;
+                    case 'wrapped':
+                        await this.clearArea(row, col, 1);
+                        break;
+                    case 'color-bomb':
+                        await this.clearRandomCandyType();
+                        break;
+                }
+            }
+
+            async clearRow(row) {
+                this.createLineEffect(row, 0, 'horizontal');
+                
+                for (let col = 0; col < CONFIG.BOARD_SIZE; col++) {
+                    if (this.board[row][col] && this.board[row][col] !== '🌈') {
+                        this.animateMatch(row, col);
+                        this.board[row][col] = null;
+                        this.score += CONFIG.SCORING.BASE_SCORE * 2;
+                    }
+                }
+                
+                await this.delay(500);
+            }
+
+            async clearColumn(col) {
+                this.createLineEffect(0, col, 'vertical');
+                
+                for (let row = 0; row < CONFIG.BOARD_SIZE; row++) {
+                    if (this.board[row][col] && this.board[row][col] !== '🌈') {
+                        this.animateMatch(row, col);
+                        this.board[row][col] = null;
+                        this.score += CONFIG.SCORING.BASE_SCORE * 2;
+                    }
+                }
+                
+                await this.delay(500);
+            }
+
+            async clearArea(centerRow, centerCol, radius) {
+                this.createExplosionEffect(centerRow, centerCol);
+                
+                for (let r = Math.max(0, centerRow - radius); 
+                     r <= Math.min(CONFIG.BOARD_SIZE - 1, centerRow + radius); r++) {
+                    for (let c = Math.max(0, centerCol - radius); 
+                         c <= Math.min(CONFIG.BOARD_SIZE - 1, centerCol + radius); c++) {
+                        if (this.board[r][c] && this.board[r][c] !== '🌈') {
+                            this.animateMatch(r, c);
+                            this.board[r][c] = null;
+                            this.score += CONFIG.SCORING.BASE_SCORE * 3;
+                        }
+                    }
+                }
+                
+                await this.delay(600);
+            }
+
+            async clearRandomCandyType() {
+                // Find most common candy type
+                const candyCount = {};
+                let maxCount = 0;
+                let targetCandy = null;
+                
+                for (let r = 0; r < CONFIG.BOARD_SIZE; r++) {
+                    for (let c = 0; c < CONFIG.BOARD_SIZE; c++) {
+                        const candy = this.board[r][c];
+                        if (candy && candy !== '🌈') {
+                            candyCount[candy] = (candyCount[candy] || 0) + 1;
+                            if (candyCount[candy] > maxCount) {
+                                maxCount = candyCount[candy];
+                                targetCandy = candy;
+                            }
+                        }
+                    }
+                }
+                
+                // Clear all of that type
+                if (targetCandy) {
+                    for (let r = 0; r < CONFIG.BOARD_SIZE; r++) {
+                        for (let c = 0; c < CONFIG.BOARD_SIZE; c++) {
+                            if (this.board[r][c] === targetCandy) {
+                                this.animateMatch(r, c);
+                                this.board[r][c] = null;
+                                this.score += CONFIG.SCORING.BASE_SCORE * 5;
+                            }
+                        }
+                    }
+                    
+                    this.showComboText(`${targetCandy} CLEARED!`);
+                }
+                
+                await this.delay(800);
+            }
+
+            // Visual Effects
+            createLineEffect(row, col, direction) {
+                const effect = document.createElement('div');
+                effect.className = `special-effect line-clear-${direction === 'horizontal' ? 'h' : 'v'}`;
+                
+                if (direction === 'horizontal') {
+                    effect.style.top = `${row * 70 + 45}px`;
+                    effect.style.left = '0';
+                } else {
+                    effect.style.left = `${col * 70 + 45}px`;
+                    effect.style.top = '0';
+                }
+                
+                this.boardElement.appendChild(effect);
+                setTimeout(() => {
+                    if (effect.parentNode) {
+                        effect.parentNode.removeChild(effect);
+                    }
+                }, 500);
+            }
+
+            createExplosionEffect(row, col) {
+                const effect = document.createElement('div');
+                effect.className = 'special-effect explosion';
+                effect.style.left = `${(col - 1.5) * 70 + 45}px`;
+                effect.style.top = `${(row - 1.5) * 70 + 45}px`;
+                this.boardElement.appendChild(effect);
+                
+                setTimeout(() => {
+                    if (effect.parentNode) {
+                        effect.parentNode.removeChild(effect);
+                    }
+                }, 600);
+            }
+
+            createSpecialComboEffect() {
+                const effect = document.createElement('div');
+                effect.className = 'special-combo-effect';
+                this.boardElement.appendChild(effect);
+                
+                setTimeout(() => {
+                    if (effect.parentNode) {
+                        effect.parentNode.removeChild(effect);
+                    }
+                }, 500);
+            }
+
+            createParticleExplosion(row, col, count) {
+                for (let i = 0; i < count; i++) {
+                    const particle = this.particlePool.get();
+                    particle.className = 'particle';
+                    
+                    const angle = (i / count) * 2 * Math.PI;
+                    const distance = 50 + Math.random() * 50;
+                    const dx = Math.cos(angle) * distance;
+                    const dy = Math.sin(angle) * distance;
+                    
+                    particle.style.cssText = `
+                        --dx: ${dx}px;
+                        --dy: ${dy}px;
+                        left: ${col * 70 + 35}px;
+                        top: ${row * 70 + 35}px;
+                    `;
+                    
+                    this.boardElement.appendChild(particle);
+                    
+                    setTimeout(() => {
+                        this.particlePool.release(particle);
+                    }, 800);
+                }
+            }
+
+            triggerScreenShake() {
+                document.getElementById('gameContainer').classList.add('screen-shake');
+                setTimeout(() => {
+                    document.getElementById('gameContainer').classList.remove('screen-shake');
+                }, 500);
+            }
+
+            animateMatch(row, col) {
+                const cell = this.getCellElement(row, col);
+                const candy = cell.querySelector('.candy');
+                if (candy) {
+                    candy.classList.add('matched');
+                }
+            }
+
+            showScorePopup(score) {
+                const popup = document.createElement('div');
+                popup.className = 'score-popup';
+                popup.textContent = `+${score}`;
+                popup.style.left = `${Math.random() * 80 + 10}%`;
+                popup.style.top = `${Math.random() * 80 + 10}%`;
+                this.boardElement.appendChild(popup);
+                
+                setTimeout(() => {
+                    if (popup.parentNode) {
+                        popup.parentNode.removeChild(popup);
+                    }
+                }, 1000);
+            }
+
+            showComboText(text) {
+                const comboText = document.createElement('div');
+                comboText.className = 'combo-text';
+                comboText.textContent = text;
+                this.boardElement.appendChild(comboText);
+                
+                setTimeout(() => {
+                    if (comboText.parentNode) {
+                        comboText.parentNode.removeChild(comboText);
+                    }
+                }, 800);
+            }
+
+            updateMultiplier() {
+                this.multiplier = Math.min(5, 1 + Math.floor(this.combo / 3));
+                
+                if (this.multiplier > 1) {
+                    this.multiplierElement.textContent = `${this.multiplier}x`;
+                    this.multiplierElement.parentElement.classList.add('show');
+                } else {
+                    this.multiplierElement.parentElement.classList.remove('show');
+                }
+            }
+
+            async dropCandies() {
+                const moves = [];
+                
+                for (let col = 0; col < CONFIG.BOARD_SIZE; col++) {
+                    let emptyRow = CONFIG.BOARD_SIZE - 1;
+                    
+                    for (let row = CONFIG.BOARD_SIZE - 1; row >= 0; row--) {
+                        if (this.board[row][col] !== null) {
+                            if (row !== emptyRow) {
+                                // Move candy
+                                this.board[emptyRow][col] = this.board[row][col];
+                                this.board[row][col] = null;
+                                
+                                // Move special candy data
+                                this.moveSpecialCandyData(row, col, emptyRow, col);
+                                
+                                moves.push({ from: { row, col }, to: { row: emptyRow, col } });
+                            }
+                            emptyRow--;
+                        }
+                    }
+                }
+                
+                // Animate drops
+                for (const move of moves) {
+                    const candy = this.getCellElement(move.from.row, move.from.col).querySelector('.candy');
+                    if (candy) {
+                        candy.classList.add('falling');
+                    }
+                    this.renderCandy(move.to.row, move.to.col);
+                }
+                
+                if (moves.length > 0) {
+                    await this.delay(400);
+                }
+            }
+
+            moveSpecialCandyData(fromRow, fromCol, toRow, toCol) {
+                const fromKey = `${fromRow},${fromCol}`;
+                const toKey = `${toRow},${toCol}`;
+                
+                if (this.specialCandies.has(fromKey)) {
+                    this.specialCandies.set(toKey, this.specialCandies.get(fromKey));
+                    this.specialCandies.delete(fromKey);
+                }
+            }
+
+            async fillBoard() {
+                const newCandies = [];
+                
+                for (let col = 0; col < CONFIG.BOARD_SIZE; col++) {
+                    for (let row = 0; row < CONFIG.BOARD_SIZE; row++) {
+                        if (this.board[row][col] === null) {
+                            // Generate candy that won't create instant match
+                            let candy;
+                            let attempts = 0;
+                            do {
+                                candy = this.getRandomCandy();
+                                attempts++;
+                            } while (this.wouldCreateMatch(row, col, candy) && attempts < 10);
+                            
+                            // Fallback: if can't avoid match after 10 attempts, use random
+                            if (attempts >= 10) {
+                                candy = this.getRandomCandy();
+                            }
+                            
+                            this.board[row][col] = candy;
+                            newCandies.push({ row, col });
+                        }
+                    }
+                }
+                
+                // Animate new candies
+                for (const pos of newCandies) {
+                    const candy = this.getCellElement(pos.row, pos.col).querySelector('.candy');
+                    if (candy) {
+                        candy.classList.add('falling');
+                    }
+                    this.renderCandy(pos.row, pos.col);
+                }
+                
+                if (newCandies.length > 0) {
+                    await this.delay(400);
+                }
+            }
+
+            validateBoard() {
+                // Check for possible moves
+                const hasPossibleMoves = this.checkForPossibleMoves();
+                
+                if (!hasPossibleMoves) {
+                    this.shuffleBoard();
+                }
+                
+                // Validate board integrity
+                for (let row = 0; row < CONFIG.BOARD_SIZE; row++) {
+                    for (let col = 0; col < CONFIG.BOARD_SIZE; col++) {
+                        if (!this.board[row][col]) {
+                            console.error(`Empty cell found at ${row},${col}`);
+                            this.board[row][col] = this.getRandomCandy();
+                            this.renderCandy(row, col);
+                        }
+                    }
+                }
+            }
+
+            checkForPossibleMoves() {
+                for (let row = 0; row < CONFIG.BOARD_SIZE; row++) {
+                    for (let col = 0; col < CONFIG.BOARD_SIZE; col++) {
+                        // Check horizontal swap
+                        if (col < CONFIG.BOARD_SIZE - 1) {
+                            this.swapBoardPositions(row, col, row, col + 1);
+                            const hasMatch = PatternDetector.findMatches(this.board).length > 0;
+                            this.swapBoardPositions(row, col, row, col + 1);
+                            
+                            if (hasMatch) return true;
+                        }
+                        
+                        // Check vertical swap
+                        if (row < CONFIG.BOARD_SIZE - 1) {
+                            this.swapBoardPositions(row, col, row + 1, col);
+                            const hasMatch = PatternDetector.findMatches(this.board).length > 0;
+                            this.swapBoardPositions(row, col, row + 1, col);
+                            
+                            if (hasMatch) return true;
+                        }
+                    }
+                }
+                
+                return false;
+            }
+
+            shuffleBoard() {
+                this.boardElement.classList.add('no-moves-shake');
+                
+                // Collect non-special candies
+                const normalCandies = [];
+                const specialPositions = [];
+                
+                for (let row = 0; row < CONFIG.BOARD_SIZE; row++) {
+                    for (let col = 0; col < CONFIG.BOARD_SIZE; col++) {
+                        if (this.specialCandies.has(`${row},${col}`)) {
+                            specialPositions.push({ row, col, candy: this.board[row][col] });
+                        } else {
+                            normalCandies.push(this.board[row][col]);
+                        }
+                    }
+                }
+                
+                // Shuffle normal candies
+                for (let i = normalCandies.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [normalCandies[i], normalCandies[j]] = [normalCandies[j], normalCandies[i]];
+                }
+                
+                // Redistribute
+                let candyIndex = 0;
+                for (let row = 0; row < CONFIG.BOARD_SIZE; row++) {
+                    for (let col = 0; col < CONFIG.BOARD_SIZE; col++) {
+                        if (!this.specialCandies.has(`${row},${col}`)) {
+                            this.board[row][col] = normalCandies[candyIndex++];
+                            this.renderCandy(row, col);
+                        }
+                    }
+                }
+                
+                setTimeout(() => {
+                    this.boardElement.classList.remove('no-moves-shake');
+                    // Check if shuffle created any matches
+                    this.animationQueue.add(() => this.processAllMatches());
+                }, 500);
+            }
+
+            showHint() {
+                if (this.stateMachine.isProcessing()) return;
+                
+                // Clear previous hints
+                document.querySelectorAll('.cell').forEach(cell => {
+                    cell.classList.remove('hint-animation');
+                });
+                
+                // Find first possible move
+                for (let row = 0; row < CONFIG.BOARD_SIZE; row++) {
+                    for (let col = 0; col < CONFIG.BOARD_SIZE; col++) {
+                        // Check horizontal swap
+                        if (col < CONFIG.BOARD_SIZE - 1) {
+                            this.swapBoardPositions(row, col, row, col + 1);
+                            const hasMatch = PatternDetector.findMatches(this.board).length > 0;
+                            this.swapBoardPositions(row, col, row, col + 1);
+                            
+                            if (hasMatch) {
+                                this.highlightHint(row, col, row, col + 1);
+                                return;
+                            }
+                        }
+                        
+                        // Check vertical swap
+                        if (row < CONFIG.BOARD_SIZE - 1) {
+                            this.swapBoardPositions(row, col, row + 1, col);
+                            const hasMatch = PatternDetector.findMatches(this.board).length > 0;
+                            this.swapBoardPositions(row, col, row + 1, col);
+                            
+                            if (hasMatch) {
+                                this.highlightHint(row, col, row + 1, col);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+
+            highlightHint(row1, col1, row2, col2) {
+                const cell1 = this.getCellElement(row1, col1);
+                const cell2 = this.getCellElement(row2, col2);
+                
+                cell1.classList.add('hint-animation');
+                cell2.classList.add('hint-animation');
+                
+                setTimeout(() => {
+                    cell1.classList.remove('hint-animation');
+                    cell2.classList.remove('hint-animation');
+                }, 3000);
+            }
+
+            setProcessingState(processing) {
+                const overlay = document.getElementById('processingOverlay');
+                overlay.style.display = processing ? 'block' : 'none';
+                
+                // Disable all cells during processing
+                document.querySelectorAll('.cell').forEach(cell => {
+                    if (processing) {
+                        cell.classList.add('processing');
+                    } else {
+                        cell.classList.remove('processing');
+                    }
+                });
+            }
+
+            checkGameStatus() {
+                if (this.moves <= 0) {
+                    this.showGameOver();
+                }
+            }
+
+            showGameOver() {
+                const overlay = document.getElementById('gameOverOverlay');
+                const finalScore = document.getElementById('finalScore');
+                const maxComboEl = document.getElementById('maxCombo');
+                const specialCreatedEl = document.getElementById('specialCreated');
+                const maxChainEl = document.getElementById('maxChain');
+                const highScoreText = document.getElementById('highScoreText');
+                
+                finalScore.textContent = this.score.toLocaleString();
+                maxComboEl.textContent = this.maxCombo;
+                specialCreatedEl.textContent = this.specialCandiesCreated;
+                maxChainEl.textContent = this.maxChain;
+                
+                if (this.score > this.highScore) {
+                    this.highScore = this.score;
+                    localStorage.setItem('healthyFoodMatchHighScore', this.highScore);
+                    highScoreText.textContent = '🎉 คะแนนสูงสุดใหม่! 🎉';
+                    highScoreText.style.color = '#f39c12';
+                } else {
+                    highScoreText.textContent = `คะแนนสูงสุด: ${this.highScore.toLocaleString()}`;
+                    highScoreText.style.color = '#56ab2f';
+                }
+                
+                overlay.style.display = 'flex';
+            }
+
+            newGame() {
+                this.animationQueue.clear();
+                this.particlePool.releaseAll();
+                this.initializeGameData();
+                
+                document.getElementById('gameOverOverlay').style.display = 'none';
+                this.init();
+            }
+
+            updateUI() {
+                this.scoreElement.textContent = this.score.toLocaleString();
+                this.movesElement.textContent = this.moves;
+                this.chainElement.textContent = this.chain;
+                
+                // Update visual indicators
+                if (this.moves <= 5) {
+                    this.movesElement.parentElement.style.background = 
+                        'linear-gradient(135deg, #e74c3c, #c0392b)';
+                } else {
+                    this.movesElement.parentElement.style.background = 
+                        'linear-gradient(135deg, #56ab2f, #a8e063)';
+                }
+            }
+
+            toggleDebug() {
+                CONFIG.DEBUG_MODE = !CONFIG.DEBUG_MODE;
+                const debugInfo = document.getElementById('debugInfo');
+                const debugBtn = document.getElementById('debugBtn');
+                
+                debugInfo.style.display = CONFIG.DEBUG_MODE ? 'block' : 'none';
+                debugBtn.style.display = CONFIG.DEBUG_MODE ? 'inline-block' : 'none';
+                
+                if (CONFIG.DEBUG_MODE) {
+                    console.log('Debug mode enabled');
+                    debugBtn.style.display = 'inline-block';
+                }
+            }
+
+            handleError(error) {
+                console.error('Game error:', error);
+                
+                // Attempt recovery
+                try {
+                    this.stateMachine.setState('idle');
+                    this.setProcessingState(false);
+                    this.deselectCell();
+                    this.validateBoard();
+                } catch (recoveryError) {
+                    console.error('Recovery failed:', recoveryError);
+                    // Last resort - restart game
+                    this.newGame();
+                }
+            }
+
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+        }
+
+        // Initialize the game
+        const game = new SuperCandyCrush();
+        
+        // Global error handling
+        window.addEventListener('error', (e) => {
+            console.error('Global error:', e.error);
+            if (game) {
+                game.handleError(e.error);
+            }
+        });
+        
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (game) {
+                game.animationQueue.clear();
+                game.particlePool.releaseAll();
+            }
+        });
+    </script>
+</body>
+</html>
