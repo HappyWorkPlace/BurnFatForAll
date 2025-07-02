@@ -878,44 +878,44 @@
                 return issues;
             }
         }
-            constructor(createFn, resetFn, initialSize = 10) {
-                this.createFn = createFn;
-                this.resetFn = resetFn;
-                this.pool = [];
-                this.active = new Set();
-                
-                for (let i = 0; i < initialSize; i++) {
-                    this.pool.push(this.createFn());
-                }
+        class ObjectPool {
+          constructor(createFn, resetFn, initialSize = 10) {
+            this.createFn = createFn;
+            this.resetFn = resetFn;
+            this.pool = [];
+            this.active = new Set();
+        
+            for (let i = 0; i < initialSize; i++) {
+              this.pool.push(this.createFn());
             }
-
-            get() {
-                let object;
-                if (this.pool.length > 0) {
-                    object = this.pool.pop();
-                } else {
-                    object = this.createFn();
-                }
-                
-                this.active.add(object);
-                return object;
+          }
+        
+          get() {
+            let object;
+            if (this.pool.length > 0) {
+              object = this.pool.pop();
+            } else {
+              object = this.createFn();
             }
-
-            release(object) {
-                if (this.active.has(object)) {
-                    this.active.delete(object);
-                    this.resetFn(object);
-                    this.pool.push(object);
-                }
+            this.active.add(object);
+            return object;
+          }
+        
+          release(object) {
+            if (this.active.has(object)) {
+              this.active.delete(object);
+              this.resetFn(object);
+              this.pool.push(object);
             }
-
-            releaseAll() {
-                this.active.forEach(object => {
-                    this.resetFn(object);
-                    this.pool.push(object);
-                });
-                this.active.clear();
-            }
+          }
+        
+          releaseAll() {
+            this.active.forEach(obj => {
+              this.resetFn(obj);
+              this.pool.push(obj);
+            });
+            this.active.clear();
+          }
         }
 
         // Enhanced Pattern Detection System
