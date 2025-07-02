@@ -2,13 +2,21 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Healthy Food Match - Super Stable Edition</title>
     <style>
+        :root {
+            --board-size: 8;
+            --cell-size: min(10vw, 65px); /* Choose the smaller value between 10vw and 65px */
+            --gap-size: min(1vw, 5px);
+            --board-dimension: calc(var(--board-size) * (var(--cell-size) + var(--gap-size)) + var(--gap-size));
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent; /* Disable tap highlight on mobile */
         }
 
         body {
@@ -19,15 +27,17 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            padding: 10px;
         }
 
         .game-container {
+            width: 100%;
+            max-width: 600px;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
-            padding: 20px;
+            padding: clamp(10px, 3vw, 20px); /* Responsive padding */
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             animation: fadeIn 0.5s ease-out;
-            position: relative;
         }
 
         @keyframes fadeIn {
@@ -35,27 +45,13 @@
             to { opacity: 1; transform: scale(1); }
         }
 
-        .screen-shake {
-            animation: screen-shake 0.5s ease-in-out;
-        }
-
-        @keyframes screen-shake {
-            0%, 100% { transform: translateX(0); }
-            10% { transform: translateX(-5px) rotate(-1deg); }
-            20% { transform: translateX(5px) rotate(1deg); }
-            30% { transform: translateX(-3px) rotate(-1deg); }
-            40% { transform: translateX(3px) rotate(1deg); }
-            50% { transform: translateX(-2px); }
-            60% { transform: translateX(2px); }
-        }
-
         .game-header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: clamp(10px, 3vw, 20px);
         }
 
         .game-title {
-            font-size: 42px;
+            font-size: clamp(28px, 6vw, 42px); /* Responsive font size */
             font-weight: bold;
             background: linear-gradient(45deg, #56ab2f, #a8e063);
             -webkit-background-clip: text;
@@ -67,76 +63,43 @@
         .game-stats {
             display: flex;
             justify-content: center;
-            margin-bottom: 20px;
-            gap: 20px;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+            margin-bottom: clamp(10px, 3vw, 20px);
+            gap: clamp(10px, 2vw, 20px);
         }
 
         .stat-box {
             background: linear-gradient(135deg, #56ab2f, #a8e063);
             color: white;
-            padding: 15px 30px;
+            padding: clamp(8px, 2vw, 15px) clamp(15px, 4vw, 30px);
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
-            position: relative;
-        }
-
-        .stat-box:hover {
-            transform: translateY(-2px);
+            text-align: center;
         }
 
         .stat-label {
-            font-size: 14px;
+            font-size: clamp(12px, 2.5vw, 14px);
             opacity: 0.9;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
         .stat-value {
-            font-size: 32px;
+            font-size: clamp(24px, 5vw, 32px);
             font-weight: bold;
             margin-top: 5px;
-        }
-
-        .multiplier-indicator {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            background: rgba(243, 156, 18, 1);
-            color: white;
-            border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-            opacity: 0;
-            transition: all 0.3s;
-        }
-
-        .multiplier-indicator.show {
-            opacity: 1;
-            animation: multiplier-pulse 0.5s ease-out;
-        }
-
-        @keyframes multiplier-pulse {
-            0% { transform: scale(0.5); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
         }
 
         .special-candies-info {
             background: rgba(0,0,0,0.05);
             border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
+            padding: clamp(10px, 2vw, 15px);
+            margin-bottom: clamp(10px, 3vw, 20px);
             text-align: center;
         }
 
         .special-candies-title {
-            font-size: 18px;
+            font-size: clamp(16px, 3.5vw, 18px);
             font-weight: bold;
             color: #56ab2f;
             margin-bottom: 10px;
@@ -145,7 +108,7 @@
         .special-candies-list {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: clamp(10px, 2vw, 20px);
             flex-wrap: wrap;
         }
 
@@ -157,29 +120,27 @@
             padding: 8px 15px;
             border-radius: 20px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            font-size: 14px;
-        }
-
-        .board-container {
-            position: relative;
-            display: inline-block;
+            font-size: clamp(12px, 2.5vw, 14px);
         }
 
         .board {
             display: grid;
-            grid-template-columns: repeat(8, 65px);
-            grid-template-rows: repeat(8, 65px);
-            gap: 5px;
+            grid-template-columns: repeat(var(--board-size), var(--cell-size));
+            grid-template-rows: repeat(var(--board-size), var(--cell-size));
+            gap: var(--gap-size);
             background: rgba(0,0,0,0.1);
-            padding: 10px;
+            padding: var(--gap-size);
             border-radius: 10px;
             position: relative;
             margin: 0 auto;
+            width: var(--board-dimension);
+            height: var(--board-dimension);
+            touch-action: none; /* Prevent scrolling while dragging on board */
         }
 
         .cell {
-            width: 65px;
-            height: 65px;
+            width: var(--cell-size);
+            height: var(--cell-size);
             background: rgba(255, 255, 255, 0.9);
             border-radius: 12px;
             display: flex;
@@ -189,46 +150,23 @@
             position: relative;
             transition: all 0.3s ease;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            overflow: hidden;
         }
-
-        .cell:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-
-        .cell.selected {
-            transform: scale(1.1);
-            box-shadow: 0 0 25px rgba(255, 255, 255, 1);
-            animation: pulse 0.5s infinite alternate;
-            z-index: 10;
-        }
-
-        .cell.processing {
-            pointer-events: none;
-        }
-
-        @keyframes pulse {
-            from { box-shadow: 0 0 25px rgba(255, 255, 255, 1); }
-            to { box-shadow: 0 0 35px rgba(255, 255, 255, 1), 0 0 45px rgba(86, 171, 47, 0.8); }
-        }
-
+        
         .candy {
-            font-size: 40px;
-            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            font-size: calc(var(--cell-size) * 0.6); /* Candy size relative to cell */
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.3s;
             z-index: 10;
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-            position: relative;
-            user-select: none;
+            position: absolute; /* Important for smooth dragging */
+            user-select: none; /* Prevent text selection */
+            pointer-events: none; /* Clicks should go to the cell */
         }
 
-        .candy.falling {
-            animation: fall 0.4s ease-in;
-        }
-
-        @keyframes fall {
-            from { transform: translateY(-400px) rotate(180deg); opacity: 0; }
-            to { transform: translateY(0) rotate(0deg); opacity: 1; }
+        .candy.dragging {
+            z-index: 100;
+            transform: scale(1.2);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            transition: none; /* Disable transition during drag for instant feedback */
         }
 
         .candy.matched {
@@ -241,363 +179,68 @@
             100% { transform: scale(0) rotate(360deg); opacity: 0; }
         }
 
-        .candy.striped-h::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: -10px;
-            right: -10px;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,1), transparent);
-            transform: translateY(-50%);
-            box-shadow: 0 0 10px rgba(255,255,255,0.8);
-            animation: stripe-glow-h 1s ease-in-out infinite;
+        .candy.falling {
+            animation: fall 0.4s ease-in;
         }
 
-        .candy.striped-v::after {
-            content: '';
-            position: absolute;
-            left: 50%;
-            top: -10px;
-            bottom: -10px;
-            width: 3px;
-            background: linear-gradient(0deg, transparent, rgba(255,255,255,1), transparent);
-            transform: translateX(-50%);
-            box-shadow: 0 0 10px rgba(255,255,255,0.8);
-            animation: stripe-glow-v 1s ease-in-out infinite;
+        @keyframes fall {
+            from { transform: translateY(-400px) rotate(180deg); opacity: 0; }
+            to { transform: translateY(0) rotate(0deg); opacity: 1; }
         }
 
-        @keyframes stripe-glow-h {
-            0%, 100% { opacity: 0.5; transform: translateY(-50%) scaleY(1); }
-            50% { opacity: 1; transform: translateY(-50%) scaleY(1.5); }
+        /* Other styles (striped, wrapped, effects, etc.) remain mostly the same */
+        .candy.striped-h::after, .candy.striped-v::after, .candy.wrapped::before, .candy.color-bomb {
+             /* Ensure special effects scale with candy */
+            font-size: inherit;
         }
+        .candy.striped-h::after { content: ''; position: absolute; top: 50%; left: -10%; right: -10%; height: 5%; background: rgba(255,255,255,0.8); transform: translateY(-50%); }
+        .candy.striped-v::after { content: ''; position: absolute; left: 50%; top: -10%; bottom: -10%; width: 5%; background: rgba(255,255,255,0.8); transform: translateX(-50%); }
+        .candy.wrapped { animation: wrapped-spin 2s linear infinite; }
+        @keyframes wrapped-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .candy.wrapped::before { content: '🥑'; position: absolute; font-size: 50%; top: -10%; right: -10%; animation: gift-bounce 0.5s ease-in-out infinite alternate; }
+        @keyframes gift-bounce { from { transform: scale(0.8) translateY(0); } to { transform: scale(1.2) translateY(-3px); } }
+        .candy.color-bomb { font-size: calc(var(--cell-size) * 0.7); animation: rainbow-spin 2s linear infinite; filter: drop-shadow(0 0 15px rgba(255,255,255,1)); }
+        @keyframes rainbow-spin { 0% { transform: rotate(0deg); filter: hue-rotate(0deg) drop-shadow(0 0 15px rgba(255,0,0,1)); } 25% { filter: hue-rotate(90deg) drop-shadow(0 0 15px rgba(255,255,0,1)); } 50% { transform: rotate(180deg); filter: hue-rotate(180deg) drop-shadow(0 0 15px rgba(0,255,0,1)); } 75% { filter: hue-rotate(270deg) drop-shadow(0 0 15px rgba(0,255,255,1)); } 100% { transform: rotate(360deg); filter: hue-rotate(360deg) drop-shadow(0 0 15px rgba(255,0,255,1)); } }
 
-        @keyframes stripe-glow-v {
-            0%, 100% { opacity: 0.5; transform: translateX(-50%) scaleX(1); }
-            50% { opacity: 1; transform: translateX(-50%) scaleX(1.5); }
-        }
+        .special-effect { position: absolute; pointer-events: none; z-index: 100; }
+        .line-clear-h { height: var(--cell-size); background: linear-gradient(90deg, transparent, rgba(255,255,255,1), transparent); animation: sweep-h 0.5s ease-out forwards; }
+        @keyframes sweep-h { from { width: 0; left: 50%; } to { width: 120%; left: -10%; } }
+        .line-clear-v { width: var(--cell-size); background: linear-gradient(0deg, transparent, rgba(255,255,255,1), transparent); animation: sweep-v 0.5s ease-out forwards; }
+        @keyframes sweep-v { from { height: 0; top: 50%; } to { height: 120%; top: -10%; } }
+        .explosion { width: calc(var(--cell-size) * 3); height: calc(var(--cell-size) * 3); background: radial-gradient(circle, rgba(255,255,255,1), rgba(255,255,255,0.5), transparent); border-radius: 50%; animation: explode-area 0.6s ease-out forwards; }
+        @keyframes explode-area { from { transform: scale(0); opacity: 1; } to { transform: scale(1.5); opacity: 0; } }
 
-        .candy.wrapped {
-            animation: wrapped-spin 2s linear infinite;
-        }
+        .score-popup { position: absolute; font-size: clamp(20px, 4vw, 28px); font-weight: bold; color: #56ab2f; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); pointer-events: none; z-index: 200; animation: score-rise 1s ease-out forwards; }
+        @keyframes score-rise { from { transform: translateY(0) scale(0.5); opacity: 1; } to { transform: translateY(-80px) scale(1.5); opacity: 0; } }
+        
+        .combo-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: clamp(48px, 10vw, 64px); font-weight: bold; background: linear-gradient(45deg, #56ab2f, #f39c12); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 3px 3px 6px rgba(0,0,0,0.5); pointer-events: none; z-index: 300; animation: combo-bounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        @keyframes combo-bounce { 0% { transform: translate(-50%, -50%) scale(0) rotate(-180deg); } 50% { transform: translate(-50%, -50%) scale(1.5) rotate(0deg); } 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 0; } }
+        
+        .game-controls { display: flex; justify-content: center; gap: 20px; margin-top: clamp(10px, 3vw, 20px); }
+        .btn { padding: clamp(10px, 2.5vw, 15px) clamp(20px, 5vw, 30px); font-size: clamp(14px, 3vw, 18px); font-weight: bold; border: none; border-radius: 15px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-transform: uppercase; letter-spacing: 1px; }
+        .btn-primary { background: linear-gradient(135deg, #56ab2f, #a8e063); color: white; }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+        .btn-secondary { background: linear-gradient(135deg, #f39c12, #f1c40f); color: white; }
+        .btn-secondary:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
 
-        @keyframes wrapped-spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+        .game-over-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .game-over-content { background: white; padding: 50px; border-radius: 25px; text-align: center; animation: slideIn 0.5s ease-out; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        @keyframes slideIn { from { transform: translateY(-100px) scale(0.8); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+        .game-over-title { font-size: 48px; font-weight: bold; background: linear-gradient(45deg, #56ab2f, #a8e063); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 30px; }
+        .final-stats { font-size: 24px; margin-bottom: 30px; line-height: 1.8; }
+        .final-stats strong { color: #56ab2f; }
+        .high-score { font-size: 20px; color: #f39c12; margin-bottom: 20px; }
+        
+        .hint-animation .candy { animation: hint-pulse 1s ease-in-out infinite; }
+        @keyframes hint-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+        
+        .no-moves-shake { animation: shake 0.5s ease-in-out; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
 
-        .candy.wrapped::before {
-            content: '🎁';
-            position: absolute;
-            font-size: 16px;
-            top: -8px;
-            right: -8px;
-            animation: gift-bounce 0.5s ease-in-out infinite alternate;
-        }
-
-        @keyframes gift-bounce {
-            from { transform: scale(0.8) translateY(0); }
-            to { transform: scale(1.2) translateY(-3px); }
-        }
-
-        .candy.color-bomb {
-            font-size: 45px;
-            animation: rainbow-spin 2s linear infinite;
-            filter: drop-shadow(0 0 15px rgba(255,255,255,1));
-        }
-
-        @keyframes rainbow-spin {
-            0% { 
-                transform: rotate(0deg); 
-                filter: hue-rotate(0deg) drop-shadow(0 0 15px rgba(255,0,0,1));
-            }
-            25% { 
-                filter: hue-rotate(90deg) drop-shadow(0 0 15px rgba(255,255,0,1));
-            }
-            50% { 
-                transform: rotate(180deg); 
-                filter: hue-rotate(180deg) drop-shadow(0 0 15px rgba(0,255,0,1));
-            }
-            75% { 
-                filter: hue-rotate(270deg) drop-shadow(0 0 15px rgba(0,255,255,1));
-            }
-            100% { 
-                transform: rotate(360deg); 
-                filter: hue-rotate(360deg) drop-shadow(0 0 15px rgba(255,0,255,1));
-            }
-        }
-
-        .special-effect {
-            position: absolute;
-            pointer-events: none;
-            z-index: 100;
-        }
-
-        .line-clear-h {
-            height: 65px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,1), transparent);
-            animation: sweep-h 0.5s ease-out forwards;
-            box-shadow: 0 0 20px rgba(255,255,255,0.8);
-        }
-
-        @keyframes sweep-h {
-            from { width: 0; left: 50%; }
-            to { width: 120%; left: -10%; }
-        }
-
-        .line-clear-v {
-            width: 65px;
-            background: linear-gradient(0deg, transparent, rgba(255,255,255,1), transparent);
-            animation: sweep-v 0.5s ease-out forwards;
-            box-shadow: 0 0 20px rgba(255,255,255,0.8);
-        }
-
-        @keyframes sweep-v {
-            from { height: 0; top: 50%; }
-            to { height: 120%; top: -10%; }
-        }
-
-        .explosion {
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, rgba(255,255,255,1), rgba(255,255,255,0.5), transparent);
-            border-radius: 50%;
-            animation: explode-area 0.6s ease-out forwards;
-            box-shadow: 0 0 30px rgba(255,255,255,0.8);
-        }
-
-        @keyframes explode-area {
-            from { transform: scale(0); opacity: 1; }
-            to { transform: scale(2); opacity: 0; }
-        }
-
-        .particle-system {
-            position: absolute;
-            pointer-events: none;
-            z-index: 150;
-        }
-
-        .particle {
-            position: absolute;
-            width: 6px;
-            height: 6px;
-            background: radial-gradient(circle, rgba(255,255,255,1), rgba(255,255,0,0.8));
-            border-radius: 50%;
-            animation: particle-burst 0.8s ease-out forwards;
-        }
-
-        @keyframes particle-burst {
-            0% { 
-                transform: scale(1) translate(0, 0); 
-                opacity: 1; 
-            }
-            100% { 
-                transform: scale(0.2) translate(var(--dx), var(--dy)); 
-                opacity: 0; 
-            }
-        }
-
-        .score-popup {
-            position: absolute;
-            font-size: 28px;
-            font-weight: bold;
-            color: #56ab2f;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            pointer-events: none;
-            z-index: 200;
-            animation: score-rise 1s ease-out forwards;
-        }
-
-        @keyframes score-rise {
-            from { transform: translateY(0) scale(0.5); opacity: 1; }
-            to { transform: translateY(-80px) scale(1.5); opacity: 0; }
-        }
-
-        .combo-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 64px;
-            font-weight: bold;
-            background: linear-gradient(45deg, #56ab2f, #f39c12);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
-            pointer-events: none;
-            z-index: 300;
-            animation: combo-bounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        @keyframes combo-bounce {
-            0% { transform: translate(-50%, -50%) scale(0) rotate(-180deg); }
-            50% { transform: translate(-50%, -50%) scale(1.5) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 0; }
-        }
-
-        .game-controls {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .btn {
-            padding: 15px 30px;
-            font-size: 18px;
-            font-weight: bold;
-            border: none;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #56ab2f, #a8e063);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #f39c12, #f1c40f);
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-        }
-
-        .game-over-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.85);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .game-over-content {
-            background: white;
-            padding: 50px;
-            border-radius: 25px;
-            text-align: center;
-            animation: slideIn 0.5s ease-out;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(-100px) scale(0.8); opacity: 0; }
-            to { transform: translateY(0) scale(1); opacity: 1; }
-        }
-
-        .game-over-title {
-            font-size: 48px;
-            font-weight: bold;
-            background: linear-gradient(45deg, #56ab2f, #a8e063);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 30px;
-        }
-
-        .final-stats {
-            font-size: 24px;
-            margin-bottom: 30px;
-            line-height: 1.8;
-        }
-
-        .final-stats strong {
-            color: #56ab2f;
-        }
-
-        .high-score {
-            font-size: 20px;
-            color: #f39c12;
-            margin-bottom: 20px;
-        }
-
-        .hint-animation {
-            animation: hint-pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes hint-pulse {
-            0%, 100% { 
-                transform: scale(1); 
-                box-shadow: 0 0 0 rgba(86, 171, 47, 0);
-            }
-            50% { 
-                transform: scale(1.15); 
-                box-shadow: 0 0 30px rgba(86, 171, 47, 1);
-            }
-        }
-
-        .no-moves-shake {
-            animation: shake 0.5s ease-in-out;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-
-        .special-combo-effect {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            z-index: 500;
-            background: radial-gradient(circle at center, transparent, rgba(255,255,255,0.3));
-            animation: special-combo-flash 0.5s ease-out;
-        }
-
-        @keyframes special-combo-flash {
-            from { opacity: 0; transform: scale(0.5); }
-            50% { opacity: 1; }
-            to { opacity: 0; transform: scale(1.5); }
-        }
-
-        .processing-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.1);
-            z-index: 50;
-            display: none;
-        }
-
-        .debug-info {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            font-family: monospace;
-            font-size: 12px;
-            display: none;
-            z-index: 1001;
-        }
     </style>
 </head>
 <body>
-    <div class="game-container" id="gameContainer">
+    <div class="game-container">
         <div class="game-header">
             <h1 class="game-title">🥗 Healthy Food Match 🥗</h1>
         </div>
@@ -606,51 +249,27 @@
             <div class="stat-box">
                 <div class="stat-label">Score</div>
                 <div class="stat-value" id="score">0</div>
-                <div class="multiplier-indicator" id="multiplier">2x</div>
             </div>
             <div class="stat-box">
                 <div class="stat-label">Moves Left</div>
                 <div class="stat-value" id="moves">30</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">Chain</div>
-                <div class="stat-value" id="chain">0</div>
             </div>
         </div>
 
         <div class="special-candies-info">
             <div class="special-candies-title">🌟 อาหารพิเศษ 🌟</div>
             <div class="special-candies-list">
-                <div class="special-candy-info">
-                    <span>4 ชิ้น</span>
-                    <span>➡️</span>
-                    <span style="font-size: 20px;">🥕</span>
-                    <span>ผักลาย (ทำลายแถว/คอลัมน์)</span>
-                </div>
-                <div class="special-candy-info">
-                    <span>รูป L/T</span>
-                    <span>➡️</span>
-                    <span style="font-size: 20px;">🎁</span>
-                    <span>ซุปเปอร์ฟู้ด (ระเบิด 3x3)</span>
-                </div>
-                <div class="special-candy-info">
-                    <span>5 ชิ้น</span>
-                    <span>➡️</span>
-                    <span style="font-size: 20px;">🌈</span>
-                    <span>สลัดรุ้ง (ทำลายชนิดเดียวกันทั้งหมด)</span>
-                </div>
+                <div class="special-candy-info"><span>4 ชิ้น</span><span>➡️</span><span style="font-size: 20px;">🥕</span><span>ผักลาย</span></div>
+                <div class="special-candy-info"><span>รูป L/T</span><span>➡️</span><span style="font-size: 20px;">🥑</span><span>ซุปเปอร์ฟู้ด</span></div>
+                <div class="special-candy-info"><span>5 ชิ้น</span><span>➡️</span><span style="font-size: 20px;">🌈</span><span>สลัดรุ้ง</span></div>
             </div>
         </div>
 
-        <div class="board-container">
-            <div class="board" id="board"></div>
-            <div class="processing-overlay" id="processingOverlay"></div>
-        </div>
+        <div class="board" id="board"></div>
 
         <div class="game-controls">
             <button class="btn btn-primary" onclick="game.newGame()">เริ่มใหม่</button>
             <button class="btn btn-secondary" onclick="game.showHint()">ช่วยบอกหน่อย 💡</button>
-            <button class="btn btn-secondary" onclick="game.toggleDebug()" id="debugBtn" style="display: none;">Debug</button>
         </div>
     </div>
 
@@ -660,36 +279,14 @@
             <div class="final-stats">
                 <strong>คะแนนสุดท้าย:</strong> <span id="finalScore">0</span><br>
                 <strong>คอมโบสูงสุด:</strong> <span id="maxCombo">0</span>x<br>
-                <strong>อาหารพิเศษที่สร้าง:</strong> <span id="specialCreated">0</span> ชิ้น<br>
-                <strong>เชนสูงสุด:</strong> <span id="maxChain">0</span>
+                <strong>อาหารพิเศษที่สร้าง:</strong> <span id="specialCreated">0</span> ชิ้น
             </div>
             <div class="high-score" id="highScoreText"></div>
             <button class="btn btn-primary" onclick="game.newGame()">เล่นอีกครั้ง</button>
         </div>
     </div>
 
-    <div class="debug-info" id="debugInfo">
-        <div>FPS: <span id="fps">60</span></div>
-        <div>State: <span id="gameState">idle</span></div>
-        <div>Processing: <span id="processingState">false</span></div>
-        <div>Queue: <span id="queueLength">0</span></div>
-    </div>
-
- ```html
 <script>
-/*
-SUGGESTED CSS ADDITIONS for Drag-and-Drop:
-Please add these styles to your <style> tag in the HTML for the best visual experience.
-
-.candy.dragging {
-    position: relative;
-    z-index: 100;
-    transform: scale(1.2);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-    transition: none; // Disable transition during drag for instant feedback
-}
-*/
-
 class CandyCrush {
     constructor() {
         // --- Game State ---
@@ -713,7 +310,8 @@ class CandyCrush {
         // --- Drag & Drop State ---
         this.draggedCell = null;
         this.startPos = { x: 0, y: 0 };
-        this.isDragging = false;
+        this.currentPos = { x: 0, y: 0 };
+        this.animationFrameId = null;
 
         // --- DOM Elements ---
         this.boardElement = document.getElementById('board');
@@ -768,19 +366,18 @@ class CandyCrush {
                 cell.className = 'cell';
                 cell.dataset.row = r;
                 cell.dataset.col = c;
-                
-                // Add event listeners for drag-and-drop
-                cell.addEventListener('mousedown', (e) => this.onDragStart(e, r, c));
-                cell.addEventListener('touchstart', (e) => this.onDragStart(e, r, c));
-                
                 this.boardElement.appendChild(cell);
             }
         }
-        // Add global listeners for drag end
+        // Add event listeners for drag-and-drop to the entire board
+        this.boardElement.addEventListener('mousedown', (e) => this.onDragStart(e));
+        this.boardElement.addEventListener('touchstart', (e) => this.onDragStart(e), { passive: false });
+        
+        window.addEventListener('mousemove', (e) => this.onDragMove(e));
+        window.addEventListener('touchmove', (e) => this.onDragMove(e), { passive: false });
+        
         window.addEventListener('mouseup', (e) => this.onDragEnd(e));
         window.addEventListener('touchend', (e) => this.onDragEnd(e));
-        window.addEventListener('mousemove', (e) => this.onDragMove(e));
-        window.addEventListener('touchmove', (e) => this.onDragMove(e));
     }
 
     newGame() {
@@ -806,18 +403,14 @@ class CandyCrush {
         }
     }
     
-    renderCell(row, col, options = {}) {
+    renderCell(row, col) {
         const cell = this.getCellElement(row, col);
         if (!cell) return;
 
-        // Reset transform style from dragging
-        cell.style.transform = '';
-
         const candy = this.board[row][col];
-        if (!candy) {
-            cell.innerHTML = '';
-            return;
-        }
+        cell.innerHTML = ''; // Clear previous content
+
+        if (!candy) return;
 
         const candyElement = document.createElement('span');
         candyElement.className = 'candy';
@@ -829,12 +422,7 @@ class CandyCrush {
             if (specialType === 'color-bomb') candyElement.textContent = '🌈';
             if (specialType === 'wrapped') candyElement.textContent = '🥑';
         }
-
-        if (options.fall) {
-            candyElement.classList.add('falling');
-        }
-
-        cell.innerHTML = '';
+        
         cell.appendChild(candyElement);
     }
 
@@ -844,62 +432,73 @@ class CandyCrush {
     }
 
     // ========================================================================
-    // USER INTERACTION (DRAG & DROP)
+    // USER INTERACTION (SMOOTH DRAG & DROP)
     // ========================================================================
     
-    onDragStart(event, row, col) {
-        if (this.isProcessing || this.moves <= 0 || this.isDragging) return;
+    onDragStart(event) {
+        if (this.isProcessing || this.draggedCell) return;
+        
+        const cell = event.target.closest('.cell');
+        if (!cell) return;
+
         event.preventDefault();
         this.clearHint();
 
-        this.isDragging = true;
-        this.draggedCell = { row, col, element: event.currentTarget.querySelector('.candy') };
-        
-        if (this.draggedCell.element) {
-            this.draggedCell.element.classList.add('dragging');
-        }
+        const row = parseInt(cell.dataset.row);
+        const col = parseInt(cell.dataset.col);
+        const candyElement = cell.querySelector('.candy');
+
+        if (!candyElement) return;
+
+        this.draggedCell = { row, col, element: candyElement };
+        candyElement.classList.add('dragging');
 
         const touch = event.touches ? event.touches[0] : event;
         this.startPos = { x: touch.clientX, y: touch.clientY };
+        this.currentPos = { ...this.startPos };
+
+        this.animationFrameId = requestAnimationFrame(() => this.dragAnimation());
     }
 
     onDragMove(event) {
-        if (!this.isDragging || !this.draggedCell || !this.draggedCell.element) return;
+        if (!this.draggedCell) return;
         event.preventDefault();
-
         const touch = event.touches ? event.touches[0] : event;
-        const dx = touch.clientX - this.startPos.x;
-        const dy = touch.clientY - this.startPos.y;
+        this.currentPos = { x: touch.clientX, y: touch.clientY };
+    }
+    
+    dragAnimation() {
+        if (!this.draggedCell) return;
+
+        const dx = this.currentPos.x - this.startPos.x;
+        const dy = this.currentPos.y - this.startPos.y;
 
         this.draggedCell.element.style.transform = `translate(${dx}px, ${dy}px) scale(1.2)`;
+        
+        this.animationFrameId = requestAnimationFrame(() => this.dragAnimation());
     }
 
     onDragEnd(event) {
-        if (!this.isDragging || !this.draggedCell) return;
-        this.isDragging = false;
+        if (!this.draggedCell) return;
 
-        if (this.draggedCell.element) {
-            this.draggedCell.element.classList.remove('dragging');
-            this.draggedCell.element.style.transform = ''; // Reset style
-        }
+        cancelAnimationFrame(this.animationFrameId);
+        this.animationFrameId = null;
+
+        this.draggedCell.element.classList.remove('dragging');
+        this.draggedCell.element.style.transform = '';
+
+        const dx = this.currentPos.x - this.startPos.x;
+        const dy = this.currentPos.y - this.startPos.y;
         
-        const touch = event.changedTouches ? event.changedTouches[0] : event;
-        const endPos = { x: touch.clientX, y: touch.clientY };
-        
-        const dx = endPos.x - this.startPos.x;
-        const dy = endPos.y - this.startPos.y;
-        
-        const dragThreshold = 20; // Minimum pixels to count as a drag
+        const dragThreshold = 20;
         
         if (Math.abs(dx) > dragThreshold || Math.abs(dy) > dragThreshold) {
             let targetRow = this.draggedCell.row;
             let targetCol = this.draggedCell.col;
 
             if (Math.abs(dx) > Math.abs(dy)) {
-                // Horizontal drag
                 targetCol += (dx > 0) ? 1 : -1;
             } else {
-                // Vertical drag
                 targetRow += (dy > 0) ? 1 : -1;
             }
 
@@ -914,33 +513,37 @@ class CandyCrush {
     async handleSwap(r1, c1, r2, c2) {
         this.isProcessing = true;
         
-        await this.animateSwap(r1, c1, r2, c2);
+        await this.animateSwap(r1, c1, r2, c2, true);
 
         const specialType1 = this.specialCandies.get(`${r1},${c1}`);
         const specialType2 = this.specialCandies.get(`${r2},${c2}`);
 
+        let isValidMove = false;
         if (specialType1 && specialType2) {
+            isValidMove = true;
             this.moves--;
-            this.updateUI();
             await this.triggerSpecialCombo(r1, c1, r2, c2, specialType1, specialType2);
             await this.processBoard();
         } else {
             const matches = this.findAllMatches();
             if (matches.length > 0) {
+                isValidMove = true;
                 this.moves--;
-                this.updateUI();
                 await this.processBoard();
-            } else {
-                await this.animateSwap(r1, c1, r2, c2); // Animate the reversal
             }
         }
+        
+        if (!isValidMove) {
+            await this.animateSwap(r1, c1, r2, c2, false); // Animate the reversal
+        }
 
+        this.updateUI();
         this.isProcessing = false;
         this.checkGameStatus();
     }
 
     // ========================================================================
-    // CORE GAME LOGIC
+    // CORE GAME LOGIC (Remains the same)
     // ========================================================================
 
     async processBoard() {
@@ -978,20 +581,22 @@ class CandyCrush {
 
         for (const match of matches) {
             let specialCreated = false;
+            let creationPos = { r: match.r, c: match.c };
+            
             if (match.type === 'five') {
-                specialCreations.push({ r: match.r, c: match.c, type: 'color-bomb' });
+                specialCreations.push({ ...creationPos, type: 'color-bomb' });
                 specialCreated = true;
             } else if (match.type === 'L' || match.type === 'T') {
-                specialCreations.push({ r: match.r, c: match.c, type: 'wrapped' });
+                specialCreations.push({ ...creationPos, type: 'wrapped' });
                 specialCreated = true;
             } else if (match.type === 'four') {
-                specialCreations.push({ r: match.r, c: match.c, type: match.orientation === 'h' ? 'striped-v' : 'striped-h' });
+                specialCreations.push({ ...creationPos, type: match.orientation === 'h' ? 'striped-v' : 'striped-h' });
                 specialCreated = true;
             }
 
             for (const { r, c } of match.cells) {
                 const key = `${r},${c}`;
-                if (specialCreated && r === match.r && c === match.c) continue;
+                if (specialCreated && r === creationPos.r && c === creationPos.c) continue;
                 
                 cellsToClear.add(key);
                 if (this.specialCandies.has(key)) {
@@ -1033,28 +638,24 @@ class CandyCrush {
 
                 const hCells = hMatch.length >= 3 ? hMatch : [];
                 const vCells = vMatch.length >= 3 ? vMatch : [];
+                
+                const isIntersection = hCells.length > 0 && vCells.length > 0;
 
-                if (hCells.length > 0 && vCells.length > 0) {
-                    const combined = [...new Set([...hCells, ...vCells])].map(cellKey => {
-                        const [r, c] = cellKey.split(',').map(Number);
-                        return {r, c};
-                    });
-                     // T or L shape logic needs to be more robust. Let's simplify.
-                    const intersection = hCells.filter(hc => vCells.some(vc => vc.r === hc.r && vc.c === hc.c));
-                    if(intersection.length > 0){
-                        const allCells = [...new Set([...hCells, ...vCells])];
-                        allMatches.push({ type: allCells.length >= 5 ? 'T' : 'L', r: intersection[0].r, c: intersection[0].c, cells: allCells });
-                        allCells.forEach(cell => checked.add(`${cell.r},${cell.c}`));
+                if (isIntersection) {
+                    const allCells = [...new Set([...hCells, ...vCells])];
+                    allMatches.push({ type: allCells.length >= 5 ? 'T' : 'L', r, c, cells: allCells });
+                    allCells.forEach(cell => checked.add(`${cell.r},${cell.c}`));
+                } else {
+                    if (hCells.length > 0) {
+                        const type = hCells.length === 5 ? 'five' : hCells.length === 4 ? 'four' : 'three';
+                        allMatches.push({ type, r, c: hCells[Math.floor(hCells.length / 2)].c, cells: hCells, orientation: 'h' });
+                        hCells.forEach(cell => checked.add(`${cell.r},${cell.c}`));
                     }
-
-                } else if (hCells.length > 0) {
-                    const type = hCells.length === 5 ? 'five' : hCells.length === 4 ? 'four' : 'three';
-                    allMatches.push({ type, r, c: hCells[Math.floor(hCells.length / 2)].c, cells: hCells, orientation: 'h' });
-                    hCells.forEach(cell => checked.add(`${cell.r},${cell.c}`));
-                } else if (vCells.length > 0) {
-                    const type = vCells.length === 5 ? 'five' : vCells.length === 4 ? 'four' : 'three';
-                    allMatches.push({ type, r: vCells[Math.floor(vCells.length / 2)].r, c, cells: vCells, orientation: 'v' });
-                    vCells.forEach(cell => checked.add(`${cell.r},${cell.c}`));
+                    if (vCells.length > 0) {
+                        const type = vCells.length === 5 ? 'five' : vCells.length === 4 ? 'four' : 'three';
+                        allMatches.push({ type, r: vCells[Math.floor(vCells.length / 2)].r, c, cells: vCells, orientation: 'v' });
+                        vCells.forEach(cell => checked.add(`${cell.r},${cell.c}`));
+                    }
                 }
             }
         }
@@ -1085,7 +686,6 @@ class CandyCrush {
         }
         this.score += points;
         if (points > 0) this.showScorePopup(points);
-        this.updateUI();
         await this.delay(500);
     }
 
@@ -1118,7 +718,6 @@ class CandyCrush {
                 }
             }
         }
-        this.renderAll();
     }
 
     async fillNewCandies() {
@@ -1126,14 +725,16 @@ class CandyCrush {
             for (let r = 0; r < this.size; r++) {
                 if (!this.board[r][c]) {
                     this.board[r][c] = this.getRandomCandy();
-                    this.renderCell(r, c, { fall: true });
+                    this.renderCell(r, c);
+                    const candyEl = this.getCellElement(r,c).querySelector('.candy');
+                    if(candyEl) candyEl.classList.add('falling');
                 }
             }
         }
     }
 
     // ========================================================================
-    // SPECIAL CANDY LOGIC
+    // SPECIAL CANDY LOGIC (Remains the same)
     // ========================================================================
 
     async triggerSpecialCombo(r1, c1, r2, c2, type1, type2) {
@@ -1145,10 +746,10 @@ class CandyCrush {
             for (let r = 0; r < this.size; r++) for (let c = 0; c < this.size; c++) cellsToClear.add(`${r},${c}`);
             this.showComboText('ULTRA CLEAR!');
         } else if (comboTypes.includes('color-bomb') && comboTypes.includes('striped')) {
-            const otherCandy = this.board[type1 === 'color-bomb' ? r2 : r1][type1 === 'color-bomb' ? c2 : c1];
+            const otherCandyType = this.board[type1 === 'color-bomb' ? r2 : r1][type1 === 'color-bomb' ? c2 : c1];
             for (let r = 0; r < this.size; r++) {
                 for (let c = 0; c < this.size; c++) {
-                    if (this.board[r][c] === otherCandy) {
+                    if (this.board[r][c] === otherCandyType) {
                         const newType = Math.random() > 0.5 ? 'striped-h' : 'striped-v';
                         this.getAffectedCellsForSpecial(r, c, newType).forEach(cell => cellsToClear.add(`${cell.r},${cell.c}`));
                     }
@@ -1156,11 +757,11 @@ class CandyCrush {
             }
             this.showComboText('STRIPE POWER!');
         } else if (comboTypes.includes('color-bomb') && comboTypes.includes('wrapped')) {
-            const otherCandy = this.board[type1 === 'color-bomb' ? r2 : r1][type1 === 'color-bomb' ? c2 : c1];
-            const secondCandy = this.getRandomCandy();
+            const otherCandyType = this.board[type1 === 'color-bomb' ? r2 : r1][type1 === 'color-bomb' ? c2 : c1];
+            const secondCandyType = this.getRandomCandy();
             for (let r = 0; r < this.size; r++) {
                 for (let c = 0; c < this.size; c++) {
-                    if (this.board[r][c] === otherCandy || this.board[r][c] === secondCandy) {
+                    if (this.board[r][c] === otherCandyType || this.board[r][c] === secondCandyType) {
                         cellsToClear.add(`${r},${c}`);
                     }
                 }
@@ -1249,8 +850,8 @@ class CandyCrush {
     animateHint(r1, c1, r2, c2) {
         const cell1 = this.getCellElement(r1, c1);
         const cell2 = this.getCellElement(r2, c2);
-        cell1.classList.add('hint-animation');
-        cell2.classList.add('hint-animation');
+        if(cell1) cell1.classList.add('hint-animation');
+        if(cell2) cell2.classList.add('hint-animation');
         this.hintTimeout = setTimeout(() => this.clearHint(), 2000);
     }
 
@@ -1318,11 +919,33 @@ class CandyCrush {
     // ANIMATIONS & EFFECTS
     // ========================================================================
 
-    async animateSwap(r1, c1, r2, c2) {
+    async animateSwap(r1, c1, r2, c2, isForward) {
         this.swapModel(r1, c1, r2, c2);
-        this.renderCell(r1, c1);
-        this.renderCell(r2, c2);
-        await this.delay(300);
+        
+        const cell1 = this.getCellElement(r1, c1);
+        const cell2 = this.getCellElement(r2, c2);
+        
+        const candy1 = cell1.querySelector('.candy');
+        const candy2 = cell2.querySelector('.candy');
+
+        if (candy1 && candy2) {
+            const dx = (c2 - c1) * 100;
+            const dy = (r2 - r1) * 100;
+            
+            candy1.style.transform = `translate(${dx}%, ${dy}%)`;
+            candy2.style.transform = `translate(${-dx}%, ${-dy}%)`;
+            
+            await this.delay(300);
+            
+            candy1.style.transform = '';
+            candy2.style.transform = '';
+        }
+
+        // Only re-render if it's a valid, forward swap
+        if (isForward) {
+            this.renderCell(r1, c1);
+            this.renderCell(r2, c2);
+        }
     }
 
     animateMatch(r, c) {
@@ -1351,14 +974,13 @@ class CandyCrush {
     createLineEffect(r, c, direction) {
         const effect = document.createElement('div');
         effect.className = `special-effect line-clear-${direction === 'horizontal' ? 'h' : 'v'}`;
-        const cellRect = this.getCellElement(r, c).getBoundingClientRect();
-        const boardRect = this.boardElement.getBoundingClientRect();
+        const cellElement = this.getCellElement(r, c);
         
         if (direction === 'horizontal') {
-            effect.style.top = `${cellRect.top - boardRect.top}px`;
+            effect.style.top = `${cellElement.offsetTop}px`;
             effect.style.left = `0`;
         } else {
-            effect.style.left = `${cellRect.left - boardRect.left}px`;
+            effect.style.left = `${cellElement.offsetLeft}px`;
             effect.style.top = `0`;
         }
         this.boardElement.appendChild(effect);
@@ -1368,10 +990,9 @@ class CandyCrush {
     createExplosionEffect(r, c) {
         const effect = document.createElement('div');
         effect.className = 'special-effect explosion';
-        const cellRect = this.getCellElement(r, c).getBoundingClientRect();
-        const boardRect = this.boardElement.getBoundingClientRect();
-        effect.style.left = `${cellRect.left - boardRect.left - (200 - 65) / 2}px`;
-        effect.style.top = `${cellRect.top - boardRect.top - (200 - 65) / 2}px`;
+        const cellElement = this.getCellElement(r, c);
+        effect.style.left = `${cellElement.offsetLeft - cellElement.offsetWidth}px`;
+        effect.style.top = `${cellElement.offsetTop - cellElement.offsetHeight}px`;
         this.boardElement.appendChild(effect);
         setTimeout(() => effect.remove(), 600);
     }
@@ -1379,10 +1000,9 @@ class CandyCrush {
     createSpecialEffect(className, r, c) {
         const effect = document.createElement('div');
         effect.className = `special-effect ${className}`;
-        const cellRect = this.getCellElement(r, c).getBoundingClientRect();
-        const boardRect = this.boardElement.getBoundingClientRect();
-        effect.style.left = `${cellRect.left - boardRect.left}px`;
-        effect.style.top = `${cellRect.top - boardRect.top}px`;
+        const cellElement = this.getCellElement(r, c);
+        effect.style.left = `${cellElement.offsetLeft}px`;
+        effect.style.top = `${cellElement.offsetTop}px`;
         this.boardElement.appendChild(effect);
         setTimeout(() => effect.remove(), 500);
     }
@@ -1427,10 +1047,6 @@ window.addEventListener('DOMContentLoaded', () => {
     const game = new CandyCrush();
     window.game = game;
 });
-
-
 </script>
-
-
 </body>
 </html>
