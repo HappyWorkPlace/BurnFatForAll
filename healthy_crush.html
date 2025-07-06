@@ -514,11 +514,11 @@ body {
             <div class="multiplier-indicator" id="multiplier">2x</div>
         </div>
         <div class="stat-box">
-            <div class="stat-label">MoveLeft</div>
+            <div class="stat-label">Move Left</div>
             <div class="stat-value" id="moves">30</div>
         </div>
         <div class="stat-box">
-            <div class="stat-label">Chain</div>
+            <div class="stat-label">Combo</div>
             <div class="stat-value" id="chain">0</div>
         </div>
     </div>
@@ -850,7 +850,7 @@ body {
       updateMultiplierDisplay() {
           if (!this.elements.multiplier) return;
           if (this.scoreMultiplier > 1 && this.multiplierTurnsLeft > 0) {
-              this.elements.multiplier.textContent = `${this.scoreMultiplier}x (${this.multiplierTurnsLeft})`;
+              this.elements.multiplier.textContent = `${this.scoreMultiplier}`;
               this.elements.multiplier.classList.add('show');
           } else {
               this.elements.multiplier.classList.remove('show');
