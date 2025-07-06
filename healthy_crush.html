@@ -1,1052 +1,1116 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Healthy Food Match - Super Stable Edition</title>
-    <style>
-        :root {
-            --board-size: 8;
-            --cell-size: min(10vw, 65px); /* Choose the smaller value between 10vw and 65px */
-            --gap-size: min(1vw, 5px);
-            --board-dimension: calc(var(--board-size) * (var(--cell-size) + var(--gap-size)) + var(--gap-size));
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent; /* Disable tap highlight on mobile */
-        }
-
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            padding: 10px;
-        }
-
-        .game-container {
-            width: 100%;
-            max-width: 600px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: clamp(10px, 3vw, 20px); /* Responsive padding */
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .game-header {
-            text-align: center;
-            margin-bottom: clamp(10px, 3vw, 20px);
-        }
-
-        .game-title {
-            font-size: clamp(28px, 6vw, 42px); /* Responsive font size */
-            font-weight: bold;
-            background: linear-gradient(45deg, #56ab2f, #a8e063);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 15px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .game-stats {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap; /* Allow wrapping on small screens */
-            margin-bottom: clamp(10px, 3vw, 20px);
-            gap: clamp(10px, 2vw, 20px);
-        }
-
-        .stat-box {
-            background: linear-gradient(135deg, #56ab2f, #a8e063);
-            color: white;
-            padding: clamp(8px, 2vw, 15px) clamp(15px, 4vw, 30px);
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            text-align: center;
-        }
-
-        .stat-label {
-            font-size: clamp(12px, 2.5vw, 14px);
-            opacity: 0.9;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .stat-value {
-            font-size: clamp(24px, 5vw, 32px);
-            font-weight: bold;
-            margin-top: 5px;
-        }
-
-        .special-candies-info {
-            background: rgba(0,0,0,0.05);
-            border-radius: 10px;
-            padding: clamp(10px, 2vw, 15px);
-            margin-bottom: clamp(10px, 3vw, 20px);
-            text-align: center;
-        }
-
-        .special-candies-title {
-            font-size: clamp(16px, 3.5vw, 18px);
-            font-weight: bold;
-            color: #56ab2f;
-            margin-bottom: 10px;
-        }
-
-        .special-candies-list {
-            display: flex;
-            justify-content: center;
-            gap: clamp(10px, 2vw, 20px);
-            flex-wrap: wrap;
-        }
-
-        .special-candy-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            font-size: clamp(12px, 2.5vw, 14px);
-        }
-
-        .board {
-            display: grid;
-            grid-template-columns: repeat(var(--board-size), var(--cell-size));
-            grid-template-rows: repeat(var(--board-size), var(--cell-size));
-            gap: var(--gap-size);
-            background: rgba(0,0,0,0.1);
-            padding: var(--gap-size);
-            border-radius: 10px;
-            position: relative;
-            margin: 0 auto;
-            width: var(--board-dimension);
-            height: var(--board-dimension);
-            touch-action: none; /* Prevent scrolling while dragging on board */
-        }
-
-        .cell {
-            width: var(--cell-size);
-            height: var(--cell-size);
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 12px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .candy {
-            font-size: calc(var(--cell-size) * 0.6); /* Candy size relative to cell */
-            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.3s;
-            z-index: 10;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-            position: absolute; /* Important for smooth dragging */
-            user-select: none; /* Prevent text selection */
-            pointer-events: none; /* Clicks should go to the cell */
-        }
-
-        .candy.dragging {
-            z-index: 100;
-            transform: scale(1.2);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-            transition: none; /* Disable transition during drag for instant feedback */
-        }
-
-        .candy.matched {
-            animation: explode 0.5s ease-out forwards;
-        }
-
-        @keyframes explode {
-            0% { transform: scale(1) rotate(0deg); }
-            50% { transform: scale(1.5) rotate(180deg); filter: brightness(2); }
-            100% { transform: scale(0) rotate(360deg); opacity: 0; }
-        }
-
-        .candy.falling {
-            animation: fall 0.4s ease-in;
-        }
-
-        @keyframes fall {
-            from { transform: translateY(-400px) rotate(180deg); opacity: 0; }
-            to { transform: translateY(0) rotate(0deg); opacity: 1; }
-        }
-
-        /* Other styles (striped, wrapped, effects, etc.) remain mostly the same */
-        .candy.striped-h::after, .candy.striped-v::after, .candy.wrapped::before, .candy.color-bomb {
-             /* Ensure special effects scale with candy */
-            font-size: inherit;
-        }
-        .candy.striped-h::after { content: ''; position: absolute; top: 50%; left: -10%; right: -10%; height: 5%; background: rgba(255,255,255,0.8); transform: translateY(-50%); }
-        .candy.striped-v::after { content: ''; position: absolute; left: 50%; top: -10%; bottom: -10%; width: 5%; background: rgba(255,255,255,0.8); transform: translateX(-50%); }
-        .candy.wrapped { animation: wrapped-spin 2s linear infinite; }
-        @keyframes wrapped-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .candy.wrapped::before { content: '🥑'; position: absolute; font-size: 50%; top: -10%; right: -10%; animation: gift-bounce 0.5s ease-in-out infinite alternate; }
-        @keyframes gift-bounce { from { transform: scale(0.8) translateY(0); } to { transform: scale(1.2) translateY(-3px); } }
-        .candy.color-bomb { font-size: calc(var(--cell-size) * 0.7); animation: rainbow-spin 2s linear infinite; filter: drop-shadow(0 0 15px rgba(255,255,255,1)); }
-        @keyframes rainbow-spin { 0% { transform: rotate(0deg); filter: hue-rotate(0deg) drop-shadow(0 0 15px rgba(255,0,0,1)); } 25% { filter: hue-rotate(90deg) drop-shadow(0 0 15px rgba(255,255,0,1)); } 50% { transform: rotate(180deg); filter: hue-rotate(180deg) drop-shadow(0 0 15px rgba(0,255,0,1)); } 75% { filter: hue-rotate(270deg) drop-shadow(0 0 15px rgba(0,255,255,1)); } 100% { transform: rotate(360deg); filter: hue-rotate(360deg) drop-shadow(0 0 15px rgba(255,0,255,1)); } }
-
-        .special-effect { position: absolute; pointer-events: none; z-index: 100; }
-        .line-clear-h { height: var(--cell-size); background: linear-gradient(90deg, transparent, rgba(255,255,255,1), transparent); animation: sweep-h 0.5s ease-out forwards; }
-        @keyframes sweep-h { from { width: 0; left: 50%; } to { width: 120%; left: -10%; } }
-        .line-clear-v { width: var(--cell-size); background: linear-gradient(0deg, transparent, rgba(255,255,255,1), transparent); animation: sweep-v 0.5s ease-out forwards; }
-        @keyframes sweep-v { from { height: 0; top: 50%; } to { height: 120%; top: -10%; } }
-        .explosion { width: calc(var(--cell-size) * 3); height: calc(var(--cell-size) * 3); background: radial-gradient(circle, rgba(255,255,255,1), rgba(255,255,255,0.5), transparent); border-radius: 50%; animation: explode-area 0.6s ease-out forwards; }
-        @keyframes explode-area { from { transform: scale(0); opacity: 1; } to { transform: scale(1.5); opacity: 0; } }
-
-        .score-popup { position: absolute; font-size: clamp(20px, 4vw, 28px); font-weight: bold; color: #56ab2f; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); pointer-events: none; z-index: 200; animation: score-rise 1s ease-out forwards; }
-        @keyframes score-rise { from { transform: translateY(0) scale(0.5); opacity: 1; } to { transform: translateY(-80px) scale(1.5); opacity: 0; } }
-        
-        .combo-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: clamp(48px, 10vw, 64px); font-weight: bold; background: linear-gradient(45deg, #56ab2f, #f39c12); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 3px 3px 6px rgba(0,0,0,0.5); pointer-events: none; z-index: 300; animation: combo-bounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
-        @keyframes combo-bounce { 0% { transform: translate(-50%, -50%) scale(0) rotate(-180deg); } 50% { transform: translate(-50%, -50%) scale(1.5) rotate(0deg); } 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 0; } }
-        
-        .game-controls { display: flex; justify-content: center; gap: 20px; margin-top: clamp(10px, 3vw, 20px); }
-        .btn { padding: clamp(10px, 2.5vw, 15px) clamp(20px, 5vw, 30px); font-size: clamp(14px, 3vw, 18px); font-weight: bold; border: none; border-radius: 15px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-transform: uppercase; letter-spacing: 1px; }
-        .btn-primary { background: linear-gradient(135deg, #56ab2f, #a8e063); color: white; }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
-        .btn-secondary { background: linear-gradient(135deg, #f39c12, #f1c40f); color: white; }
-        .btn-secondary:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
-
-        .game-over-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 1000; }
-        .game-over-content { background: white; padding: 50px; border-radius: 25px; text-align: center; animation: slideIn 0.5s ease-out; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-        @keyframes slideIn { from { transform: translateY(-100px) scale(0.8); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
-        .game-over-title { font-size: 48px; font-weight: bold; background: linear-gradient(45deg, #56ab2f, #a8e063); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 30px; }
-        .final-stats { font-size: 24px; margin-bottom: 30px; line-height: 1.8; }
-        .final-stats strong { color: #56ab2f; }
-        .high-score { font-size: 20px; color: #f39c12; margin-bottom: 20px; }
-        
-        .hint-animation .candy { animation: hint-pulse 1s ease-in-out infinite; }
-        @keyframes hint-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
-        
-        .no-moves-shake { animation: shake 0.5s ease-in-out; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
-
-    </style>
-</head>
-<body>
-    <div class="game-container">
-        <div class="game-header">
-            <h1 class="game-title">🥗 Healthy Food Match 🥗</h1>
-        </div>
-
-        <div class="game-stats">
-            <div class="stat-box">
-                <div class="stat-label">Score</div>
-                <div class="stat-value" id="score">0</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">Moves Left</div>
-                <div class="stat-value" id="moves">30</div>
-            </div>
-        </div>
-
-        <div class="special-candies-info">
-            <div class="special-candies-title">🌟 อาหารพิเศษ 🌟</div>
-            <div class="special-candies-list">
-                <div class="special-candy-info"><span>4 ชิ้น</span><span>➡️</span><span style="font-size: 20px;">🥕</span><span>ผักลาย</span></div>
-                <div class="special-candy-info"><span>รูป L/T</span><span>➡️</span><span style="font-size: 20px;">🥑</span><span>ซุปเปอร์ฟู้ด</span></div>
-                <div class="special-candy-info"><span>5 ชิ้น</span><span>➡️</span><span style="font-size: 20px;">🌈</span><span>สลัดรุ้ง</span></div>
-            </div>
-        </div>
-
-        <div class="board" id="board"></div>
-
-        <div class="game-controls">
-            <button class="btn btn-primary" onclick="game.newGame()">เริ่มใหม่</button>
-            <button class="btn btn-secondary" onclick="game.showHint()">ช่วยบอกหน่อย 💡</button>
-        </div>
-    </div>
-
-    <div class="game-over-overlay" id="gameOverOverlay">
-        <div class="game-over-content">
-            <h2 class="game-over-title">จบเกม!</h2>
-            <div class="final-stats">
-                <strong>คะแนนสุดท้าย:</strong> <span id="finalScore">0</span><br>
-                <strong>คอมโบสูงสุด:</strong> <span id="maxCombo">0</span>x<br>
-                <strong>อาหารพิเศษที่สร้าง:</strong> <span id="specialCreated">0</span> ชิ้น
-            </div>
-            <div class="high-score" id="highScoreText"></div>
-            <button class="btn btn-primary" onclick="game.newGame()">เล่นอีกครั้ง</button>
-        </div>
-    </div>
-
-<script>
-class CandyCrush {
-    constructor() {
-        // --- Game State ---
-        this.board = [];
-        this.size = 8;
-        this.score = 0;
-        this.moves = 30;
-        this.combo = 0;
-        this.maxCombo = 0;
-        this.specialCandiesCreated = 0;
-        this.highScore = localStorage.getItem('healthyFoodMatchHighScore') || 0;
-
-        // --- Core Mechanics ---
-        this.candyTypes = ['🥕', '🥦', '🍎', '🍊', '🥒', '🍇'];
-        this.specialCandies = new Map();
-
-        // --- UI & Control ---
-        this.isProcessing = false;
-        this.hintTimeout = null;
-
-        // --- Drag & Drop State ---
-        this.draggedCell = null;
-        this.startPos = { x: 0, y: 0 };
-        this.currentPos = { x: 0, y: 0 };
-        this.animationFrameId = null;
-
-        // --- DOM Elements ---
-        this.boardElement = document.getElementById('board');
-        this.scoreElement = document.getElementById('score');
-        this.movesElement = document.getElementById('moves');
-        this.gameOverOverlay = document.getElementById('gameOverOverlay');
-        
-        this.init();
-    }
-
-    // ========================================================================
-    // INITIALIZATION & GAME SETUP
-    // ========================================================================
-
-    init() {
-        this.isProcessing = true;
-        this.createBoardModel();
-        this.createBoardView();
-        
-        while (!this.hasPossibleMoves()) {
-            this.createBoardModel();
-        }
-        
-        this.renderAll();
-        this.updateUI();
-        this.isProcessing = false;
-    }
-
-    createBoardModel() {
-        this.board = [];
-        this.specialCandies.clear();
-        for (let r = 0; r < this.size; r++) {
-            this.board[r] = [];
-            for (let c = 0; c < this.size; c++) {
-                let candy;
-                do {
-                    candy = this.getRandomCandy();
-                } while (
-                    (c >= 2 && this.board[r][c - 1] === candy && this.board[r][c - 2] === candy) ||
-                    (r >= 2 && this.board[r - 2][c] === candy && this.board[r - 1][c] === candy)
-                );
-                this.board[r][c] = candy;
-            }
-        }
-    }
-
-    createBoardView() {
-        this.boardElement.innerHTML = '';
-        for (let r = 0; r < this.size; r++) {
-            for (let c = 0; c < this.size; c++) {
-                const cell = document.createElement('div');
-                cell.className = 'cell';
-                cell.dataset.row = r;
-                cell.dataset.col = c;
-                this.boardElement.appendChild(cell);
-            }
-        }
-        // Add event listeners for drag-and-drop to the entire board
-        this.boardElement.addEventListener('mousedown', (e) => this.onDragStart(e));
-        this.boardElement.addEventListener('touchstart', (e) => this.onDragStart(e), { passive: false });
-        
-        window.addEventListener('mousemove', (e) => this.onDragMove(e));
-        window.addEventListener('touchmove', (e) => this.onDragMove(e), { passive: false });
-        
-        window.addEventListener('mouseup', (e) => this.onDragEnd(e));
-        window.addEventListener('touchend', (e) => this.onDragEnd(e));
-    }
-
-    newGame() {
-        this.score = 0;
-        this.moves = 30;
-        this.combo = 0;
-        this.maxCombo = 0;
-        this.specialCandiesCreated = 0;
-        
-        this.gameOverOverlay.style.display = 'none';
-        this.init();
-    }
-
-    // ========================================================================
-    // RENDERING & UI UPDATES
-    // ========================================================================
-
-    renderAll() {
-        for (let r = 0; r < this.size; r++) {
-            for (let c = 0; c < this.size; c++) {
-                this.renderCell(r, c);
-            }
-        }
-    }
-    
-    renderCell(row, col) {
-        const cell = this.getCellElement(row, col);
-        if (!cell) return;
-
-        const candy = this.board[row][col];
-        cell.innerHTML = ''; // Clear previous content
-
-        if (!candy) return;
-
-        const candyElement = document.createElement('span');
-        candyElement.className = 'candy';
-        candyElement.textContent = candy;
-
-        const specialType = this.specialCandies.get(`${row},${col}`);
-        if (specialType) {
-            candyElement.classList.add(specialType);
-            if (specialType === 'color-bomb') candyElement.textContent = '🌈';
-            if (specialType === 'wrapped') candyElement.textContent = '🥑';
-        }
-        
-        cell.appendChild(candyElement);
-    }
-
-    updateUI() {
-        this.scoreElement.textContent = this.score;
-        this.movesElement.textContent = this.moves;
-    }
-
-    // ========================================================================
-    // USER INTERACTION (SMOOTH DRAG & DROP)
-    // ========================================================================
-    
-    onDragStart(event) {
-        if (this.isProcessing || this.draggedCell) return;
-        
-        const cell = event.target.closest('.cell');
-        if (!cell) return;
-
-        event.preventDefault();
-        this.clearHint();
-
-        const row = parseInt(cell.dataset.row);
-        const col = parseInt(cell.dataset.col);
-        const candyElement = cell.querySelector('.candy');
-
-        if (!candyElement) return;
-
-        this.draggedCell = { row, col, element: candyElement };
-        candyElement.classList.add('dragging');
-
-        const touch = event.touches ? event.touches[0] : event;
-        this.startPos = { x: touch.clientX, y: touch.clientY };
-        this.currentPos = { ...this.startPos };
-
-        this.animationFrameId = requestAnimationFrame(() => this.dragAnimation());
-    }
-
-    onDragMove(event) {
-        if (!this.draggedCell) return;
-        event.preventDefault();
-        const touch = event.touches ? event.touches[0] : event;
-        this.currentPos = { x: touch.clientX, y: touch.clientY };
-    }
-    
-    dragAnimation() {
-        if (!this.draggedCell) return;
-
-        const dx = this.currentPos.x - this.startPos.x;
-        const dy = this.currentPos.y - this.startPos.y;
-
-        this.draggedCell.element.style.transform = `translate(${dx}px, ${dy}px) scale(1.2)`;
-        
-        this.animationFrameId = requestAnimationFrame(() => this.dragAnimation());
-    }
-
-    onDragEnd(event) {
-        if (!this.draggedCell) return;
-
-        cancelAnimationFrame(this.animationFrameId);
-        this.animationFrameId = null;
-
-        this.draggedCell.element.classList.remove('dragging');
-        this.draggedCell.element.style.transform = '';
-
-        const dx = this.currentPos.x - this.startPos.x;
-        const dy = this.currentPos.y - this.startPos.y;
-        
-        const dragThreshold = 20;
-        
-        if (Math.abs(dx) > dragThreshold || Math.abs(dy) > dragThreshold) {
-            let targetRow = this.draggedCell.row;
-            let targetCol = this.draggedCell.col;
-
-            if (Math.abs(dx) > Math.abs(dy)) {
-                targetCol += (dx > 0) ? 1 : -1;
-            } else {
-                targetRow += (dy > 0) ? 1 : -1;
-            }
-
-            if (this.isValid(targetRow, targetCol)) {
-                this.handleSwap(this.draggedCell.row, this.draggedCell.col, targetRow, targetCol);
-            }
-        }
-        
-        this.draggedCell = null;
-    }
-
-    async handleSwap(r1, c1, r2, c2) {
-        this.isProcessing = true;
-        
-        await this.animateSwap(r1, c1, r2, c2, true);
-
-        const specialType1 = this.specialCandies.get(`${r1},${c1}`);
-        const specialType2 = this.specialCandies.get(`${r2},${c2}`);
-
-        let isValidMove = false;
-        if (specialType1 && specialType2) {
-            isValidMove = true;
-            this.moves--;
-            await this.triggerSpecialCombo(r1, c1, r2, c2, specialType1, specialType2);
-            await this.processBoard();
-        } else {
-            const matches = this.findAllMatches();
-            if (matches.length > 0) {
-                isValidMove = true;
-                this.moves--;
-                await this.processBoard();
-            }
-        }
-        
-        if (!isValidMove) {
-            await this.animateSwap(r1, c1, r2, c2, false); // Animate the reversal
-        }
-
-        this.updateUI();
-        this.isProcessing = false;
-        this.checkGameStatus();
-    }
-
-    // ========================================================================
-    // CORE GAME LOGIC (Remains the same)
-    // ========================================================================
-
-    async processBoard() {
-        this.combo = 0;
-        let matches = this.findAllMatches();
-
-        while (matches.length > 0) {
-            this.isProcessing = true;
-            this.combo++;
-            if (this.combo > this.maxCombo) this.maxCombo = this.combo;
-            if (this.combo > 1) this.showComboText(`${this.combo}x COMBO!`);
-
-            const { cellsToClear, specialCreations } = this.processFoundMatches(matches);
-
-            await this.clearAndScore(cellsToClear);
-            await this.createSpecialCandies(specialCreations);
-            await this.delay(150);
-
-            await this.applyGravity();
-            await this.fillNewCandies();
-            
-            await this.delay(300);
-            matches = this.findAllMatches();
-        }
-        
-        if (!this.hasPossibleMoves()) {
-            await this.shuffleBoard();
-        }
-    }
-    
-    processFoundMatches(matches) {
-        const cellsToClear = new Set();
-        const specialCreations = [];
-        let specialCandiesToTrigger = [];
-
-        for (const match of matches) {
-            let specialCreated = false;
-            let creationPos = { r: match.r, c: match.c };
-            
-            if (match.type === 'five') {
-                specialCreations.push({ ...creationPos, type: 'color-bomb' });
-                specialCreated = true;
-            } else if (match.type === 'L' || match.type === 'T') {
-                specialCreations.push({ ...creationPos, type: 'wrapped' });
-                specialCreated = true;
-            } else if (match.type === 'four') {
-                specialCreations.push({ ...creationPos, type: match.orientation === 'h' ? 'striped-v' : 'striped-h' });
-                specialCreated = true;
-            }
-
-            for (const { r, c } of match.cells) {
-                const key = `${r},${c}`;
-                if (specialCreated && r === creationPos.r && c === creationPos.c) continue;
-                
-                cellsToClear.add(key);
-                if (this.specialCandies.has(key)) {
-                    specialCandiesToTrigger.push({r, c, type: this.specialCandies.get(key)});
-                }
-            }
-        }
-        
-        while (specialCandiesToTrigger.length > 0) {
-            const {r, c, type} = specialCandiesToTrigger.pop();
-            const affectedCells = this.getAffectedCellsForSpecial(r, c, type);
-            
-            for (const {r: ar, c: ac} of affectedCells) {
-                const key = `${ar},${ac}`;
-                if (!cellsToClear.has(key)) {
-                    cellsToClear.add(key);
-                    if (this.specialCandies.has(key)) {
-                        specialCandiesToTrigger.push({r: ar, c: ac, type: this.specialCandies.get(key)});
-                    }
-                }
-            }
-        }
-        
-        return { cellsToClear, specialCreations };
-    }
-
-    findAllMatches() {
-        const allMatches = [];
-        const checked = new Set();
-
-        for (let r = 0; r < this.size; r++) {
-            for (let c = 0; c < this.size; c++) {
-                const key = `${r},${c}`;
-                if (checked.has(key) || !this.board[r][c]) continue;
-
-                const candy = this.board[r][c];
-                const hMatch = this.getMatch(r, c, 0, 1, candy);
-                const vMatch = this.getMatch(r, c, 1, 0, candy);
-
-                const hCells = hMatch.length >= 3 ? hMatch : [];
-                const vCells = vMatch.length >= 3 ? vMatch : [];
-                
-                const isIntersection = hCells.length > 0 && vCells.length > 0;
-
-                if (isIntersection) {
-                    const allCells = [...new Set([...hCells, ...vCells])];
-                    allMatches.push({ type: allCells.length >= 5 ? 'T' : 'L', r, c, cells: allCells });
-                    allCells.forEach(cell => checked.add(`${cell.r},${cell.c}`));
-                } else {
-                    if (hCells.length > 0) {
-                        const type = hCells.length === 5 ? 'five' : hCells.length === 4 ? 'four' : 'three';
-                        allMatches.push({ type, r, c: hCells[Math.floor(hCells.length / 2)].c, cells: hCells, orientation: 'h' });
-                        hCells.forEach(cell => checked.add(`${cell.r},${cell.c}`));
-                    }
-                    if (vCells.length > 0) {
-                        const type = vCells.length === 5 ? 'five' : vCells.length === 4 ? 'four' : 'three';
-                        allMatches.push({ type, r: vCells[Math.floor(vCells.length / 2)].r, c, cells: vCells, orientation: 'v' });
-                        vCells.forEach(cell => checked.add(`${cell.r},${cell.c}`));
-                    }
-                }
-            }
-        }
-        return allMatches;
-    }
-
-    getMatch(r, c, dr, dc, candy) {
-        const match = [];
-        let cr = r, cc = c;
-        while (this.isValid(cr, cc) && this.board[cr][cc] === candy) {
-            match.push({ r: cr, c: cc });
-            cr += dr;
-            cc += dc;
-        }
-        return match;
-    }
-
-    async clearAndScore(cellsToClear) {
-        let points = 0;
-        for (const key of cellsToClear) {
-            const [r, c] = key.split(',').map(Number);
-            if (this.board[r][c]) {
-                this.animateMatch(r, c);
-                this.board[r][c] = null;
-                this.specialCandies.delete(key);
-                points += 10 * this.combo;
-            }
-        }
-        this.score += points;
-        if (points > 0) this.showScorePopup(points);
-        await this.delay(500);
-    }
-
-    async createSpecialCandies(creations) {
-        for (const special of creations) {
-            this.specialCandies.set(`${special.r},${special.c}`, special.type);
-            this.board[special.r][special.c] = this.getRandomCandy();
-            this.renderCell(special.r, special.c);
-            this.specialCandiesCreated++;
-        }
-    }
-    
-    async applyGravity() {
-        for (let c = 0; c < this.size; c++) {
-            let emptyRow = this.size - 1;
-            for (let r = this.size - 1; r >= 0; r--) {
-                if (this.board[r][c]) {
-                    if (r !== emptyRow) {
-                        this.board[emptyRow][c] = this.board[r][c];
-                        this.board[r][c] = null;
-                        
-                        const oldKey = `${r},${c}`;
-                        const newKey = `${emptyRow},${c}`;
-                        if (this.specialCandies.has(oldKey)) {
-                            this.specialCandies.set(newKey, this.specialCandies.get(oldKey));
-                            this.specialCandies.delete(oldKey);
-                        }
-                    }
-                    emptyRow--;
-                }
-            }
-        }
-    }
-
-    async fillNewCandies() {
-        for (let c = 0; c < this.size; c++) {
-            for (let r = 0; r < this.size; r++) {
-                if (!this.board[r][c]) {
-                    this.board[r][c] = this.getRandomCandy();
-                    this.renderCell(r, c);
-                    const candyEl = this.getCellElement(r,c).querySelector('.candy');
-                    if(candyEl) candyEl.classList.add('falling');
-                }
-            }
-        }
-    }
-
-    // ========================================================================
-    // SPECIAL CANDY LOGIC (Remains the same)
-    // ========================================================================
-
-    async triggerSpecialCombo(r1, c1, r2, c2, type1, type2) {
-        this.createSpecialEffect('special-combo-flash', r1, c1);
-        const cellsToClear = new Set([`${r1},${c1}`, `${r2},${c2}`]);
-        const comboTypes = [type1, type2].sort().join(',');
-
-        if (comboTypes.includes('color-bomb,color-bomb')) {
-            for (let r = 0; r < this.size; r++) for (let c = 0; c < this.size; c++) cellsToClear.add(`${r},${c}`);
-            this.showComboText('ULTRA CLEAR!');
-        } else if (comboTypes.includes('color-bomb') && comboTypes.includes('striped')) {
-            const otherCandyType = this.board[type1 === 'color-bomb' ? r2 : r1][type1 === 'color-bomb' ? c2 : c1];
-            for (let r = 0; r < this.size; r++) {
-                for (let c = 0; c < this.size; c++) {
-                    if (this.board[r][c] === otherCandyType) {
-                        const newType = Math.random() > 0.5 ? 'striped-h' : 'striped-v';
-                        this.getAffectedCellsForSpecial(r, c, newType).forEach(cell => cellsToClear.add(`${cell.r},${cell.c}`));
-                    }
-                }
-            }
-            this.showComboText('STRIPE POWER!');
-        } else if (comboTypes.includes('color-bomb') && comboTypes.includes('wrapped')) {
-            const otherCandyType = this.board[type1 === 'color-bomb' ? r2 : r1][type1 === 'color-bomb' ? c2 : c1];
-            const secondCandyType = this.getRandomCandy();
-            for (let r = 0; r < this.size; r++) {
-                for (let c = 0; c < this.size; c++) {
-                    if (this.board[r][c] === otherCandyType || this.board[r][c] === secondCandyType) {
-                        cellsToClear.add(`${r},${c}`);
-                    }
-                }
-            }
-            this.showComboText('DOUBLE BOOM!');
-        } else if (comboTypes.includes('wrapped,wrapped')) {
-            this.getAffectedCellsForSpecial(r1, c1, 'wrapped', 2).forEach(cell => cellsToClear.add(`${cell.r},${cell.c}`));
-            this.showComboText('MEGA BOOM!');
-        } else if (comboTypes.includes('striped') && comboTypes.includes('wrapped')) {
-            this.getAffectedCellsForSpecial(r1, c1, 'striped-h', 1).forEach(cell => cellsToClear.add(`${cell.r},${cell.c}`));
-            this.getAffectedCellsForSpecial(r1, c1, 'striped-v', 1).forEach(cell => cellsToClear.add(`${cell.r},${cell.c}`));
-            this.showComboText('CROSS BLAST!');
-        } else if (comboTypes.includes('striped-h') && comboTypes.includes('striped-v')) {
-            this.getAffectedCellsForSpecial(r1, c1, 'striped-h').forEach(cell => cellsToClear.add(`${cell.r},${cell.c}`));
-            this.getAffectedCellsForSpecial(r1, c1, 'striped-v').forEach(cell => cellsToClear.add(`${cell.r},${cell.c}`));
-            this.showComboText('LINE BLAST!');
-        }
-        
-        await this.clearAndScore(cellsToClear);
-    }
-
-    getAffectedCellsForSpecial(r, c, type, radius = 1) {
-        const affected = [];
-        if (type.includes('striped-h')) {
-            this.createLineEffect(r, c, 'horizontal');
-            for(let i = -radius; i <= radius; i++) {
-                for (let col = 0; col < this.size; col++) affected.push({ r: r + i, c: col });
-            }
-        }
-        if (type.includes('striped-v')) {
-            this.createLineEffect(r, c, 'vertical');
-            for(let i = -radius; i <= radius; i++) {
-                for (let row = 0; row < this.size; row++) affected.push({ r: row, c: c + i });
-            }
-        }
-        if (type.includes('wrapped')) {
-            this.createExplosionEffect(r, c);
-            for (let row = r - radius; row <= r + radius; row++) {
-                for (let col = c - radius; col <= c + radius; col++) {
-                    affected.push({ r: row, c: col });
-                }
-            }
-        }
-        return affected.filter(cell => this.isValid(cell.r, cell.c));
-    }
-
-    // ========================================================================
-    // MOVE VALIDATION & HINTS
-    // ========================================================================
-    
-    hasPossibleMoves() {
-        for (let r = 0; r < this.size; r++) {
-            for (let c = 0; c < this.size; c++) {
-                if (c < this.size - 1 && this.isMoveValid(r, c, r, c + 1)) return true;
-                if (r < this.size - 1 && this.isMoveValid(r, c, r + 1, c)) return true;
-            }
-        }
-        return false;
-    }
-    
-    isMoveValid(r1, c1, r2, c2) {
-        this.swapModel(r1, c1, r2, c2);
-        const hasMatch = this.findAllMatches().length > 0;
-        this.swapModel(r1, c1, r2, c2);
-        return hasMatch;
-    }
-    
-    showHint() {
-        if (this.isProcessing) return;
-        this.clearHint();
-
-        for (let r = 0; r < this.size; r++) {
-            for (let c = 0; c < this.size; c++) {
-                if (c < this.size - 1 && this.isMoveValid(r, c, r, c + 1)) {
-                    this.animateHint(r, c, r, c + 1);
-                    return;
-                }
-                if (r < this.size - 1 && this.isMoveValid(r, c, r + 1, c)) {
-                    this.animateHint(r, c, r + 1, c);
-                    return;
-                }
-            }
-        }
-    }
-
-    animateHint(r1, c1, r2, c2) {
-        const cell1 = this.getCellElement(r1, c1);
-        const cell2 = this.getCellElement(r2, c2);
-        if(cell1) cell1.classList.add('hint-animation');
-        if(cell2) cell2.classList.add('hint-animation');
-        this.hintTimeout = setTimeout(() => this.clearHint(), 2000);
-    }
-
-    clearHint() {
-        if (this.hintTimeout) clearTimeout(this.hintTimeout);
-        document.querySelectorAll('.hint-animation').forEach(el => el.classList.remove('hint-animation'));
-    }
-
-    async shuffleBoard() {
-        this.isProcessing = true;
-        this.boardElement.classList.add('no-moves-shake');
-        this.showComboText('SHUFFLING!');
-        await this.delay(500);
-
-        do {
-            const allCandies = this.board.flat();
-            for (let i = allCandies.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [allCandies[i], allCandies[j]] = [allCandies[j], allCandies[i]];
-            }
-            for (let r = 0; r < this.size; r++) {
-                for (let c = 0; c < this.size; c++) {
-                    this.board[r][c] = allCandies[r * this.size + c];
-                }
-            }
-        } while (this.findAllMatches().length > 0 || !this.hasPossibleMoves());
-
-        this.renderAll();
-        await this.delay(500);
-        this.boardElement.classList.remove('no-moves-shake');
-        this.isProcessing = false;
-    }
-
-    // ========================================================================
-    // GAME STATE CHECKS
-    // ========================================================================
-
-    checkGameStatus() {
-        if (this.moves <= 0) {
-            this.isProcessing = true;
-            this.showGameOver();
-        }
-    }
-
-    showGameOver() {
-        document.getElementById('finalScore').textContent = this.score;
-        document.getElementById('maxCombo').textContent = this.maxCombo;
-        document.getElementById('specialCreated').textContent = this.specialCandiesCreated;
-        const highScoreText = document.getElementById('highScoreText');
-        
-        if (this.score > this.highScore) {
-            this.highScore = this.score;
-            localStorage.setItem('healthyFoodMatchHighScore', this.highScore);
-            highScoreText.textContent = '🎉 คะแนนสูงสุดใหม่! 🎉';
-            highScoreText.style.color = '#f39c12';
-        } else {
-            highScoreText.textContent = `คะแนนสูงสุด: ${this.highScore}`;
-            highScoreText.style.color = '#56ab2f';
-        }
-        
-        this.gameOverOverlay.style.display = 'flex';
-    }
-
-    // ========================================================================
-    // ANIMATIONS & EFFECTS
-    // ========================================================================
-
-    async animateSwap(r1, c1, r2, c2, isForward) {
-        this.swapModel(r1, c1, r2, c2);
-        
-        const cell1 = this.getCellElement(r1, c1);
-        const cell2 = this.getCellElement(r2, c2);
-        
-        const candy1 = cell1.querySelector('.candy');
-        const candy2 = cell2.querySelector('.candy');
-
-        if (candy1 && candy2) {
-            const dx = (c2 - c1) * 100;
-            const dy = (r2 - r1) * 100;
-            
-            candy1.style.transform = `translate(${dx}%, ${dy}%)`;
-            candy2.style.transform = `translate(${-dx}%, ${-dy}%)`;
-            
-            await this.delay(300);
-            
-            candy1.style.transform = '';
-            candy2.style.transform = '';
-        }
-
-        // Only re-render if it's a valid, forward swap
-        if (isForward) {
-            this.renderCell(r1, c1);
-            this.renderCell(r2, c2);
-        }
-    }
-
-    animateMatch(r, c) {
-        const candy = this.getCellElement(r, c)?.querySelector('.candy');
-        if (candy) candy.classList.add('matched');
-    }
-
-    showScorePopup(score) {
-        const popup = document.createElement('div');
-        popup.className = 'score-popup';
-        popup.textContent = `+${score}`;
-        popup.style.left = `${Math.random() * 80 + 10}%`;
-        popup.style.top = `${Math.random() * 80 + 10}%`;
-        this.boardElement.appendChild(popup);
-        setTimeout(() => popup.remove(), 1000);
-    }
-
-    showComboText(text) {
-        const comboText = document.createElement('div');
-        comboText.className = 'combo-text';
-        comboText.textContent = text;
-        this.boardElement.appendChild(comboText);
-        setTimeout(() => comboText.remove(), 1200);
-    }
-
-    createLineEffect(r, c, direction) {
-        const effect = document.createElement('div');
-        effect.className = `special-effect line-clear-${direction === 'horizontal' ? 'h' : 'v'}`;
-        const cellElement = this.getCellElement(r, c);
-        
-        if (direction === 'horizontal') {
-            effect.style.top = `${cellElement.offsetTop}px`;
-            effect.style.left = `0`;
-        } else {
-            effect.style.left = `${cellElement.offsetLeft}px`;
-            effect.style.top = `0`;
-        }
-        this.boardElement.appendChild(effect);
-        setTimeout(() => effect.remove(), 500);
-    }
-
-    createExplosionEffect(r, c) {
-        const effect = document.createElement('div');
-        effect.className = 'special-effect explosion';
-        const cellElement = this.getCellElement(r, c);
-        effect.style.left = `${cellElement.offsetLeft - cellElement.offsetWidth}px`;
-        effect.style.top = `${cellElement.offsetTop - cellElement.offsetHeight}px`;
-        this.boardElement.appendChild(effect);
-        setTimeout(() => effect.remove(), 600);
-    }
-
-    createSpecialEffect(className, r, c) {
-        const effect = document.createElement('div');
-        effect.className = `special-effect ${className}`;
-        const cellElement = this.getCellElement(r, c);
-        effect.style.left = `${cellElement.offsetLeft}px`;
-        effect.style.top = `${cellElement.offsetTop}px`;
-        this.boardElement.appendChild(effect);
-        setTimeout(() => effect.remove(), 500);
-    }
-
-    // ========================================================================
-    // UTILITY HELPERS
-    // ========================================================================
-
-    getRandomCandy() {
-        return this.candyTypes[Math.floor(Math.random() * this.candyTypes.length)];
-    }
-
-    swapModel(r1, c1, r2, c2) {
-        [this.board[r1][c1], this.board[r2][c2]] = [this.board[r2][c2], this.board[r1][c1]];
-        
-        const key1 = `${r1},${c1}`, key2 = `${r2},${c2}`;
-        const special1 = this.specialCandies.get(key1);
-        const special2 = this.specialCandies.get(key2);
-        
-        if (special1) this.specialCandies.set(key2, special1); else this.specialCandies.delete(key2);
-        if (special2) this.specialCandies.set(key1, special2); else this.specialCandies.delete(key1);
-    }
-
-    isAdjacent(r1, c1, r2, c2) {
-        return Math.abs(r1 - r2) + Math.abs(c1 - c2) === 1;
-    }
-    
-    isValid(r, c) {
-        return r >= 0 && r < this.size && c >= 0 && c < this.size;
-    }
-
-    getCellElement(row, col) {
-        return this.boardElement.querySelector(`[data-row="${row}"][data-col="${col}"]`);
-    }
-
-    delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Healthy Food Match – Clean Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+/* ========== RESET & BASIC LAYOUT ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-    const game = new CandyCrush();
-    window.game = game;
-});
-</script>
+html {
+    font-size: 16px;
+}
+
+body {
+    font-family: 'Mitr', sans-serif;
+    background: #f0f4f0; /* Softer background color */
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    overflow: hidden;
+    color: #333;
+}
+
+.game-container {
+    background: #ffffff; /* Clean white background */
+    border-radius: 25px;
+    padding: clamp(15px, 4vw, 25px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+    animation: fadeIn 0.5s ease-out;
+    position: relative;
+    width: 100%;
+    max-width: 450px; /* Slightly smaller max-width */
+    border: 1px solid #eef2f0;
+    margin: 0 auto;
+    overflow: hidden; /* Prevent any overflow */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* ========== HEADER ========== */
+.game-title {
+    font-size: clamp(28px, 7vw, 36px);
+    font-weight: 700;
+    text-align: center;
+    color: #4caf50; /* Green color from screenshot */
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.game-title::before {
+    content: '';
+    display: block;
+    width: 20px;
+    height: 20px;
+    background-color: #4caf50;
+    border-radius: 50%;
+}
+
+/* ========== STATS DISPLAY ========== */
+.game-stats {
+    display: flex;
+    justify-content: center;
+    gap: clamp(10px, 2vw, 15px);
+    margin-bottom: 25px;
+}
+
+.stat-box {
+    background: #4caf50; /* Solid green from screenshot */
+    color: white;
+    border-radius: 15px;
+    padding: clamp(10px, 2vw, 15px) clamp(15px, 4vw, 25px);
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    position: relative;
+    transition: 0.3s transform, 0.3s box-shadow;
+    flex: 1;
+    text-align: center;
+}
+
+.stat-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
+}
+
+.stat-label {
+    font-size: clamp(12px, 2.5vw, 13px);
+    font-weight: 400;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-value {
+    font-size: clamp(24px, 6vw, 32px);
+    font-weight: 700;
+    margin-top: 5px;
+}
+
+.multiplier-indicator {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #ff9800; /* Vibrant orange */
+    color: white;
+    font-size: clamp(10px, 2vw, 12px);
+    font-weight: 700;
+    min-width: clamp(28px, 7vw, 35px);
+    height: clamp(24px, 6vw, 28px);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 2px solid white;
+    padding: 0 5px;
+    white-space: nowrap;
+}
+
+.multiplier-indicator.show {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* ========== SPECIAL CANDIES INFO ========== */
+.special-candies-info {
+    background: #f5f8f5; /* Lighter gray */
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 20px;
+    text-align: center;
+    border: 1px solid #e8ede8;
+}
+
+.special-candies-title {
+    font-size: clamp(16px, 4vw, 18px);
+    font-weight: 700;
+    color: #4caf50;
+    margin-bottom: 12px;
+}
+
+.special-candies-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.special-candy-info {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    background: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: clamp(12px, 2.5vw, 14px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* ========== GAME BOARD ========== */
+.board {
+    display: grid;
+    --cell-size: min(9vw, 42px); /* Smaller size to fit better */
+    grid-template-columns: repeat(8, var(--cell-size));
+    grid-template-rows: repeat(8, var(--cell-size));
+    gap: 3px;
+    background: #e8ede8;
+    padding: 6px;
+    border-radius: 15px;
+    margin: 0 auto;
+    width: fit-content;
+    max-width: calc(100vw - 40px); /* Ensure it doesn't overflow */
+}
+
+.cell {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    background: #f7f9f7;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    overflow: hidden;
+}
+
+.cell.hint {
+    animation: hint-glow 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes hint-glow {
+    from { box-shadow: 0 0 15px rgba(255, 152, 0, 0.6); }
+    to { box-shadow: 0 0 25px rgba(255, 152, 0, 1), 0 0 35px rgba(255, 152, 0, 0.5); }
+}
+
+/* ========== CANDY STYLING ========== */
+.candy {
+    font-size: min(7vw, 30px); /* Adjusted to match smaller cell size */
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.15));
+    user-select: none;
+    transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
+    animation: popIn 0.3s ease-out;
+}
+
+@keyframes popIn {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.candy.dragging {
+    position: fixed; /* Use fixed for smoother dragging over all elements */
+    transform: scale(1.2);
+    filter: drop-shadow(0 12px 35px rgba(0, 0, 0, 0.3));
+    touch-action: none;
+    transition: none;
+}
+
+.candy.falling {
+    animation: fall 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes fall {
+    from { transform: translateY(-150px) scale(0.8); opacity: 0.7; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.candy.matched {
+    animation: spinAndFade 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+@keyframes spinAndFade {
+    0% { transform: scale(1.1) rotate(0deg); opacity: 1; }
+    50% { transform: scale(1.3) rotate(90deg); opacity: 0.7; }
+    100% { transform: scale(0) rotate(180deg); opacity: 0; }
+}
+
+/* ========== CONTROL BUTTONS ========== */
+.game-controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.btn {
+    padding: 12px 25px;
+    font-size: clamp(16px, 3.5vw, 18px);
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: 0.3s transform, 0.3s box-shadow;
+    text-transform: uppercase;
+}
+
+.btn-primary {
+    background: #4caf50;
+    color: white;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.btn-secondary {
+    background: #ff9800;
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* ========== GAME OVER OVERLAY ========== */
+.game-over-overlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+}
+
+.game-over-content {
+    background: white;
+    padding: clamp(30px, 6vw, 50px);
+    border-radius: 25px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    animation: slideIn 0.5s ease-out;
+    width: 90%;
+    max-width: 450px;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-50px) scale(0.9); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.game-over-title {
+    font-size: clamp(36px, 8vw, 48px);
+    font-weight: 700;
+    color: #4caf50;
+    margin-bottom: 30px;
+}
+
+.final-stats {
+    font-size: clamp(18px, 4vw, 22px);
+    line-height: 1.8;
+    margin-bottom: 30px;
+}
+
+.final-stats strong {
+    color: #4caf50;
+}
+
+.high-score {
+    font-size: clamp(16px, 3.5vw, 18px);
+    color: #ff9800;
+    margin-bottom: 25px;
+}
+</style>
+</head>
+<body>
+
+<div class="game-container">
+    <h1 class="game-title">Healthy Food Match</h1>
+
+    <div class="game-stats">
+        <div class="stat-box">
+            <div class="stat-label">Score</div>
+            <div class="stat-value" id="score">0</div>
+            <div class="multiplier-indicator" id="multiplier">2x</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Moves Left</div>
+            <div class="stat-value" id="moves">30</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Chain</div>
+            <div class="stat-value" id="chain">0</div>
+        </div>
+    </div>
+
+    <div class="special-candies-info">
+        <div class="special-candies-title">🌟 ระบบคูณสะสม 🌟</div>
+        <div class="special-candies-list">
+            <div class="special-candy-info">4+ ชิ้น/L/T ➡️ ⚡️ คูณ+1 (คง 2 ตา)</div>
+            <div class="special-candy-info">ภายใน 2 ตา ➡️ 🎯 สะสมคูณต่อได้</div>
+        </div>
+    </div>
+
+    <div class="board" id="board"></div>
+    
+    <div class="game-controls">
+        <button class="btn btn-primary" onclick="game.startNewGame()">เริ่มใหม่</button>
+        <button class="btn btn-secondary" onclick="game.showHint()">คำใบ้ 💡</button>
+    </div>
+</div>
+
+<div class="game-over-overlay" id="gameOverOverlay">
+    <div class="game-over-content">
+        <h2 class="game-over-title">จบเกม!</h2>
+        <div class="final-stats">
+            <strong>คะแนนสุดท้าย:</strong> <span id="finalScore">0</span><br>
+            <strong>คอมโบสูงสุด:</strong> <span id="maxCombo">0</span>x<br>
+            <strong>ตัวคูณสูงสุด:</strong> <span id="maxMultiplierStat">0</span>x
+        </div>
+        <div class="high-score" id="highScoreText"></div>
+        <button class="btn btn-primary" onclick="game.startNewGame()">เล่นอีกครั้ง</button>
+    </div>
+</div>
+
+<script>
+  class HealthyFoodMatch {
+      constructor() {
+          // ========== GAME CONFIGURATION ==========
+          this.BOARD_SIZE = 8;
+          this.INITIAL_MOVES = 30;
+          this.MIN_MATCH_LENGTH = 3;
+          this.BASE_POINTS_PER_CANDY = 4;
+          
+          // ========== FOOD TYPES ==========
+          this.foodTypes = ['🥕', '🍇', '🥦', '🥒', '🍎', '🍊'];
+          
+          // ========== GAME STATE ==========
+          this.gameBoard = [];
+          this.currentScore = 0;
+          this.remainingMoves = this.INITIAL_MOVES;
+          this.currentChain = 0;
+          this.maxChainCombo = 0;
+          
+          // ========== MULTIPLIER SYSTEM ==========
+          this.scoreMultiplier = 1;
+          this.maxMultiplier = 1;
+          this.multiplierTurnsLeft = 0; // จำนวนตาที่ multiplier จะคงอยู่
+          
+          // ========== DRAG STATE ==========
+          this.dragState = {
+              isDragging: false,
+              startCell: null,
+              dragElement: null,
+              startPosition: null,
+              dragOffset: null
+          };
+          
+          // ========== HIGH SCORE ==========
+          this.highScore = parseInt(localStorage.getItem('healthyFoodMatchHighScore')) || 0;
+          
+          // ========== HINT STATE ==========
+          this.hintTimeout = null;
+          
+          // ========== DOM ELEMENTS ==========
+          this.initializeDOMElements();
+          
+          // ========== EVENT LISTENERS ==========
+          this.setupEventListeners();
+          
+          // ========== START GAME ==========
+          this.initializeGame();
+      }
+  
+      // ✅ ย้าย handleMultiplierTurns มาไว้ตรงนี้
+      handleMultiplierTurns() {
+          // ลดจำนวนตาที่เหลือหากมี multiplier active
+          if (this.multiplierTurnsLeft > 0) {
+              this.multiplierTurnsLeft--;
+              
+              // หาก multiplier หมดอายุ ให้ reset เป็น x1
+              if (this.multiplierTurnsLeft <= 0) {
+                  this.scoreMultiplier = 1;
+                  this.multiplierTurnsLeft = 0;
+              }
+              
+              this.updateMultiplierDisplay();
+              this.updateGameUI();
+          }
+      }
+  
+      // ========== INITIALIZATION METHODS ==========
+      
+      initializeDOMElements() {
+          this.elements = {
+              board: document.getElementById('board'),
+              score: document.getElementById('score'),
+              moves: document.getElementById('moves'),
+              chain: document.getElementById('chain'),
+              multiplier: document.getElementById('multiplier'),
+              gameOverOverlay: document.getElementById('gameOverOverlay'),
+              finalScore: document.getElementById('finalScore'),
+              maxCombo: document.getElementById('maxCombo'),
+              maxMultiplierStat: document.getElementById('maxMultiplierStat'),
+              highScoreText: document.getElementById('highScoreText')
+          };
+      }
+  
+      setupEventListeners() {
+          window.addEventListener('pointermove', (e) => this.handleDragMove(e), { passive: false });
+          window.addEventListener('pointerup', (e) => this.handleDragEnd(e), { passive: false });
+      }
+  
+      initializeGame() {
+          this.isGameProcessing = true;
+          this.resetGameState();
+          this.createGameBoard();
+          this.createBoardDisplay();
+          
+          while (!this.hasPossibleMoves()) {
+              this.createGameBoard();
+          }
+          
+          this.renderAllCells();
+          this.updateGameUI();
+          this.isGameProcessing = false;
+      }
+  
+      resetGameState() {
+          this.currentScore = 0;
+          this.remainingMoves = this.INITIAL_MOVES;
+          this.currentChain = 0;
+          this.maxChainCombo = 0;
+          this.scoreMultiplier = 1;
+          this.maxMultiplier = 1;
+          this.multiplierTurnsLeft = 0;
+          this.gameBoard = [];
+          this.clearHint();
+          this.elements.gameOverOverlay.style.display = 'none';
+          
+          if (this.elements) {
+              this.updateMultiplierDisplay();
+          }
+      }
+  
+      // ========== BOARD CREATION METHODS ==========
+  
+      createGameBoard() {
+          this.gameBoard = [];
+          for (let r = 0; r < this.BOARD_SIZE; r++) {
+              this.gameBoard[r] = [];
+              for (let c = 0; c < this.BOARD_SIZE; c++) {
+                  let food;
+                  do {
+                      food = this.getRandomFood();
+                  } while (
+                      (c >= 2 && this.gameBoard[r][c-1] === food && this.gameBoard[r][c-2] === food) ||
+                      (r >= 2 && this.gameBoard[r-1][c] === food && this.gameBoard[r-2][c] === food)
+                  );
+                  this.gameBoard[r][c] = food;
+              }
+          }
+      }
+  
+      createBoardDisplay() {
+          this.elements.board.innerHTML = '';
+          for (let r = 0; r < this.BOARD_SIZE; r++) {
+              for (let c = 0; c < this.BOARD_SIZE; c++) {
+                  const cell = this.createCellElement(r, c);
+                  this.elements.board.appendChild(cell);
+              }
+          }
+      }
+  
+      createCellElement(row, col) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          cell.dataset.row = row;
+          cell.dataset.col = col;
+          cell.addEventListener('pointerdown', (e) => this.handleDragStart(e, row, col), { passive: false });
+          return cell;
+      }
+  
+      // ========== RENDERING METHODS ==========
+  
+      renderAllCells() {
+          for (let r = 0; r < this.BOARD_SIZE; r++) {
+              for (let c = 0; c < this.BOARD_SIZE; c++) {
+                  this.renderCell(r, c);
+              }
+          }
+      }
+  
+      renderCell(row, col, options = {}) {
+          const cell = this.getCellElement(row, col);
+          if (!cell) return;
+          
+          cell.innerHTML = '';
+          const food = this.gameBoard[row][col];
+          if (!food) return;
+          
+          const foodElement = document.createElement('span');
+          foodElement.className = 'candy';
+          foodElement.textContent = food;
+          
+          if (options.isFalling) {
+              foodElement.classList.add('falling');
+          } else {
+              foodElement.style.animation = 'popIn 0.3s ease-out';
+          }
+          
+          cell.appendChild(foodElement);
+      }
+  
+      updateGameUI() {
+          // Smooth score animation
+          if (this.elements.score.textContent !== this.currentScore.toString()) {
+              this.elements.score.style.transform = 'scale(1.1)';
+              this.elements.score.style.transition = 'all 0.2s ease';
+              setTimeout(() => {
+                  this.elements.score.textContent = this.currentScore;
+                  this.elements.score.style.transform = 'scale(1)';
+              }, 100);
+          }
+          
+          this.elements.moves.textContent = this.remainingMoves;
+          this.elements.chain.textContent = this.currentChain;
+      }
+  
+      updateMultiplierDisplay() {
+          if (!this.elements.multiplier) return;
+          if (this.scoreMultiplier > 1 && this.multiplierTurnsLeft > 0) {
+              this.elements.multiplier.textContent = `${this.scoreMultiplier}x (${this.multiplierTurnsLeft})`;
+              this.elements.multiplier.classList.add('show');
+          } else {
+              this.elements.multiplier.classList.remove('show');
+          }
+      }
+  
+      // ========== DRAG HANDLING METHODS ==========
+  
+      handleDragStart(event, row, col) {
+          if (this.isGameProcessing || this.remainingMoves <= 0 || this.dragState.isDragging) return;
+          
+          event.preventDefault();
+          event.stopPropagation();
+          this.clearHint();
+          
+          const cell = this.getCellElement(row, col);
+          const foodElement = cell.querySelector('.candy');
+          if (!foodElement) return;
+  
+          const rect = foodElement.getBoundingClientRect();
+          
+          this.dragState = {
+              isDragging: true,
+              startCell: { row, col },
+              dragElement: foodElement,
+              startPosition: this.getEventPosition(event),
+              dragOffset: { x: this.getEventPosition(event).x - rect.left, y: this.getEventPosition(event).y - rect.top }
+          };
+          
+          foodElement.classList.add('dragging');
+          foodElement.style.zIndex = '9999';
+          // Move element to body to avoid clipping issues
+          document.body.appendChild(foodElement);
+          this.handleDragMove(event); // Position it correctly from the start
+      }
+  
+      handleDragMove(event) {
+          if (!this.dragState.isDragging) return;
+          event.preventDefault();
+          
+          const { dragElement, startPosition, dragOffset } = this.dragState;
+          const currentPosition = this.getEventPosition(event);
+  
+          // Position the element directly under the cursor
+          let x = currentPosition.x - dragOffset.x;
+          let y = currentPosition.y - dragOffset.y;
+          
+          dragElement.style.left = `${x}px`;
+          dragElement.style.top = `${y}px`;
+      }
+  
+      handleDragEnd(event) {
+          if (!this.dragState.isDragging) return;
+          
+          const { dragElement, startCell } = this.dragState;
+          
+          document.body.removeChild(dragElement);
+          this.renderCell(startCell.row, startCell.col); // Put it back visually
+          
+          const currentPosition = this.getEventPosition(event);
+          const deltaX = currentPosition.x - this.dragState.startPosition.x;
+          const deltaY = currentPosition.y - this.dragState.startPosition.y;
+          
+          const targetCell = this.calculateTargetCell(deltaX, deltaY);
+          
+          if (targetCell && this.isValidCell(targetCell.row, targetCell.col)) {
+              this.attemptSwap(startCell.row, startCell.col, targetCell.row, targetCell.col);
+          }
+          
+          this.dragState = { isDragging: false, startCell: null, dragElement: null, startPosition: null };
+      }
+  
+      getEventPosition(event) {
+          const pointer = event.touches ? event.touches[0] : event;
+          return { x: pointer.clientX, y: pointer.clientY };
+      }
+  
+      calculateTargetCell(deltaX, deltaY) {
+          const DRAG_THRESHOLD = 20; // Slightly higher threshold for touch
+          if (Math.abs(deltaX) < DRAG_THRESHOLD && Math.abs(deltaY) < DRAG_THRESHOLD) return null;
+          
+          let { row, col } = this.dragState.startCell;
+          if (Math.abs(deltaX) > Math.abs(deltaY)) {
+              col += deltaX > 0 ? 1 : -1;
+          } else {
+              row += deltaY > 0 ? 1 : -1;
+          }
+          return { row, col };
+      }
+  
+      // ========== SWAP LOGIC METHODS ==========
+  
+      async attemptSwap(row1, col1, row2, col2) {
+          if (this.isGameProcessing) return; // Additional safety check
+          
+          this.isGameProcessing = true;
+          await this.executeSwap(row1, col1, row2, col2);
+          
+          const matches = this.findAllMatches();
+          
+          if (matches.length > 0) {
+              this.remainingMoves--;
+              this.updateGameUI(); // Update UI immediately after move
+              await this.processMatches(matches);
+              
+              // หลังจบการเล่นแต่ละครั้ง จัดการ multiplier turns
+              this.handleMultiplierTurns();
+          } else {
+              await this.executeSwap(row1, col1, row2, col2); // Swap back
+          }
+          
+          this.isGameProcessing = false;
+          
+          // Check game over condition with a small delay to ensure all processing is complete
+          setTimeout(() => {
+              if (this.remainingMoves <= 0 && !this.isGameProcessing) {
+                  this.showGameOver();
+              }
+          }, 100);
+      }
+  
+      async executeSwap(row1, col1, row2, col2) {
+          this.swapFoodsInModel(row1, col1, row2, col2);
+          
+          // Smooth swap animation
+          const cell1 = this.getCellElement(row1, col1);
+          const cell2 = this.getCellElement(row2, col2);
+          const candy1 = cell1?.querySelector('.candy');
+          const candy2 = cell2?.querySelector('.candy');
+          
+          if (candy1) {
+              candy1.style.transform = 'scale(1.1)';
+              candy1.style.transition = 'all 0.2s ease';
+          }
+          if (candy2) {
+              candy2.style.transform = 'scale(1.1)';
+              candy2.style.transition = 'all 0.2s ease';
+          }
+          
+          await this.delay(100);
+          
+          this.renderCell(row1, col1);
+          this.renderCell(row2, col2);
+          
+          await this.delay(100);
+      }
+  
+      swapFoodsInModel(row1, col1, row2, col2) {
+          [this.gameBoard[row1][col1], this.gameBoard[row2][col2]] = [this.gameBoard[row2][col2], this.gameBoard[row1][col1]];
+      }
+  
+      // ========== MATCH PROCESSING METHODS ==========
+  
+      async processMatches(initialMatches) {
+          this.currentChain = 0;
+          let matches = initialMatches;
+          let hasSpecialMatchInThisTurn = false;
+          
+          while (matches.length > 0) {
+              this.isGameProcessing = true;
+              this.currentChain++;
+              if (this.currentChain > this.maxChainCombo) this.maxChainCombo = this.currentChain;
+              
+              // ตรวจสอบว่ามี special match หรือไม่
+              const specialMatch = this.checkForSpecialMatches(matches);
+              if (specialMatch) {
+                  hasSpecialMatchInThisTurn = true;
+              }
+              
+              // คำนวนคะแนนด้วย multiplier ปัจจุบัน
+              const clearedCells = this.markMatchedFoods(matches);
+              this.addScore(clearedCells.size, this.currentChain, this.scoreMultiplier);
+              
+              this.updateGameUI();
+              
+              // Wait for match animations to complete
+              await this.delay(600);
+              
+              // Remove matched foods from board
+              this.removeMatchedFoods(clearedCells);
+              
+              // Apply gravity and fill in sequence
+              await this.applyGravitySmooth();
+              await this.fillEmptyCellsSmooth();
+              
+              matches = this.findAllMatches();
+          }
+          
+          // อัพเดท multiplier หลังจบ chain ทั้งหมด
+          if (hasSpecialMatchInThisTurn) {
+              this.updateMultiplierFromSpecialMatches();
+          }
+          
+          if (!this.hasPossibleMoves()) await this.shuffleBoard();
+          this.isGameProcessing = false;
+      }
+  
+      checkForSpecialMatches(matches) {
+          for (const match of matches) {
+              let type = this.getMatchType(match.cells.length);
+              if(match.type === 'L_T_shape') type = 'L_T_shape';
+  
+              if (type === 'L_T_shape' || type === 'five_match' || type === 'four_match') {
+                  return true;
+              }
+          }
+          return false;
+      }
+  
+      updateMultiplierFromSpecialMatches() {
+          // เพิ่ม multiplier และ reset turns เป็น 2
+          if (this.scoreMultiplier === 1) {
+              this.scoreMultiplier = 2; // เริ่มต้นที่ x2
+          } else {
+              this.scoreMultiplier += 1; // เพิ่มทีละ 1
+          }
+          
+          this.multiplierTurnsLeft = 2; // คงสถานะ 2 ตา
+          
+          if (this.scoreMultiplier > this.maxMultiplier) {
+              this.maxMultiplier = this.scoreMultiplier;
+          }
+          
+          this.updateMultiplierDisplay();
+      }
+  
+      markMatchedFoods(matches) {
+          const cellsToClr = new Set();
+          matches.forEach(match => match.cells.forEach(cell => cellsToClr.add(`${cell.row},${cell.col}`)));
+          
+          cellsToClr.forEach(cellKey => {
+              const [row, col] = cellKey.split(',').map(Number);
+              const cellEl = this.getCellElement(row, col);
+              const candyEl = cellEl?.querySelector('.candy');
+              if(candyEl) candyEl.classList.add('matched');
+          });
+          
+          return cellsToClr;
+      }
+  
+      removeMatchedFoods(cellsToClr) {
+          cellsToClr.forEach(cellKey => {
+              const [row, col] = cellKey.split(',').map(Number);
+              this.gameBoard[row][col] = null;
+              const cellEl = this.getCellElement(row, col);
+              if(cellEl) cellEl.innerHTML = '';
+          });
+      }
+  
+      addScore(cellCount, chain, multiplier) {
+          const score = cellCount * this.BASE_POINTS_PER_CANDY * (1 + (chain - 1) * 0.5) * multiplier;
+          this.currentScore += Math.round(score);
+      }
+  
+      async applyGravitySmooth() {
+          let hasChanges = false;
+          
+          for (let c = 0; c < this.BOARD_SIZE; c++) {
+              let writeRow = this.BOARD_SIZE - 1;
+              for (let r = this.BOARD_SIZE - 1; r >= 0; r--) {
+                  if (this.gameBoard[r][c]) {
+                      if (r !== writeRow) {
+                          hasChanges = true;
+                          this.gameBoard[writeRow][c] = this.gameBoard[r][c];
+                          this.gameBoard[r][c] = null;
+                          
+                          // Move the visual element smoothly
+                          const fromCell = this.getCellElement(r, c);
+                          const toCell = this.getCellElement(writeRow, c);
+                          const candyEl = fromCell?.querySelector('.candy');
+                          
+                          if (candyEl && toCell) {
+                              fromCell.innerHTML = '';
+                              toCell.innerHTML = '';
+                              
+                              const newCandy = document.createElement('span');
+                              newCandy.className = 'candy falling';
+                              newCandy.textContent = this.gameBoard[writeRow][c];
+                              toCell.appendChild(newCandy);
+                          }
+                      }
+                      writeRow--;
+                  }
+              }
+          }
+          
+          if(hasChanges) await this.delay(250);
+      }
+  
+      async fillEmptyCellsSmooth() {
+          let needsFalling = false;
+          const newCandies = [];
+          
+          for (let r = 0; r < this.BOARD_SIZE; r++) {
+              for (let c = 0; c < this.BOARD_SIZE; c++) {
+                  if (!this.gameBoard[r][c]) {
+                      needsFalling = true;
+                      this.gameBoard[r][c] = this.getRandomFood();
+                      newCandies.push({row: r, col: c});
+                  }
+              }
+          }
+          
+          // Render new candies with staggered animation
+          newCandies.forEach((pos, index) => {
+              setTimeout(() => {
+                  this.renderCell(pos.row, pos.col, { isFalling: true });
+              }, index * 50); // Stagger by 50ms each
+          });
+          
+          if(needsFalling) await this.delay(400);
+      }
+  
+      // ========== MATCH DETECTION METHODS ==========
+  
+      findAllMatches() {
+          const allMatches = new Set();
+          const horizontalMatches = this.findMatchesInDirection('horizontal');
+          const verticalMatches = this.findMatchesInDirection('vertical');
+  
+          const combined = [...horizontalMatches, ...verticalMatches];
+          const mergedMatches = [];
+  
+          while(combined.length > 0){
+              let baseMatch = combined.shift();
+              let wasMerged = false;
+              for(let i = 0; i < mergedMatches.length; i++){
+                  const merged = mergedMatches[i];
+                  if(baseMatch.cells.some(c1 => merged.cells.some(c2 => c1.row === c2.row && c1.col === c2.col))){
+                      const newCells = [...merged.cells];
+                      baseMatch.cells.forEach(c1 => {
+                          if(!newCells.some(c2 => c1.row === c2.row && c1.col === c2.col)){
+                              newCells.push(c1);
+                          }
+                      });
+                      mergedMatches[i] = { cells: newCells, type: 'L_T_shape' };
+                      wasMerged = true;
+                      break;
+                  }
+              }
+              if(!wasMerged) mergedMatches.push(baseMatch);
+          }
+          return mergedMatches;
+      }
+  
+      findMatchesInDirection(direction) {
+          const matches = [];
+          const mainAxis = this.BOARD_SIZE;
+          const crossAxis = this.BOARD_SIZE;
+  
+          for (let i = 0; i < mainAxis; i++) {
+              let run = [];
+              for (let j = 0; j < crossAxis; j++) {
+                  const row = direction === 'vertical' ? j : i;
+                  const col = direction === 'vertical' ? i : j;
+                  const lastRow = direction === 'vertical' ? j - 1 : i;
+                  const lastCol = direction === 'vertical' ? i : j - 1;
+                  
+                  if (j > 0 && this.gameBoard[row][col] === this.gameBoard[lastRow][lastCol] && this.gameBoard[row][col]) {
+                      run.push({ row, col });
+                  } else {
+                      if (run.length >= this.MIN_MATCH_LENGTH) matches.push({ cells: run, type: this.getMatchType(run.length) });
+                      run = [{ row, col }];
+                  }
+              }
+              if (run.length >= this.MIN_MATCH_LENGTH) matches.push({ cells: run, type: this.getMatchType(run.length) });
+          }
+          return matches;
+      }
+  
+      getMatchType(length) {
+          if (length >= 5) return 'five_match';
+          if (length === 4) return 'four_match';
+          return 'normal_match';
+      }
+  
+      // ========== HINT SYSTEM METHODS ==========
+  
+      showHint() {
+          if (this.isGameProcessing) return;
+          this.clearHint();
+          const hint = this.findFirstPossibleMove();
+          if (hint) {
+              hint.cells.forEach(c => this.getCellElement(c.row, c.col)?.classList.add('hint'));
+              this.hintTimeout = setTimeout(() => this.clearHint(), 2000);
+          }
+      }
+  
+      findFirstPossibleMove() {
+          for (let r = 0; r < this.BOARD_SIZE; r++) {
+              for (let c = 0; c < this.BOARD_SIZE; c++) {
+                  // Check swap right
+                  if (c < this.BOARD_SIZE - 1) {
+                      this.swapFoodsInModel(r, c, r, c + 1);
+                      const matches = this.findAllMatches();
+                      this.swapFoodsInModel(r, c, r, c + 1); // Swap back
+                      if (matches.length > 0) return { cells: [{row: r, col: c}, {row: r, col: c+1}] };
+                  }
+                  // Check swap down
+                  if (r < this.BOARD_SIZE - 1) {
+                      this.swapFoodsInModel(r, c, r + 1, c);
+                      const matches = this.findAllMatches();
+                      this.swapFoodsInModel(r, c, r + 1, c); // Swap back
+                      if (matches.length > 0) return { cells: [{row: r, col: c}, {row: r+1, col: c}] };
+                  }
+              }
+          }
+          return null;
+      }
+  
+      clearHint() {
+          if (this.hintTimeout) clearTimeout(this.hintTimeout);
+          document.querySelectorAll('.hint').forEach(el => el.classList.remove('hint'));
+      }
+  
+      hasPossibleMoves() {
+          return !!this.findFirstPossibleMove();
+      }
+  
+      // ========== BOARD SHUFFLING METHODS ==========
+  
+      async shuffleBoard() {
+          this.isGameProcessing = true;
+          console.log("No possible moves. Shuffling board...");
+          let attempts = 0;
+          do {
+              this.randomizeBoard();
+              attempts++;
+          } while ((this.findAllMatches().length > 0 || !this.hasPossibleMoves()) && attempts < 20);
+          
+          if (attempts >= 20) {
+              this.initializeGame();
+              return;
+          }
+          
+          // Smooth shuffle animation
+          for (let r = 0; r < this.BOARD_SIZE; r++) {
+              for (let c = 0; c < this.BOARD_SIZE; c++) {
+                  setTimeout(() => {
+                      this.renderCell(r, c, { isFalling: true });
+                  }, (r * this.BOARD_SIZE + c) * 20);
+              }
+          }
+          
+          await this.delay(500);
+          this.isGameProcessing = false;
+      }
+  
+      randomizeBoard() {
+          const allFoods = this.gameBoard.flat();
+          for (let i = allFoods.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [allFoods[i], allFoods[j]] = [allFoods[j], allFoods[i]];
+          }
+          for (let i = 0; i < allFoods.length; i++) {
+              this.gameBoard[Math.floor(i / this.BOARD_SIZE)][i % this.BOARD_SIZE] = allFoods[i];
+          }
+      }
+  
+      // ========== GAME OVER METHODS ==========
+  
+      showGameOver() {
+          this.isGameProcessing = true;
+          this.elements.finalScore.textContent = this.currentScore;
+          this.elements.maxCombo.textContent = this.maxChainCombo;
+          this.elements.maxMultiplierStat.textContent = `${this.maxMultiplier}x`;
+          this.updateHighScore();
+          this.elements.gameOverOverlay.style.display = 'flex';
+      }
+  
+      updateHighScore() {
+          if (this.currentScore > this.highScore) {
+              this.highScore = this.currentScore;
+              localStorage.setItem('healthyFoodMatchHighScore', this.highScore);
+              this.elements.highScoreText.textContent = '🎉 คะแนนสูงสุดใหม่! 🎉';
+          } else {
+              this.elements.highScoreText.textContent = `คะแนนสูงสุด: ${this.highScore}`;
+          }
+      }
+  
+      // ========== PUBLIC INTERFACE METHODS ==========
+  
+      startNewGame() {
+          this.elements.gameOverOverlay.style.display = 'none';
+          this.initializeGame();
+      }
+  
+      // ========== UTILITY METHODS ==========
+  
+      getRandomFood() {
+          return this.foodTypes[Math.floor(Math.random() * this.foodTypes.length)];
+      }
+  
+      getCellElement(row, col) {
+          return this.elements.board.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+      }
+  
+      isValidCell(row, col) {
+          return row >= 0 && row < this.BOARD_SIZE && col >= 0 && col < this.BOARD_SIZE;
+      }
+  
+      delay(milliseconds) {
+          return new Promise(resolve => setTimeout(resolve, milliseconds));
+      }
+  }
+  
+  // ========== GAME INITIALIZATION ==========
+  window.addEventListener('DOMContentLoaded', () => {
+      window.game = new HealthyFoodMatch();
+  });
+  </script>
 </body>
 </html>
