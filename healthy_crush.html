@@ -22,9 +22,9 @@
 
 html {
     font-size: 16px;
-    overflow: hidden; /* ป้องกันการ scroll */
+    overflow: hidden;
     height: 100vh;
-    touch-action: manipulation; /* ป้องกัน zoom และ scroll */
+    touch-action: manipulation;
 }
 
 body {
@@ -51,7 +51,6 @@ body {
     animation: fadeIn 0.5s ease-out;
     position: relative;
     width: 100%;
-    max-width: 450px;
     border: 1px solid #eef2f0;
     margin: 0 auto;
     overflow: hidden;
@@ -150,41 +149,12 @@ body {
 .multiplier-indicator.show {
     opacity: 1;
     transform: scale(1);
+    animation: pulse 2s ease-in-out infinite;
 }
 
-/* ========== SPECIAL CANDIES INFO ========== */
-.special-candies-info {
-    background: #f5f8f5;
-    border-radius: 15px;
-    padding: 15px;
-    margin-bottom: 20px;
-    text-align: center;
-    border: 1px solid #e8ede8;
-}
-
-.special-candies-title {
-    font-size: clamp(16px, 4vw, 18px);
-    font-weight: 700;
-    color: #4caf50;
-    margin-bottom: 12px;
-}
-
-.special-candies-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-}
-
-.special-candy-info {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    background: white;
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-size: clamp(12px, 2.5vw, 14px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
 }
 
 /* ========== GAME BOARD ========== */
@@ -200,9 +170,10 @@ body {
     margin: 0 auto;
     width: fit-content;
     max-width: calc(100vw - 40px);
-    touch-action: none; /* ป้องกันการ scroll เมื่อแตะบอร์ด */
+    touch-action: none;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
+    position: relative;
 }
 
 .cell {
@@ -235,26 +206,27 @@ body {
     font-size: min(7vw, 30px);
     filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.15));
     user-select: none;
-    transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     will-change: transform;
     touch-action: none;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
-    pointer-events: none; /* ป้องกัน interference ระหว่าง events */
+    pointer-events: none;
 }
 
 .candy.new {
-    animation: popIn 0.25s ease-out;
+    animation: popIn 0.3s ease-out;
 }
 
 @keyframes popIn {
-    from { transform: scale(0.5); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
+    from { transform: scale(0.3) rotate(-180deg); opacity: 0; }
+    50% { transform: scale(1.2) rotate(-90deg); opacity: 0.8; }
+    to { transform: scale(1) rotate(0deg); opacity: 1; }
 }
 
 .candy.dragging {
     position: fixed;
-    transform: scale(1.2);
+    transform: scale(1.3);
     filter: drop-shadow(0 12px 35px rgba(0, 0, 0, 0.3));
     touch-action: none;
     transition: none;
@@ -263,22 +235,170 @@ body {
 }
 
 .candy.falling {
-    animation: fall 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    animation: simpleFall 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-@keyframes fall {
-    from { transform: translateY(-100px) scale(0.8); opacity: 0.7; }
-    to { transform: translateY(0) scale(1); opacity: 1; }
+@keyframes simpleFall {
+    0% { 
+        transform: translateY(-50px) scale(0.95); 
+        opacity: 0.8; 
+    }
+    100% { 
+        transform: translateY(0) scale(1); 
+        opacity: 1; 
+    }
+}
+
+.candy.newCandy {
+    animation: smoothFall 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes smoothFall {
+    0% { 
+        transform: translateY(-150px) scale(0.8) rotate(-10deg); 
+        opacity: 0.7; 
+    }
+    20% { 
+        transform: translateY(-100px) scale(0.9) rotate(-5deg); 
+        opacity: 0.8; 
+    }
+    60% { 
+        transform: translateY(-20px) scale(1.05) rotate(2deg); 
+        opacity: 0.95; 
+    }
+    80% { 
+        transform: translateY(5px) scale(1.02) rotate(1deg); 
+        opacity: 1; 
+    }
+    100% { 
+        transform: translateY(0) scale(1) rotate(0deg); 
+        opacity: 1; 
+    }
 }
 
 .candy.matched {
-    animation: spinAndFade 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    animation: spinAndExplode 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
 }
 
-@keyframes spinAndFade {
-    0% { transform: scale(1.1) rotate(0deg); opacity: 1; }
-    50% { transform: scale(1.3) rotate(90deg); opacity: 0.7; }
-    100% { transform: scale(0) rotate(180deg); opacity: 0; }
+@keyframes spinAndExplode {
+    0% { 
+        transform: scale(1) rotate(0deg); 
+        opacity: 1; 
+        filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.15)) brightness(1);
+    }
+    15% { 
+        transform: scale(1.1) rotate(45deg); 
+        opacity: 0.95; 
+        filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.2)) brightness(1.1);
+    }
+    30% { 
+        transform: scale(1.3) rotate(120deg); 
+        opacity: 0.85; 
+        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25)) brightness(1.3);
+    }
+    45% { 
+        transform: scale(1.5) rotate(200deg); 
+        opacity: 0.7; 
+        filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.3)) brightness(1.5);
+    }
+    60% { 
+        transform: scale(1.7) rotate(280deg); 
+        opacity: 0.5; 
+        filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.35)) brightness(1.7);
+    }
+    75% { 
+        transform: scale(1.8) rotate(340deg); 
+        opacity: 0.3; 
+        filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4)) brightness(1.8);
+    }
+    90% { 
+        transform: scale(1.2) rotate(380deg); 
+        opacity: 0.1; 
+        filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2)) brightness(1.5);
+    }
+    100% { 
+        transform: scale(0) rotate(400deg); 
+        opacity: 0; 
+        filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0)) brightness(1);
+    }
+}
+
+/* ========== SCORE POPUP ========== */
+.score-popup {
+    position: absolute;
+    font-size: clamp(18px, 4vw, 24px);
+    font-weight: 700;
+    color: #4caf50;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+    z-index: 1000;
+    animation: scoreFloat 1.5s ease-out forwards;
+}
+
+@keyframes scoreFloat {
+    0% {
+        transform: translateY(0) scale(0.5);
+        opacity: 0;
+    }
+    20% {
+        transform: translateY(-20px) scale(1.2);
+        opacity: 1;
+    }
+    40% {
+        transform: translateY(-40px) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-80px) scale(0.8);
+        opacity: 0;
+    }
+}
+
+/* ========== MULTIPLIER EFFECT ========== */
+.multiplier-effect {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(48px, 12vw, 72px);
+    font-weight: 900;
+    color: #ff9800;
+    text-shadow: 
+        0 0 20px rgba(255, 152, 0, 0.8),
+        0 0 40px rgba(255, 152, 0, 0.6),
+        0 4px 8px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+    z-index: 2000;
+    animation: multiplierBoom 2s ease-out forwards;
+    white-space: nowrap;
+    text-align: center;
+}
+
+@keyframes multiplierBoom {
+    0% {
+        transform: translate(-50%, -50%) scale(0.3) rotate(-10deg);
+        opacity: 0;
+    }
+    15% {
+        transform: translate(-50%, -50%) scale(1.4) rotate(5deg);
+        opacity: 1;
+    }
+    30% {
+        transform: translate(-50%, -50%) scale(1.1) rotate(-2deg);
+        opacity: 1;
+    }
+    45% {
+        transform: translate(-50%, -50%) scale(1.2) rotate(1deg);
+        opacity: 1;
+    }
+    70% {
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(0.8) rotate(0deg);
+        opacity: 0;
+    }
 }
 
 /* ========== CONTROL BUTTONS ========== */
@@ -324,8 +444,8 @@ body {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* ========== GAME OVER OVERLAY ========== */
-.game-over-overlay {
+/* ========== OVERLAY STYLES ========== */
+.overlay {
     position: fixed;
     inset: 0;
     display: none;
@@ -337,7 +457,7 @@ body {
     touch-action: manipulation;
 }
 
-.game-over-content {
+.overlay-content {
     background: white;
     padding: clamp(30px, 6vw, 50px);
     border-radius: 25px;
@@ -353,6 +473,41 @@ body {
     to { transform: translateY(0) scale(1); opacity: 1; }
 }
 
+/* ========== TUTORIAL POPUP ========== */
+.tutorial-title {
+    font-size: clamp(24px, 6vw, 32px);
+    font-weight: 700;
+    color: #4caf50;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.special-candies-list {
+    text-align: left;
+    margin-bottom: 25px;
+}
+
+.special-candy-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f5f8f5;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    font-size: clamp(14px, 3vw, 16px);
+    border-left: 4px solid #4caf50;
+}
+
+.special-candy-info .emoji {
+    font-size: clamp(20px, 4vw, 24px);
+    min-width: 30px;
+}
+
+/* ========== GAME OVER OVERLAY ========== */
 .game-over-title {
     font-size: clamp(36px, 8vw, 48px);
     font-weight: 700;
@@ -389,20 +544,12 @@ body {
             <div class="multiplier-indicator" id="multiplier">2x</div>
         </div>
         <div class="stat-box">
-            <div class="stat-label">Moves Left</div>
+            <div class="stat-label">MoveLeft</div>
             <div class="stat-value" id="moves">30</div>
         </div>
         <div class="stat-box">
             <div class="stat-label">Chain</div>
             <div class="stat-value" id="chain">0</div>
-        </div>
-    </div>
-
-    <div class="special-candies-info">
-        <div class="special-candies-title">🌟 ระบบคูณสะสม 🌟</div>
-        <div class="special-candies-list">
-            <div class="special-candy-info">4+ ชิ้น/L/T ➡️ ⚡️ คูณ+1 (คง 2 ตา)</div>
-            <div class="special-candy-info">ภายใน 2 ตา ➡️ 🎯 สะสมคูณต่อได้</div>
         </div>
     </div>
 
@@ -414,8 +561,40 @@ body {
     </div>
 </div>
 
-<div class="game-over-overlay" id="gameOverOverlay">
-    <div class="game-over-content">
+<!-- Tutorial Popup -->
+<div class="overlay" id="tutorialOverlay">
+    <div class="overlay-content">
+        <h2 class="tutorial-title">🌟 ระบบคูณสะสม 🌟</h2>
+        <div class="special-candies-list">
+            <div class="special-candy-info">
+                <span class="emoji">⚡️</span>
+                <div>
+                    <strong>การจับคู่พิเศษ:</strong><br>
+                    4+ ชิ้น หรือ รูปแบบ L/T ➡️ คูณ +1
+                </div>
+            </div>
+            <div class="special-candy-info">
+                <span class="emoji">🎯</span>
+                <div>
+                    <strong>สะสมคูณ:</strong><br>
+                    ทำได้ภายใน 2 ตา ➡️ คูณสะสมต่อได้
+                </div>
+            </div>
+            <div class="special-candy-info">
+                <span class="emoji">🔥</span>
+                <div>
+                    <strong>คอมโบ:</strong><br>
+                    ทำลายต่อเนื่อง ➡️ คะแนนเพิ่มขึ้น
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-primary" onclick="game.closeTutorial()">เริ่มเล่น!</button>
+    </div>
+</div>
+
+<!-- Game Over Popup -->
+<div class="overlay" id="gameOverOverlay">
+    <div class="overlay-content">
         <h2 class="game-over-title">จบเกม!</h2>
         <div class="final-stats">
             <strong>คะแนนสุดท้าย:</strong> <span id="finalScore">0</span><br>
@@ -428,748 +607,827 @@ body {
 </div>
 
 <script>
-class HealthyFoodMatch {
-    constructor() {
-        // ========== GAME CONFIGURATION ==========
-        this.BOARD_SIZE = 8;
-        this.INITIAL_MOVES = 30;
-        this.MIN_MATCH_LENGTH = 3;
-        this.BASE_POINTS_PER_CANDY = 4;
-        this.TOUCH_THRESHOLD = 30; // เพิ่ม threshold สำหรับ touch
-        
-        // ========== FOOD TYPES ==========
-        this.foodTypes = ['🥕', '🍇', '🥦', '🥒', '🍎', '🍊'];
-        
-        // ========== GAME STATE ==========
-        this.gameBoard = [];
-        this.currentScore = 0;
-        this.remainingMoves = this.INITIAL_MOVES;
-        this.currentChain = 0;
-        this.maxChainCombo = 0;
-        this.isGameProcessing = false;
-        
-        // ========== MULTIPLIER SYSTEM ==========
-        this.scoreMultiplier = 1;
-        this.maxMultiplier = 1;
-        this.multiplierTurnsLeft = 0;
-        
-        // ========== DRAG STATE ==========
-        this.dragState = {
-            isDragging: false,
-            startCell: null,
-            dragElement: null,
-            startPosition: null,
-            dragOffset: null,
-            touchStartTime: 0
-        };
-        
-        // ========== HIGH SCORE ==========
-        this.highScore = parseInt(localStorage.getItem('healthyFoodMatchHighScore')) || 0;
-        
-        // ========== HINT STATE ==========
-        this.hintTimeout = null;
-        
-        // ========== DOM ELEMENTS ==========
-        this.initializeDOMElements();
-        
-        // ========== EVENT LISTENERS ==========
-        this.setupEventListeners();
-        
-        // ========== START GAME ==========
-        this.initializeGame();
-    }
+  class HealthyFoodMatch {
+      constructor() {
+          // ========== GAME CONFIGURATION ==========
+          this.BOARD_SIZE = 8;
+          this.INITIAL_MOVES = 30;
+          this.MIN_MATCH_LENGTH = 3;
+          this.BASE_POINTS_PER_CANDY = 4;
+          this.TOUCH_THRESHOLD = 30;
+          
+          // ========== FOOD TYPES ==========
+          this.foodTypes = ['🥕', '🍇', '🥦', '🥒', '🍎', '🍊'];
+          
+          // ========== GAME STATE ==========
+          this.gameBoard = [];
+          this.currentScore = 0;
+          this.remainingMoves = this.INITIAL_MOVES;
+          this.currentChain = 0;
+          this.maxChainCombo = 0;
+          this.isGameProcessing = false;
+          this.hasShownTutorial = false;
+          
+          // ========== MULTIPLIER SYSTEM ==========
+          this.scoreMultiplier = 1;
+          this.maxMultiplier = 1;
+          this.multiplierTurnsLeft = 0;
+          
+          // ========== DRAG STATE ==========
+          this.dragState = {
+              isDragging: false,
+              startCell: null,
+              dragElement: null,
+              startPosition: null,
+              dragOffset: null,
+              touchStartTime: 0
+          };
+          
+          // ========== HIGH SCORE ==========
+          this.highScore = 0; // ไม่ใช้ localStorage
+          
+          // ========== HINT STATE ==========
+          this.hintTimeout = null;
+          
+          // ========== DOM ELEMENTS ==========
+          this.initializeDOMElements();
+          
+          // ========== EVENT LISTENERS ==========
+          this.setupEventListeners();
+          
+          // ========== START GAME ==========
+          this.showTutorial();
+      }
+  
+      // ========== INITIALIZATION METHODS ==========
+      
+      initializeDOMElements() {
+          this.elements = {
+              board: document.getElementById('board'),
+              score: document.getElementById('score'),
+              moves: document.getElementById('moves'),
+              chain: document.getElementById('chain'),
+              multiplier: document.getElementById('multiplier'),
+              tutorialOverlay: document.getElementById('tutorialOverlay'),
+              gameOverOverlay: document.getElementById('gameOverOverlay'),
+              finalScore: document.getElementById('finalScore'),
+              maxCombo: document.getElementById('maxCombo'),
+              maxMultiplierStat: document.getElementById('maxMultiplierStat'),
+              highScoreText: document.getElementById('highScoreText')
+          };
+      }
 
-    // ========== INITIALIZATION METHODS ==========
-    
-    initializeDOMElements() {
-        this.elements = {
-            board: document.getElementById('board'),
-            score: document.getElementById('score'),
-            moves: document.getElementById('moves'),
-            chain: document.getElementById('chain'),
-            multiplier: document.getElementById('multiplier'),
-            gameOverOverlay: document.getElementById('gameOverOverlay'),
-            finalScore: document.getElementById('finalScore'),
-            maxCombo: document.getElementById('maxCombo'),
-            maxMultiplierStat: document.getElementById('maxMultiplierStat'),
-            highScoreText: document.getElementById('highScoreText')
-        };
-    }
+      showTutorial() {
+          if (!this.hasShownTutorial) {
+              this.elements.tutorialOverlay.style.display = 'flex';
+              this.hasShownTutorial = true;
+          } else {
+              this.initializeGame();
+          }
+      }
 
-    setupEventListeners() {
-        // ป้องกันการ scroll ของหน้าเว็บ
-        document.addEventListener('touchmove', (e) => {
-            if (this.dragState.isDragging) {
-                e.preventDefault();
-            }
-        }, { passive: false });
+      closeTutorial() {
+          this.elements.tutorialOverlay.style.display = 'none';
+          this.initializeGame();
+      }
+  
+      setupEventListeners() {
+          document.addEventListener('touchmove', (e) => {
+              if (this.dragState.isDragging) {
+                  e.preventDefault();
+              }
+          }, { passive: false });
+  
+          document.addEventListener('touchstart', (e) => {
+              if (this.dragState.isDragging) {
+                  e.preventDefault();
+              }
+          }, { passive: false });
+  
+          window.addEventListener('pointermove', (e) => this.handleDragMove(e), { passive: false });
+          window.addEventListener('pointerup', (e) => this.handleDragEnd(e), { passive: false });
+          window.addEventListener('touchend', (e) => this.handleDragEnd(e), { passive: false });
+      }
+  
+      initializeGame() {
+          this.isGameProcessing = true;
+          this.resetGameState();
+          this.createGameBoard();
+          this.createBoardDisplay();
+          
+          while (!this.hasPossibleMoves()) {
+              this.createGameBoard();
+          }
+          
+          this.renderAllCells();
+          this.updateGameUI();
+          this.isGameProcessing = false;
+      }
+  
+      resetGameState() {
+          this.currentScore = 0;
+          this.remainingMoves = this.INITIAL_MOVES;
+          this.currentChain = 0;
+          this.maxChainCombo = 0;
+          this.scoreMultiplier = 1;
+          this.maxMultiplier = 1;
+          this.multiplierTurnsLeft = 0;
+          this.gameBoard = [];
+          this.clearHint();
+          this.elements.gameOverOverlay.style.display = 'none';
+          
+          if (this.elements) {
+              this.updateMultiplierDisplay();
+          }
+      }
+  
+      // ========== BOARD CREATION METHODS ==========
+  
+      createGameBoard() {
+          this.gameBoard = [];
+          for (let r = 0; r < this.BOARD_SIZE; r++) {
+              this.gameBoard[r] = [];
+              for (let c = 0; c < this.BOARD_SIZE; c++) {
+                  let food;
+                  do {
+                      food = this.getRandomFood();
+                  } while (
+                      (c >= 2 && this.gameBoard[r][c-1] === food && this.gameBoard[r][c-2] === food) ||
+                      (r >= 2 && this.gameBoard[r-1][c] === food && this.gameBoard[r-2][c] === food)
+                  );
+                  this.gameBoard[r][c] = food;
+              }
+          }
+      }
+  
+      createBoardDisplay() {
+          this.elements.board.innerHTML = '';
+          for (let r = 0; r < this.BOARD_SIZE; r++) {
+              for (let c = 0; c < this.BOARD_SIZE; c++) {
+                  const cell = this.createCellElement(r, c);
+                  this.elements.board.appendChild(cell);
+              }
+          }
+      }
+  
+      createCellElement(row, col) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          cell.dataset.row = row;
+          cell.dataset.col = col;
+          
+          cell.addEventListener('touchstart', (e) => this.handleDragStart(e, row, col), { passive: false });
+          cell.addEventListener('pointerdown', (e) => this.handleDragStart(e, row, col), { passive: false });
+          
+          return cell;
+      }
+  
+      // ========== RENDERING METHODS ==========
+  
+      renderAllCells() {
+          for (let r = 0; r < this.BOARD_SIZE; r++) {
+              for (let c = 0; c < this.BOARD_SIZE; c++) {
+                  this.renderCell(r, c);
+              }
+          }
+      }
+  
+      renderCell(row, col, options = {}) {
+          const cell = this.getCellElement(row, col);
+          if (!cell) return;
+          
+          cell.innerHTML = '';
+          const food = this.gameBoard[row][col];
+          if (!food) return;
+          
+          const foodElement = document.createElement('span');
+          foodElement.className = 'candy';
+          foodElement.textContent = food;
+          
+          if (options.isFalling) {
+              foodElement.classList.add('falling');
+          } else if (options.isNew) {
+              foodElement.classList.add('new');
+          } else if (options.isNewCandy) {
+              foodElement.classList.add('newCandy');
+          }
+          
+          cell.appendChild(foodElement);
+      }
 
-        document.addEventListener('touchstart', (e) => {
-            if (this.dragState.isDragging) {
-                e.preventDefault();
-            }
-        }, { passive: false });
+      // ========== MULTIPLIER EFFECT METHODS ==========
+      
+      showMultiplierEffect(multiplier) {
+          const effect = document.createElement('div');
+          effect.className = 'multiplier-effect';
+          effect.textContent = `คะแนน X${multiplier} !!`;
+          
+          document.body.appendChild(effect);
+          
+          setTimeout(() => {
+              if (effect.parentNode) {
+                  effect.parentNode.removeChild(effect);
+              }
+          }, 2000);
+      }
 
-        // Event listeners สำหรับ drag
-        window.addEventListener('pointermove', (e) => this.handleDragMove(e), { passive: false });
-        window.addEventListener('pointerup', (e) => this.handleDragEnd(e), { passive: false });
-        window.addEventListener('touchend', (e) => this.handleDragEnd(e), { passive: false });
-    }
+      // ========== SCORE POPUP METHODS ==========
+      
+      showScorePopup(score, centerRow, centerCol) {
+          const cell = this.getCellElement(centerRow, centerCol);
+          if (!cell) return;
+          
+          const popup = document.createElement('div');
+          popup.className = 'score-popup';
+          popup.textContent = `+${score}`;
+          
+          const rect = cell.getBoundingClientRect();
+          const boardRect = this.elements.board.getBoundingClientRect();
+          
+          popup.style.left = `${rect.left - boardRect.left + rect.width/2}px`;
+          popup.style.top = `${rect.top - boardRect.top + rect.height/2}px`;
+          
+          this.elements.board.appendChild(popup);
+          
+          setTimeout(() => {
+              if (popup.parentNode) {
+                  popup.parentNode.removeChild(popup);
+              }
+          }, 1500);
+      }
 
-    initializeGame() {
-        this.isGameProcessing = true;
-        this.resetGameState();
-        this.createGameBoard();
-        this.createBoardDisplay();
-        
-        while (!this.hasPossibleMoves()) {
-            this.createGameBoard();
-        }
-        
-        this.renderAllCells();
-        this.updateGameUI();
-        this.isGameProcessing = false;
-    }
-
-    resetGameState() {
-        this.currentScore = 0;
-        this.remainingMoves = this.INITIAL_MOVES;
-        this.currentChain = 0;
-        this.maxChainCombo = 0;
-        this.scoreMultiplier = 1;
-        this.maxMultiplier = 1;
-        this.multiplierTurnsLeft = 0;
-        this.gameBoard = [];
-        this.clearHint();
-        this.elements.gameOverOverlay.style.display = 'none';
-        
-        if (this.elements) {
-            this.updateMultiplierDisplay();
-        }
-    }
-
-    // ========== BOARD CREATION METHODS ==========
-
-    createGameBoard() {
-        this.gameBoard = [];
-        for (let r = 0; r < this.BOARD_SIZE; r++) {
-            this.gameBoard[r] = [];
-            for (let c = 0; c < this.BOARD_SIZE; c++) {
-                let food;
-                do {
-                    food = this.getRandomFood();
-                } while (
-                    (c >= 2 && this.gameBoard[r][c-1] === food && this.gameBoard[r][c-2] === food) ||
-                    (r >= 2 && this.gameBoard[r-1][c] === food && this.gameBoard[r-2][c] === food)
-                );
-                this.gameBoard[r][c] = food;
-            }
-        }
-    }
-
-    createBoardDisplay() {
-        this.elements.board.innerHTML = '';
-        for (let r = 0; r < this.BOARD_SIZE; r++) {
-            for (let c = 0; c < this.BOARD_SIZE; c++) {
-                const cell = this.createCellElement(r, c);
-                this.elements.board.appendChild(cell);
-            }
-        }
-    }
-
-    createCellElement(row, col) {
-        const cell = document.createElement('div');
-        cell.className = 'cell';
-        cell.dataset.row = row;
-        cell.dataset.col = col;
-        
-        // ใช้ touchstart แทน pointerdown สำหรับ mobile
-        cell.addEventListener('touchstart', (e) => this.handleDragStart(e, row, col), { passive: false });
-        cell.addEventListener('pointerdown', (e) => this.handleDragStart(e, row, col), { passive: false });
-        
-        return cell;
-    }
-
-    // ========== RENDERING METHODS ==========
-
-    renderAllCells() {
-        for (let r = 0; r < this.BOARD_SIZE; r++) {
-            for (let c = 0; c < this.BOARD_SIZE; c++) {
-                this.renderCell(r, c);
-            }
-        }
-    }
-
-    renderCell(row, col, options = {}) {
-        const cell = this.getCellElement(row, col);
-        if (!cell) return;
-        
-        cell.innerHTML = '';
-        const food = this.gameBoard[row][col];
-        if (!food) return;
-        
-        const foodElement = document.createElement('span');
-        foodElement.className = 'candy';
-        foodElement.textContent = food;
-        
-        if (options.isFalling) {
-            foodElement.classList.add('falling');
-        } else if (options.isNew) {
-            foodElement.classList.add('new');
-        }
-        
-        cell.appendChild(foodElement);
-    }
-
-    updateGameUI() {
-        // Smooth score animation
-        if (this.elements.score.textContent !== this.currentScore.toString()) {
-            this.elements.score.style.transform = 'scale(1.1)';
-            this.elements.score.style.transition = 'all 0.2s ease';
-            setTimeout(() => {
-                this.elements.score.textContent = this.currentScore;
-                this.elements.score.style.transform = 'scale(1)';
-            }, 100);
-        }
-        
-        this.elements.moves.textContent = this.remainingMoves;
-        this.elements.chain.textContent = this.currentChain;
-    }
-
-    updateMultiplierDisplay() {
-        if (!this.elements.multiplier) return;
-        if (this.scoreMultiplier > 1 && this.multiplierTurnsLeft > 0) {
-            this.elements.multiplier.textContent = `${this.scoreMultiplier}x (${this.multiplierTurnsLeft})`;
-            this.elements.multiplier.classList.add('show');
-        } else {
-            this.elements.multiplier.classList.remove('show');
-        }
-    }
-
-    // ========== DRAG HANDLING METHODS ==========
-
-    handleDragStart(event, row, col) {
-        if (this.isGameProcessing || this.remainingMoves <= 0 || this.dragState.isDragging) return;
-        
-        event.preventDefault();
-        event.stopPropagation();
-        this.clearHint();
-        
-        const cell = this.getCellElement(row, col);
-        const foodElement = cell.querySelector('.candy');
-        if (!foodElement) return;
-
-        const rect = foodElement.getBoundingClientRect();
-        const eventPos = this.getEventPosition(event);
-        
-        this.dragState = {
-            isDragging: true,
-            startCell: { row, col },
-            dragElement: foodElement.cloneNode(true), // สร้าง copy แทนการย้าย element จริง
-            startPosition: eventPos,
-            dragOffset: { 
-                x: eventPos.x - rect.left - rect.width/2, 
-                y: eventPos.y - rect.top - rect.height/2 
-            },
-            touchStartTime: Date.now()
-        };
-        
-        // สร้าง drag element ใหม่แทนการใช้ของเดิม
-        this.dragState.dragElement.className = 'candy dragging';
-        this.dragState.dragElement.style.position = 'fixed';
-        this.dragState.dragElement.style.zIndex = '9999';
-        this.dragState.dragElement.style.pointerEvents = 'none';
-        
-        document.body.appendChild(this.dragState.dragElement);
-        this.handleDragMove(event);
-    }
-
-    handleDragMove(event) {
-        if (!this.dragState.isDragging) return;
-        event.preventDefault();
-        event.stopPropagation();
-        
-        const currentPosition = this.getEventPosition(event);
-        const x = currentPosition.x - this.dragState.dragOffset.x;
-        const y = currentPosition.y - this.dragState.dragOffset.y;
-        
-        this.dragState.dragElement.style.left = `${x}px`;
-        this.dragState.dragElement.style.top = `${y}px`;
-    }
-
-    handleDragEnd(event) {
-        if (!this.dragState.isDragging) return;
-        
-        event.preventDefault();
-        event.stopPropagation();
-        
-        const { dragElement, startCell, touchStartTime } = this.dragState;
-        
-        // ลบ drag element
-        if (dragElement && dragElement.parentNode) {
-            document.body.removeChild(dragElement);
-        }
-        
-        const currentPosition = this.getEventPosition(event);
-        const deltaX = currentPosition.x - this.dragState.startPosition.x;
-        const deltaY = currentPosition.y - this.dragState.startPosition.y;
-        const dragDuration = Date.now() - touchStartTime;
-        
-        // ตรวจสอบว่าเป็นการ tap สั้นๆ หรือ drag จริง
-        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-        
-        if (distance > this.TOUCH_THRESHOLD && dragDuration > 100) {
-            const targetCell = this.calculateTargetCell(deltaX, deltaY);
-            
-            if (targetCell && this.isValidCell(targetCell.row, targetCell.col)) {
-                this.attemptSwap(startCell.row, startCell.col, targetCell.row, targetCell.col);
-            }
-        }
-        
-        this.dragState = { 
-            isDragging: false, 
-            startCell: null, 
-            dragElement: null, 
-            startPosition: null,
-            touchStartTime: 0
-        };
-    }
-
-    getEventPosition(event) {
-        const pointer = event.touches ? event.touches[0] : event;
-        return { x: pointer.clientX, y: pointer.clientY };
-    }
-
-    calculateTargetCell(deltaX, deltaY) {
-        if (Math.abs(deltaX) < this.TOUCH_THRESHOLD && Math.abs(deltaY) < this.TOUCH_THRESHOLD) return null;
-        
-        let { row, col } = this.dragState.startCell;
-        if (Math.abs(deltaX) > Math.abs(deltaY)) {
-            col += deltaX > 0 ? 1 : -1;
-        } else {
-            row += deltaY > 0 ? 1 : -1;
-        }
-        return { row, col };
-    }
-
-    // ========== SWAP LOGIC METHODS ==========
-
-    async attemptSwap(row1, col1, row2, col2) {
-        if (this.isGameProcessing) return;
-        
-        this.isGameProcessing = true;
-        await this.executeSwap(row1, col1, row2, col2);
-        
-        const matches = this.findAllMatches();
-        
-        if (matches.length > 0) {
-            this.remainingMoves--;
-            this.updateGameUI();
-            await this.processMatches(matches);
-            this.handleMultiplierTurns();
-        } else {
-            await this.executeSwap(row1, col1, row2, col2); // Swap back
-        }
-        
-        this.isGameProcessing = false;
-        
-        setTimeout(() => {
-            if (this.remainingMoves <= 0 && !this.isGameProcessing) {
-                this.showGameOver();
-            }
-        }, 100);
-    }
-
-    async executeSwap(row1, col1, row2, col2) {
-        this.swapFoodsInModel(row1, col1, row2, col2);
-        
-        // Smooth swap animation
-        const cell1 = this.getCellElement(row1, col1);
-        const cell2 = this.getCellElement(row2, col2);
-        const candy1 = cell1?.querySelector('.candy');
-        const candy2 = cell2?.querySelector('.candy');
-        
-        if (candy1) {
-            candy1.style.transform = 'scale(1.1)';
-            candy1.style.transition = 'all 0.15s ease';
-        }
-        if (candy2) {
-            candy2.style.transform = 'scale(1.1)';
-            candy2.style.transition = 'all 0.15s ease';
-        }
-        
-        await this.delay(75);
-        
-        this.renderCell(row1, col1, { isNew: true });
-        this.renderCell(row2, col2, { isNew: true });
-        
-        await this.delay(75);
-    }
-
-    swapFoodsInModel(row1, col1, row2, col2) {
-        [this.gameBoard[row1][col1], this.gameBoard[row2][col2]] = [this.gameBoard[row2][col2], this.gameBoard[row1][col1]];
-    }
-
-    // ========== MULTIPLIER METHODS ==========
-
-    handleMultiplierTurns() {
-        if (this.multiplierTurnsLeft > 0) {
-            this.multiplierTurnsLeft--;
-            
-            if (this.multiplierTurnsLeft <= 0) {
-                this.scoreMultiplier = 1;
-                this.multiplierTurnsLeft = 0;
-            }
-            
-            this.updateMultiplierDisplay();
-            this.updateGameUI();
-        }
-    }
-
-    // ========== MATCH PROCESSING METHODS ==========
-
-    async processMatches(initialMatches) {
-        this.currentChain = 0;
-        let matches = initialMatches;
-        let hasSpecialMatchInThisTurn = false;
-        
-        while (matches.length > 0) {
-            this.isGameProcessing = true;
-            this.currentChain++;
-            if (this.currentChain > this.maxChainCombo) this.maxChainCombo = this.currentChain;
-            
-            const specialMatch = this.checkForSpecialMatches(matches);
-            if (specialMatch) {
-                hasSpecialMatchInThisTurn = true;
-            }
-            
-            const clearedCells = this.markMatchedFoods(matches);
-            this.addScore(clearedCells.size, this.currentChain, this.scoreMultiplier);
-            
-            this.updateGameUI();
-            
-            await this.delay(500);
-            
-            this.removeMatchedFoods(clearedCells);
-            
-            await this.applyGravitySmooth();
-            await this.fillEmptyCellsSmooth();
-            
-            matches = this.findAllMatches();
-        }
-        
-        if (hasSpecialMatchInThisTurn) {
-            this.updateMultiplierFromSpecialMatches();
-        }
-        
-        if (!this.hasPossibleMoves()) await this.shuffleBoard();
-        this.isGameProcessing = false;
-    }
-
-    checkForSpecialMatches(matches) {
-        for (const match of matches) {
-            let type = this.getMatchType(match.cells.length);
-            if(match.type === 'L_T_shape') type = 'L_T_shape';
-
-            if (type === 'L_T_shape' || type === 'five_match' || type === 'four_match') {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    updateMultiplierFromSpecialMatches() {
-        if (this.scoreMultiplier === 1) {
-            this.scoreMultiplier = 2;
-        } else {
-            this.scoreMultiplier += 1;
-        }
-        
-        this.multiplierTurnsLeft = 2;
-        
-        if (this.scoreMultiplier > this.maxMultiplier) {
-            this.maxMultiplier = this.scoreMultiplier;
-        }
-        
-        this.updateMultiplierDisplay();
-    }
-
-    markMatchedFoods(matches) {
-        const cellsToClr = new Set();
-        matches.forEach(match => match.cells.forEach(cell => cellsToClr.add(`${cell.row},${cell.col}`)));
-        
-        cellsToClr.forEach(cellKey => {
-            const [row, col] = cellKey.split(',').map(Number);
-            const cellEl = this.getCellElement(row, col);
-            const candyEl = cellEl?.querySelector('.candy');
-            if(candyEl) candyEl.classList.add('matched');
-        });
-        
-        return cellsToClr;
-    }
-
-    removeMatchedFoods(cellsToClr) {
-        cellsToClr.forEach(cellKey => {
-            const [row, col] = cellKey.split(',').map(Number);
-            this.gameBoard[row][col] = null;
-            const cellEl = this.getCellElement(row, col);
-            if(cellEl) cellEl.innerHTML = '';
-        });
-    }
-
-    addScore(cellCount, chain, multiplier) {
-        const score = cellCount * this.BASE_POINTS_PER_CANDY * (1 + (chain - 1) * 0.5) * multiplier;
-        this.currentScore += Math.round(score);
-    }
-
-    async applyGravitySmooth() {
-        let hasChanges = false;
-        
-        for (let c = 0; c < this.BOARD_SIZE; c++) {
-            let writeRow = this.BOARD_SIZE - 1;
-            for (let r = this.BOARD_SIZE - 1; r >= 0; r--) {
-                if (this.gameBoard[r][c]) {
-                    if (r !== writeRow) {
-                        hasChanges = true;
-                        this.gameBoard[writeRow][c] = this.gameBoard[r][c];
-                        this.gameBoard[r][c] = null;
-                        
-                        const fromCell = this.getCellElement(r, c);
-                        const toCell = this.getCellElement(writeRow, c);
-                        
-                        if (fromCell && toCell) {
-                            fromCell.innerHTML = '';
-                            toCell.innerHTML = '';
-                            
-                            const newCandy = document.createElement('span');
-                            newCandy.className = 'candy falling';
-                            newCandy.textContent = this.gameBoard[writeRow][c];
-                            toCell.appendChild(newCandy);
-                        }
-                    }
-                    writeRow--;
-                }
-            }
-        }
-        
-        if(hasChanges) await this.delay(200);
-    }
-
-    async fillEmptyCellsSmooth() {
-        let needsFalling = false;
-        const newCandies = [];
-        
-        for (let r = 0; r < this.BOARD_SIZE; r++) {
-            for (let c = 0; c < this.BOARD_SIZE; c++) {
-                if (!this.gameBoard[r][c]) {
-                    needsFalling = true;
-                    this.gameBoard[r][c] = this.getRandomFood();
-                    newCandies.push({row: r, col: c});
-                }
-            }
-        }
-        
-        newCandies.forEach((pos, index) => {
-            setTimeout(() => {
-                this.renderCell(pos.row, pos.col, { isFalling: true });
-            }, index * 30);
-        });
-        
-        if(needsFalling) await this.delay(300);
-    }
-
-    // ========== MATCH DETECTION METHODS ==========
-
-    findAllMatches() {
-        const horizontalMatches = this.findMatchesInDirection('horizontal');
-        const verticalMatches = this.findMatchesInDirection('vertical');
-        const combined = [...horizontalMatches, ...verticalMatches];
-        const mergedMatches = [];
-
-        while(combined.length > 0){
-            let baseMatch = combined.shift();
-            let wasMerged = false;
-            for(let i = 0; i < mergedMatches.length; i++){
-                const merged = mergedMatches[i];
-                if(baseMatch.cells.some(c1 => merged.cells.some(c2 => c1.row === c2.row && c1.col === c2.col))){
-                    const newCells = [...merged.cells];
-                    baseMatch.cells.forEach(c1 => {
-                        if(!newCells.some(c2 => c1.row === c2.row && c1.col === c2.col)){
-                            newCells.push(c1);
-                        }
-                    });
-                    mergedMatches[i] = { cells: newCells, type: 'L_T_shape' };
-                    wasMerged = true;
-                    break;
-                }
-            }
-            if(!wasMerged) mergedMatches.push(baseMatch);
-        }
-        return mergedMatches;
-    }
-
-    findMatchesInDirection(direction) {
-        const matches = [];
-        const mainAxis = this.BOARD_SIZE;
-        const crossAxis = this.BOARD_SIZE;
-
-        for (let i = 0; i < mainAxis; i++) {
-            let run = [];
-            for (let j = 0; j < crossAxis; j++) {
-                const row = direction === 'vertical' ? j : i;
-                const col = direction === 'vertical' ? i : j;
-                const lastRow = direction === 'vertical' ? j - 1 : i;
-                const lastCol = direction === 'vertical' ? i : j - 1;
-                
-                if (j > 0 && this.gameBoard[row][col] === this.gameBoard[lastRow][lastCol] && this.gameBoard[row][col]) {
-                    run.push({ row, col });
-                } else {
-                    if (run.length >= this.MIN_MATCH_LENGTH) matches.push({ cells: run, type: this.getMatchType(run.length) });
-                    run = [{ row, col }];
-                }
-            }
-            if (run.length >= this.MIN_MATCH_LENGTH) matches.push({ cells: run, type: this.getMatchType(run.length) });
-        }
-        return matches;
-    }
-
-    getMatchType(length) {
-        if (length >= 5) return 'five_match';
-        if (length === 4) return 'four_match';
-        return 'normal_match';
-    }
-
-    // ========== HINT SYSTEM METHODS ==========
-
-    showHint() {
-        if (this.isGameProcessing) return;
-        this.clearHint();
-        const hint = this.findFirstPossibleMove();
-        if (hint) {
-            hint.cells.forEach(c => this.getCellElement(c.row, c.col)?.classList.add('hint'));
-            this.hintTimeout = setTimeout(() => this.clearHint(), 2000);
-        }
-    }
-
-    findFirstPossibleMove() {
-        for (let r = 0; r < this.BOARD_SIZE; r++) {
-            for (let c = 0; c < this.BOARD_SIZE; c++) {
-                if (c < this.BOARD_SIZE - 1) {
-                    this.swapFoodsInModel(r, c, r, c + 1);
-                    const matches = this.findAllMatches();
-                    this.swapFoodsInModel(r, c, r, c + 1);
-                    if (matches.length > 0) return { cells: [{row: r, col: c}, {row: r, col: c+1}] };
-                }
-                if (r < this.BOARD_SIZE - 1) {
-                    this.swapFoodsInModel(r, c, r + 1, c);
-                    const matches = this.findAllMatches();
-                    this.swapFoodsInModel(r, c, r + 1, c);
-                    if (matches.length > 0) return { cells: [{row: r, col: c}, {row: r+1, col: c}] };
-                }
-            }
-        }
-        return null;
-    }
-
-    clearHint() {
-        if (this.hintTimeout) clearTimeout(this.hintTimeout);
-        document.querySelectorAll('.hint').forEach(el => el.classList.remove('hint'));
-    }
-
-    hasPossibleMoves() {
-        return !!this.findFirstPossibleMove();
-    }
-
-    // ========== BOARD SHUFFLING METHODS ==========
-
-    async shuffleBoard() {
-        this.isGameProcessing = true;
-        console.log("No possible moves. Shuffling board...");
-        let attempts = 0;
-        do {
-            this.randomizeBoard();
-            attempts++;
-        } while ((this.findAllMatches().length > 0 || !this.hasPossibleMoves()) && attempts < 20);
-        
-        if (attempts >= 20) {
-            this.initializeGame();
-            return;
-        }
-        
-        for (let r = 0; r < this.BOARD_SIZE; r++) {
-            for (let c = 0; c < this.BOARD_SIZE; c++) {
-                setTimeout(() => {
-                    this.renderCell(r, c, { isFalling: true });
-                }, (r * this.BOARD_SIZE + c) * 15);
-            }
-        }
-        
-        await this.delay(400);
-        this.isGameProcessing = false;
-    }
-
-    randomizeBoard() {
-        const allFoods = this.gameBoard.flat();
-        for (let i = allFoods.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [allFoods[i], allFoods[j]] = [allFoods[j], allFoods[i]];
-        }
-        for (let i = 0; i < allFoods.length; i++) {
-            this.gameBoard[Math.floor(i / this.BOARD_SIZE)][i % this.BOARD_SIZE] = allFoods[i];
-        }
-    }
-
-    // ========== GAME OVER METHODS ==========
-
-    showGameOver() {
-        this.isGameProcessing = true;
-        this.elements.finalScore.textContent = this.currentScore;
-        this.elements.maxCombo.textContent = this.maxChainCombo;
-        this.elements.maxMultiplierStat.textContent = `${this.maxMultiplier}x`;
-        this.updateHighScore();
-        this.elements.gameOverOverlay.style.display = 'flex';
-    }
-
-    updateHighScore() {
-        if (this.currentScore > this.highScore) {
-            this.highScore = this.currentScore;
-            localStorage.setItem('healthyFoodMatchHighScore', this.highScore);
-            this.elements.highScoreText.textContent = '🎉 คะแนนสูงสุดใหม่! 🎉';
-        } else {
-            this.elements.highScoreText.textContent = `คะแนนสูงสุด: ${this.highScore}`;
-        }
-    }
-
-    // ========== PUBLIC INTERFACE METHODS ==========
-
-    startNewGame() {
-        this.elements.gameOverOverlay.style.display = 'none';
-        this.initializeGame();
-    }
-
-    // ========== UTILITY METHODS ==========
-
-    getRandomFood() {
-        return this.foodTypes[Math.floor(Math.random() * this.foodTypes.length)];
-    }
-
-    getCellElement(row, col) {
-        return this.elements.board.querySelector(`[data-row="${row}"][data-col="${col}"]`);
-    }
-
-    isValidCell(row, col) {
-        return row >= 0 && row < this.BOARD_SIZE && col >= 0 && col < this.BOARD_SIZE;
-    }
-
-    delay(milliseconds) {
-        return new Promise(resolve => setTimeout(resolve, milliseconds));
-    }
-}
-
-// ========== GAME INITIALIZATION ==========
-window.addEventListener('DOMContentLoaded', () => {
-    window.game = new HealthyFoodMatch();
-});
-</script>
+      calculateMatchCenter(cells) {
+          const avgRow = cells.reduce((sum, cell) => sum + cell.row, 0) / cells.length;
+          const avgCol = cells.reduce((sum, cell) => sum + cell.col, 0) / cells.length;
+          return { row: Math.round(avgRow), col: Math.round(avgCol) };
+      }
+  
+      updateGameUI() {
+          if (this.elements.score.textContent !== this.currentScore.toString()) {
+              this.elements.score.style.transform = 'scale(1.2)';
+              this.elements.score.style.transition = 'all 0.3s ease';
+              setTimeout(() => {
+                  this.elements.score.textContent = this.currentScore;
+                  this.elements.score.style.transform = 'scale(1)';
+              }, 150);
+          }
+          
+          this.elements.moves.textContent = this.remainingMoves;
+          this.elements.chain.textContent = this.currentChain;
+      }
+  
+      updateMultiplierDisplay() {
+          if (!this.elements.multiplier) return;
+          if (this.scoreMultiplier > 1 && this.multiplierTurnsLeft > 0) {
+              this.elements.multiplier.textContent = `${this.scoreMultiplier}x (${this.multiplierTurnsLeft})`;
+              this.elements.multiplier.classList.add('show');
+          } else {
+              this.elements.multiplier.classList.remove('show');
+          }
+      }
+  
+      // ========== DRAG HANDLING METHODS ==========
+  
+      handleDragStart(event, row, col) {
+          if (this.isGameProcessing || this.remainingMoves <= 0 || this.dragState.isDragging) return;
+          
+          event.preventDefault();
+          event.stopPropagation();
+          this.clearHint();
+          
+          const cell = this.getCellElement(row, col);
+          const foodElement = cell.querySelector('.candy');
+          if (!foodElement) return;
+  
+          const rect = foodElement.getBoundingClientRect();
+          const eventPos = this.getEventPosition(event);
+          
+          this.dragState = {
+              isDragging: true,
+              startCell: { row, col },
+              dragElement: foodElement.cloneNode(true),
+              startPosition: eventPos,
+              dragOffset: { 
+                  x: eventPos.x - rect.left - rect.width/2, 
+                  y: eventPos.y - rect.top - rect.height/2 
+              },
+              touchStartTime: Date.now()
+          };
+          
+          this.dragState.dragElement.className = 'candy dragging';
+          this.dragState.dragElement.style.position = 'fixed';
+          this.dragState.dragElement.style.zIndex = '9999';
+          this.dragState.dragElement.style.pointerEvents = 'none';
+          
+          document.body.appendChild(this.dragState.dragElement);
+          this.handleDragMove(event);
+      }
+  
+      handleDragMove(event) {
+          if (!this.dragState.isDragging) return;
+          event.preventDefault();
+          event.stopPropagation();
+          
+          const currentPosition = this.getEventPosition(event);
+          const x = currentPosition.x - this.dragState.dragOffset.x;
+          const y = currentPosition.y - this.dragState.dragOffset.y;
+          
+          this.dragState.dragElement.style.left = `${x}px`;
+          this.dragState.dragElement.style.top = `${y}px`;
+      }
+  
+      handleDragEnd(event) {
+          if (!this.dragState.isDragging) return;
+          
+          event.preventDefault();
+          event.stopPropagation();
+          
+          const { dragElement, startCell, touchStartTime } = this.dragState;
+          
+          if (dragElement && dragElement.parentNode) {
+              document.body.removeChild(dragElement);
+          }
+          
+          const currentPosition = this.getEventPosition(event);
+          const deltaX = currentPosition.x - this.dragState.startPosition.x;
+          const deltaY = currentPosition.y - this.dragState.startPosition.y;
+          const dragDuration = Date.now() - touchStartTime;
+          
+          const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+          
+          if (distance > this.TOUCH_THRESHOLD && dragDuration > 100) {
+              const targetCell = this.calculateTargetCell(deltaX, deltaY);
+              
+              if (targetCell && this.isValidCell(targetCell.row, targetCell.col)) {
+                  this.attemptSwap(startCell.row, startCell.col, targetCell.row, targetCell.col);
+              }
+          }
+          
+          this.dragState = { 
+              isDragging: false, 
+              startCell: null, 
+              dragElement: null, 
+              startPosition: null,
+              touchStartTime: 0
+          };
+      }
+  
+      getEventPosition(event) {
+          const pointer = event.touches ? event.touches[0] : event;
+          return { x: pointer.clientX, y: pointer.clientY };
+      }
+  
+      calculateTargetCell(deltaX, deltaY) {
+          if (Math.abs(deltaX) < this.TOUCH_THRESHOLD && Math.abs(deltaY) < this.TOUCH_THRESHOLD) return null;
+          
+          let { row, col } = this.dragState.startCell;
+          if (Math.abs(deltaX) > Math.abs(deltaY)) {
+              col += deltaX > 0 ? 1 : -1;
+          } else {
+              row += deltaY > 0 ? 1 : -1;
+          }
+          return { row, col };
+      }
+  
+      // ========== SWAP LOGIC METHODS ==========
+  
+      async attemptSwap(row1, col1, row2, col2) {
+          if (this.isGameProcessing) return;
+          
+          this.isGameProcessing = true;
+          await this.executeSwap(row1, col1, row2, col2);
+          
+          const matches = this.findAllMatches();
+          
+          if (matches.length > 0) {
+              this.remainingMoves--;
+              this.updateGameUI();
+              await this.processMatches(matches);
+              this.handleMultiplierTurns();
+          } else {
+              await this.executeSwap(row1, col1, row2, col2);
+          }
+          
+          this.isGameProcessing = false;
+          
+          setTimeout(() => {
+              if (this.remainingMoves <= 0 && !this.isGameProcessing) {
+                  this.showGameOver();
+              }
+          }, 100);
+      }
+  
+      async executeSwap(row1, col1, row2, col2) {
+          this.swapFoodsInModel(row1, col1, row2, col2);
+          
+          const cell1 = this.getCellElement(row1, col1);
+          const cell2 = this.getCellElement(row2, col2);
+          const candy1 = cell1?.querySelector('.candy');
+          const candy2 = cell2?.querySelector('.candy');
+          
+          if (candy1) {
+              candy1.style.transform = 'scale(1.2) rotate(5deg)';
+              candy1.style.transition = 'all 0.2s ease';
+          }
+          if (candy2) {
+              candy2.style.transform = 'scale(1.2) rotate(-5deg)';
+              candy2.style.transition = 'all 0.2s ease';
+          }
+          
+          await this.delay(100);
+          
+          this.renderCell(row1, col1, { isNew: true });
+          this.renderCell(row2, col2, { isNew: true });
+          
+          await this.delay(100);
+      }
+  
+      swapFoodsInModel(row1, col1, row2, col2) {
+          [this.gameBoard[row1][col1], this.gameBoard[row2][col2]] = [this.gameBoard[row2][col2], this.gameBoard[row1][col1]];
+      }
+  
+      // ========== MULTIPLIER METHODS ==========
+  
+      handleMultiplierTurns() {
+          if (this.multiplierTurnsLeft > 0) {
+              this.multiplierTurnsLeft--;
+              
+              if (this.multiplierTurnsLeft <= 0) {
+                  this.scoreMultiplier = 1;
+                  this.multiplierTurnsLeft = 0;
+              }
+              
+              this.updateMultiplierDisplay();
+              this.updateGameUI();
+          }
+      }
+  
+      // ========== MATCH PROCESSING METHODS ==========
+  
+      async processMatches(initialMatches) {
+          this.currentChain = 0;
+          let matches = initialMatches;
+          let hasSpecialMatchInThisTurn = false;
+          
+          while (matches.length > 0) {
+              this.isGameProcessing = true;
+              this.currentChain++;
+              if (this.currentChain > this.maxChainCombo) this.maxChainCombo = this.currentChain;
+              
+              const specialMatch = this.checkForSpecialMatches(matches);
+              if (specialMatch) {
+                  hasSpecialMatchInThisTurn = true;
+              }
+              
+              const clearedCells = this.markMatchedFoods(matches);
+              const scoreGained = this.addScore(clearedCells.size, this.currentChain, this.scoreMultiplier);
+              
+              // แสดง score popup
+              for (const match of matches) {
+                  const center = this.calculateMatchCenter(match.cells);
+                  this.showScorePopup(Math.round(scoreGained / matches.length), center.row, center.col);
+              }
+              
+              this.updateGameUI();
+              
+              await this.delay(700); // เพิ่มเวลาให้เห็น animation ชัด
+              
+              this.removeMatchedFoods(clearedCells);
+              
+              await this.applyGravitySmooth();
+              await this.fillEmptyCellsSmooth();
+              
+              matches = this.findAllMatches();
+          }
+          
+          if (hasSpecialMatchInThisTurn) {
+              this.updateMultiplierFromSpecialMatches();
+          }
+          
+          if (!this.hasPossibleMoves()) await this.shuffleBoard();
+          this.isGameProcessing = false;
+      }
+  
+      checkForSpecialMatches(matches) {
+          for (const match of matches) {
+              let type = this.getMatchType(match.cells.length);
+              if(match.type === 'L_T_shape') type = 'L_T_shape';
+  
+              if (type === 'L_T_shape' || type === 'five_match' || type === 'four_match') {
+                  return true;
+              }
+          }
+          return false;
+      }
+  
+      updateMultiplierFromSpecialMatches() {
+          if (this.scoreMultiplier === 1) {
+              this.scoreMultiplier = 2;
+          } else {
+              this.scoreMultiplier += 1;
+          }
+          
+          this.multiplierTurnsLeft = 2;
+          
+          if (this.scoreMultiplier > this.maxMultiplier) {
+              this.maxMultiplier = this.scoreMultiplier;
+          }
+          
+          // แสดง multiplier effect ขนาดใหญ่
+          this.showMultiplierEffect(this.scoreMultiplier);
+          
+          this.updateMultiplierDisplay();
+      }
+  
+      markMatchedFoods(matches) {
+          const cellsToClr = new Set();
+          matches.forEach(match => match.cells.forEach(cell => cellsToClr.add(`${cell.row},${cell.col}`)));
+          
+          cellsToClr.forEach(cellKey => {
+              const [row, col] = cellKey.split(',').map(Number);
+              const cellEl = this.getCellElement(row, col);
+              const candyEl = cellEl?.querySelector('.candy');
+              if(candyEl) candyEl.classList.add('matched');
+          });
+          
+          return cellsToClr;
+      }
+  
+      removeMatchedFoods(cellsToClr) {
+          cellsToClr.forEach(cellKey => {
+              const [row, col] = cellKey.split(',').map(Number);
+              this.gameBoard[row][col] = null;
+              const cellEl = this.getCellElement(row, col);
+              if(cellEl) cellEl.innerHTML = '';
+          });
+      }
+  
+      addScore(cellCount, chain, multiplier) {
+          const score = cellCount * this.BASE_POINTS_PER_CANDY * (1 + (chain - 1) * 0.5) * multiplier;
+          const finalScore = Math.round(score);
+          this.currentScore += finalScore;
+          return finalScore;
+      }
+  
+      async applyGravitySmooth() {
+          let hasChanges = false;
+          const movements = [];
+          
+          for (let c = 0; c < this.BOARD_SIZE; c++) {
+              let writeRow = this.BOARD_SIZE - 1;
+              for (let r = this.BOARD_SIZE - 1; r >= 0; r--) {
+                  if (this.gameBoard[r][c]) {
+                      if (r !== writeRow) {
+                          hasChanges = true;
+                          movements.push({
+                              from: {row: r, col: c},
+                              to: {row: writeRow, col: c},
+                              food: this.gameBoard[r][c]
+                          });
+                          
+                          this.gameBoard[writeRow][c] = this.gameBoard[r][c];
+                          this.gameBoard[r][c] = null;
+                      }
+                      writeRow--;
+                  }
+              }
+          }
+          
+          // แสดง falling animation สำหรับอาหารที่มีอยู่แล้ว
+          movements.forEach((movement, index) => {
+              setTimeout(() => {
+                  const fromCell = this.getCellElement(movement.from.row, movement.from.col);
+                  const toCell = this.getCellElement(movement.to.row, movement.to.col);
+                  
+                  if (fromCell && toCell) {
+                      fromCell.innerHTML = '';
+                      toCell.innerHTML = '';
+                      
+                      const newCandy = document.createElement('span');
+                      newCandy.className = 'candy falling';
+                      newCandy.textContent = movement.food;
+                      toCell.appendChild(newCandy);
+                  }
+              }, index * 50);
+          });
+          
+          if(hasChanges) await this.delay(500);
+      }
+  
+      async fillEmptyCellsSmooth() {
+          let needsFalling = false;
+          const newCandies = [];
+          
+          for (let r = 0; r < this.BOARD_SIZE; r++) {
+              for (let c = 0; c < this.BOARD_SIZE; c++) {
+                  if (!this.gameBoard[r][c]) {
+                      needsFalling = true;
+                      this.gameBoard[r][c] = this.getRandomFood();
+                      newCandies.push({row: r, col: c});
+                  }
+              }
+          }
+          
+          newCandies.forEach((pos, index) => {
+              setTimeout(() => {
+                  this.renderCell(pos.row, pos.col, { isNewCandy: true });
+              }, index * 50);
+          });
+          
+          if(needsFalling) await this.delay(500);
+      }
+  
+      // ========== MATCH DETECTION METHODS ==========
+  
+      findAllMatches() {
+          const horizontalMatches = this.findMatchesInDirection('horizontal');
+          const verticalMatches = this.findMatchesInDirection('vertical');
+          const combined = [...horizontalMatches, ...verticalMatches];
+          const mergedMatches = [];
+  
+          while(combined.length > 0){
+              let baseMatch = combined.shift();
+              let wasMerged = false;
+              for(let i = 0; i < mergedMatches.length; i++){
+                  const merged = mergedMatches[i];
+                  if(baseMatch.cells.some(c1 => merged.cells.some(c2 => c1.row === c2.row && c1.col === c2.col))){
+                      const newCells = [...merged.cells];
+                      baseMatch.cells.forEach(c1 => {
+                          if(!newCells.some(c2 => c1.row === c2.row && c1.col === c2.col)){
+                              newCells.push(c1);
+                          }
+                      });
+                      mergedMatches[i] = { cells: newCells, type: 'L_T_shape' };
+                      wasMerged = true;
+                      break;
+                  }
+              }
+              if(!wasMerged) mergedMatches.push(baseMatch);
+          }
+          return mergedMatches;
+      }
+  
+      findMatchesInDirection(direction) {
+          const matches = [];
+          const mainAxis = this.BOARD_SIZE;
+          const crossAxis = this.BOARD_SIZE;
+  
+          for (let i = 0; i < mainAxis; i++) {
+              let run = [];
+              for (let j = 0; j < crossAxis; j++) {
+                  const row = direction === 'vertical' ? j : i;
+                  const col = direction === 'vertical' ? i : j;
+                  const lastRow = direction === 'vertical' ? j - 1 : i;
+                  const lastCol = direction === 'vertical' ? i : j - 1;
+                  
+                  if (j > 0 && this.gameBoard[row][col] === this.gameBoard[lastRow][lastCol] && this.gameBoard[row][col]) {
+                      run.push({ row, col });
+                  } else {
+                      if (run.length >= this.MIN_MATCH_LENGTH) matches.push({ cells: run, type: this.getMatchType(run.length) });
+                      run = [{ row, col }];
+                  }
+              }
+              if (run.length >= this.MIN_MATCH_LENGTH) matches.push({ cells: run, type: this.getMatchType(run.length) });
+          }
+          return matches;
+      }
+  
+      getMatchType(length) {
+          if (length >= 5) return 'five_match';
+          if (length === 4) return 'four_match';
+          return 'normal_match';
+      }
+  
+      // ========== HINT SYSTEM METHODS ==========
+  
+      showHint() {
+          if (this.isGameProcessing) return;
+          this.clearHint();
+          const hint = this.findFirstPossibleMove();
+          if (hint) {
+              hint.cells.forEach(c => this.getCellElement(c.row, c.col)?.classList.add('hint'));
+              this.hintTimeout = setTimeout(() => this.clearHint(), 3000);
+          }
+      }
+  
+      findFirstPossibleMove() {
+          for (let r = 0; r < this.BOARD_SIZE; r++) {
+              for (let c = 0; c < this.BOARD_SIZE; c++) {
+                  if (c < this.BOARD_SIZE - 1) {
+                      this.swapFoodsInModel(r, c, r, c + 1);
+                      const matches = this.findAllMatches();
+                      this.swapFoodsInModel(r, c, r, c + 1);
+                      if (matches.length > 0) return { cells: [{row: r, col: c}, {row: r, col: c+1}] };
+                  }
+                  if (r < this.BOARD_SIZE - 1) {
+                      this.swapFoodsInModel(r, c, r + 1, c);
+                      const matches = this.findAllMatches();
+                      this.swapFoodsInModel(r, c, r + 1, c);
+                      if (matches.length > 0) return { cells: [{row: r, col: c}, {row: r+1, col: c}] };
+                  }
+              }
+          }
+          return null;
+      }
+  
+      clearHint() {
+          if (this.hintTimeout) clearTimeout(this.hintTimeout);
+          document.querySelectorAll('.hint').forEach(el => el.classList.remove('hint'));
+      }
+  
+      hasPossibleMoves() {
+          return !!this.findFirstPossibleMove();
+      }
+  
+      // ========== BOARD SHUFFLING METHODS ==========
+  
+      async shuffleBoard() {
+          this.isGameProcessing = true;
+          console.log("No possible moves. Shuffling board...");
+          let attempts = 0;
+          do {
+              this.randomizeBoard();
+              attempts++;
+          } while ((this.findAllMatches().length > 0 || !this.hasPossibleMoves()) && attempts < 20);
+          
+          if (attempts >= 20) {
+              this.initializeGame();
+              return;
+          }
+          
+          for (let r = 0; r < this.BOARD_SIZE; r++) {
+              for (let c = 0; c < this.BOARD_SIZE; c++) {
+                  setTimeout(() => {
+                      this.renderCell(r, c, { isNewCandy: true });
+                  }, (r * this.BOARD_SIZE + c) * 25);
+              }
+          }
+          
+          await this.delay(600);
+          this.isGameProcessing = false;
+      }
+  
+      randomizeBoard() {
+          const allFoods = this.gameBoard.flat();
+          for (let i = allFoods.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [allFoods[i], allFoods[j]] = [allFoods[j], allFoods[i]];
+          }
+          for (let i = 0; i < allFoods.length; i++) {
+              this.gameBoard[Math.floor(i / this.BOARD_SIZE)][i % this.BOARD_SIZE] = allFoods[i];
+          }
+      }
+  
+      // ========== GAME OVER METHODS ==========
+  
+      showGameOver() {
+          this.isGameProcessing = true;
+          this.elements.finalScore.textContent = this.currentScore;
+          this.elements.maxCombo.textContent = this.maxChainCombo;
+          this.elements.maxMultiplierStat.textContent = `${this.maxMultiplier}x`;
+          this.updateHighScore();
+          this.elements.gameOverOverlay.style.display = 'flex';
+      }
+  
+      updateHighScore() {
+          if (this.currentScore > this.highScore) {
+              this.highScore = this.currentScore;
+              this.elements.highScoreText.textContent = '🎉 คะแนนสูงสุดใหม่! 🎉';
+          } else {
+              this.elements.highScoreText.textContent = `คะแนนสูงสุด: ${this.highScore}`;
+          }
+      }
+  
+      // ========== PUBLIC INTERFACE METHODS ==========
+  
+      startNewGame() {
+          this.elements.gameOverOverlay.style.display = 'none';
+          this.initializeGame();
+      }
+  
+      // ========== UTILITY METHODS ==========
+  
+      getRandomFood() {
+          return this.foodTypes[Math.floor(Math.random() * this.foodTypes.length)];
+      }
+  
+      getCellElement(row, col) {
+          return this.elements.board.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+      }
+  
+      isValidCell(row, col) {
+          return row >= 0 && row < this.BOARD_SIZE && col >= 0 && col < this.BOARD_SIZE;
+      }
+  
+      delay(milliseconds) {
+          return new Promise(resolve => setTimeout(resolve, milliseconds));
+      }
+  }
+  
+  // ========== GAME INITIALIZATION ==========
+  window.addEventListener('DOMContentLoaded', () => {
+      window.game = new HealthyFoodMatch();
+  });
+  </script>
 </body>
 </html>
